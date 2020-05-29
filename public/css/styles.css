@@ -1,0 +1,41 @@
+html {
+  min-height: 100%;
+}
+body.auth-body {
+  height: 100vh;
+  color: #ffffff;
+  background-color: #062c33;
+}
+.auth-main {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+.auth-registration-link {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  text-decoration: underline;
+  color: #ffffff;
+}
+.auth-registration-link:hover,
+.auth-registration-link:focus,
+.auth-registration-link:active {
+  text-decoration: none;
+  color: #ffffff;
+}
+.auth-form {
+  margin: 0 auto;
+  max-width: 400px;
+}

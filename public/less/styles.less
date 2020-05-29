@@ -1,0 +1,33 @@
+@import "variables";
+html {
+    min-height: 100%;
+}
+body {
+    &.auth-body {
+        height: 100vh;
+        color: #ffffff;
+        background-color: #062c33;
+    }
+}
+.auth-main {
+    position: relative;
+    .flex();
+    .flex-center();
+    .align-items-center();
+    height: 100%;
+}
+.auth-registration-link {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    text-decoration: underline;
+    color: #ffffff;
+    &:hover, &:focus, &:active {
+        text-decoration: none;
+        color: #ffffff;
+    }
+}
+.auth-form {
+    margin: 0 auto;
+    max-width: 400px;
+}
