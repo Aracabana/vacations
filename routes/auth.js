@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Geonames = require('geonames.js')
 
 router.get('/login', function(request, response) {
     response.render('login', {
@@ -8,8 +9,13 @@ router.get('/login', function(request, response) {
     })
 });
 router.post('/login', function(request, response) {
-    console.log(new Date());
     console.log(request.body);
+    const { name, password } = request.body;
+    // if(!name || !password) {
+    //     response.json({ ok: false, caption: 'Invalid Data' });
+    //     return;
+    // }
+    // response.json({ ok: true, caption: 'Data is valid'});
 });
 
 router.get('/registration', function(request, response) {
