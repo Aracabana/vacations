@@ -9,15 +9,7 @@ router.get('/login', function(request, response) {
         pageTitle: 'Авторизация'
     })
 });
-router.post('/login', function(request, response) {
-    console.log(request.body);
-    const { name, password } = request.body;
-    // if(!name || !password) {
-    //     response.json({ ok: false, caption: 'Invalid Data' });
-    //     return;
-    // }
-    // response.json({ ok: true, caption: 'Data is valid'});
-});
+router.post('/login', authController.login);
 
 router.get('/registration', function(request, response) {
     response.render('registration', {
