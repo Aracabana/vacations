@@ -1,30 +1,15 @@
-const express               = require('express');
-const cookieParser          = require('cookie-parser');
-const bodyParser            = require('body-parser');
-const access                = require('./routes/access');
-const dotenv                = require('dotenv').config();
-const mysql                 = require('mysql2');
-const http                  = require('http');
-const path                  = require('path');
-const auth                  = require('./routes/auth');
-const hbs                   = require('express-handlebars');
-const {sqlConnection}       = require('./config');
+const express        = require('express');
+const cookieParser   = require('cookie-parser');
+const bodyParser     = require('body-parser');
+const access         = require('./routes/access');
+const dotenv         = require('dotenv').config();
+const http           = require('http');
+const path           = require('path');
+const auth           = require('./routes/auth');
+const hbs            = require('express-handlebars');
 
 const port = process.env.PORT || '8080';
 const app = express(); // инициализация приложения
-
-/*
-   Настраивает подключение к серверу MySql.
-   Параметры подключения находятся в файле Config.js.
- */
-const connection = mysql.createConnection(sqlConnection).promise(); // Создает строку подключения к базе данных
-connection.connect() // Коннектится к базе данных. В случае неудачи выводит ошибку
-    .then(res => {
-        console.log('Подключение к серверу MySQL установлено');
-    })
-    .catch(err => {
-        console.log(err);
-    });
 
 /*
     Устанавливает основные настройки для сервера.
