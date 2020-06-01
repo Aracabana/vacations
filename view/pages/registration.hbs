@@ -2,23 +2,33 @@
     <a href="/auth/login" class="auth-registration-link">Уже зарегистрированы?</a>
     <div class="container">
         <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
-        <form action="" class="auth-form">
+        <form id="registration-form" class="auth-form" novalidate>
+            <div id="serverFeedback" class="alert" hidden></div>
             <div class="form-group">
                 <label for="regLogin">Логин</label>
-                <input type="text" class="form-control" id="regLogin" name="regLogin">
-                <small id="regLoginHelp" class="form-text text-muted"></small>
+                <input type="text" class="form-control" id="regLogin" name="login" required>
+                <small id="regLoginHelp" class="form-text text-muted">Логин должен содержать не менее 4х символов</small>
+                <div class="invalid-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">E-mail</label>
+                <input type="email" class="form-control" id="regEmail" name="email" required>
+                <small id="regEmailHelp" class="form-text text-muted"></small>
+                <div class="invalid-feedback"></div>
             </div>
             <div class="form-group">
                 <label for="regPassword">Пароль</label>
-                <input type="password" class="form-control" id="regPassword" name="regPassword">
-                <small id="regPasswordHelp" class="form-text text-muted"></small>
+                <input type="password" class="form-control" id="regPassword" name="password" required>
+                <small id="regPasswordHelp" class="form-text text-muted">Пароль должен содержать не менее 4х символов</small>
+                <div class="invalid-feedback"></div>
             </div>
             <div class="form-group">
                 <label for="regConfirmPassword">Подтверждение пароля</label>
-                <input type="password" class="form-control" id="regConfirmPassword" name="regConfirmPassword">
+                <input type="password" class="form-control" id="regConfirmPassword" name="confirmPassword" required>
                 <small id="regConfirmPasswordHelp" class="form-text text-muted"></small>
+                <div class="invalid-feedback"></div>
             </div>
-            <button type="submit" class="btn btn-success btn-block">Зарегистрироваться</button>
+            <button type="submit" class="btn btn-success btn-block" disabled>Зарегистрироваться</button>
         </form>
     </div>
 </section>

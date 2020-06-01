@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Geonames = require('geonames.js')
+const { authController } = require('../controllers');
+// const Geonames = require('geonames.js');
 
 router.get('/login', function(request, response) {
     response.render('login', {
@@ -24,9 +25,7 @@ router.get('/registration', function(request, response) {
         pageTitle: 'Регистрация'
     })
 });
-router.post('/registration', function(request, response) {
-
-});
+router.post('/registration', authController.regUser);
 
 
 module.exports = router;
