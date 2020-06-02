@@ -25,7 +25,4 @@ async function getUser(login) {
     }
 }
 
-
-
-
 module.exports = {insert, getUser}

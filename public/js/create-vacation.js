@@ -1,10 +1,5 @@
 window.onload = function() {
-    const vacationDateFrom = document.querySelector('#dateFrom');
-    vacationDateFrom.min = new Date().toISOString().split("T")[0];
-    const vacationDateTo = document.querySelector('#dateTo');
-    const minDateTo = new Date();
-    minDateTo.setDate(minDateTo.getDate() + 1);
-    vacationDateTo.min = minDateTo.toISOString().split("T")[0];
+    setDatePickersOptions();
     const vacationForm = document.querySelector('#vacation-form');
     vacationForm.addEventListener('submit', submitVacation);
     // setListeners(vacationForm);
@@ -31,4 +26,13 @@ async function submitVacation(e) {
     catch (err) {
         console.log(err);
     }
+}
+
+function setDatePickersOptions() {
+    const vacationDateFrom = document.querySelector('#dateFrom');
+    const vacationDateTo = document.querySelector('#dateTo');
+    vacationDateFrom.min = new Date().toISOString().split("T")[0];
+    const minForDateTo = new Date();
+    minForDateTo.setDate(minForDateTo.getDate() + 1);
+    vacationDateTo.min = minForDateTo.toISOString().split("T")[0];
 }

@@ -17,25 +17,31 @@ async function submitLogin(e){
     const password = document.getElementById('authPassword').value;
     const setSession = document.getElementById('authRememberMe').checked;
     const formData = {login, password, setSession};
-    const response = await fetch('/auth/login', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
-    const data = await response.json();
-    console.log(data);
-    const serverFeedback = setServerFeedback(data);
-    setTimeout(() => {
-        if (data.ok) {
-            localStorage.setItem('login', data.login);
-            window.location.href = '/';
-            return;
-        }
-        serverFeedback.hidden = true;
-    }, 500);
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        const serverFeedback = setServerFeedback(data);
+        setTimeout(() => {
+            if (data.ok) {
+                localStorage.setItem('login', data.login);
+                window.location.href = '/';
+                return;
+            }
+            serverFeedback.hidden = true;
+        }, 500);
+    }
+    catch (err) {
+        console.log(err);
+    }
+
 
     // const x = await fetch("http://api.geonames.org/searchJSON?countryCode=RU&lang=ru&username=antondrik");
     // const z = await x.json();

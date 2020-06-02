@@ -24,7 +24,4 @@ async function getAllByUserId(userId) {
     }
 }
 
-
-
-
 module.exports = {insert, getAllByUserId}
