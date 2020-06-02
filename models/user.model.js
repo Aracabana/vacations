@@ -17,7 +17,6 @@ async function insert(user) {
 async function getUser(login) {
     const sql = 'SELECT * FROM users WHERE users.login = ?';
     try {
-        // throw new SyntaxError("Данные некорректны");
         const result = await connection.query(sql, [login]);
         const user = JSON.parse(JSON.stringify(result[0]));
         return user[0];

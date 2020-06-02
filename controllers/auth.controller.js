@@ -35,13 +35,13 @@ async function validateLogin(login, password) {
         if (user) {
             try {
                 const isValid = await bcrypt.compare(password, user.password);
-                if (!isValid) throw new Error('Неверный логин или пароль. Password');
+                if (!isValid) throw new Error('Неверный логин или пароль');
                 return user;
             } catch (err) {
                 if (err) throw err;
             }
         }
-        throw new Error('Неверный логин или пароль. User');
+        throw new Error('Неверный логин или пароль');
     } catch (err) {
         if (err) throw err;
     }
@@ -66,13 +66,13 @@ async function login(request, response) {
     try {
         const user = await validateLogin(login, password);
         if (setSession) {
-            request.session.cookie.expires = 24 * 60 * 60 * 1000;
+            request.session.cookie.expires = 14 * 24 * 60 * 60 * 1000;
         }
         else {
             request.session.cookie.expires = false;
         }
         request.session.login = user.login;
-        response.json({ok: true, caption: user});
+        response.json({ok: true, caption: 'Вы успешно авторизовались', login: user.login});
     }
     catch (err) {
         response.json({ ok: false, caption: err.message});
