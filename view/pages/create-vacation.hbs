@@ -13,15 +13,9 @@
                            placeholder="Начните вводить"
                            list="countries-list">
                     <datalist id="countries-list">
-                        <option>Россия</option>
-                        <option>Молдова</option>
-                        <option>Индия</option>
-                        <option>США</option>
-                        <option>Испания</option>
-                        <option>Нидерланды</option>
-                        <option>Малайзия</option>
-                        <option>Польша</option>
-                        <option>Литва</option>
+                        {{#each countryNames}}
+                            <option class="comment">{{this}}</option>
+                        {{/each}}
                     </datalist>
                 </div>
                 <div class="row">

@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "express-handlebars": "^4.0.4",
     "express-session": "^1.17.1",
-    "geonames.js": "^2.3.0",
+    "geonames.js": "^2.0.0",
     "mysql2": "^2.1.0",
     "nodemon": "^2.0.4",
     "uuid": "^8.1.0"
