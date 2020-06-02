@@ -71,6 +71,7 @@ async function login(request, response) {
         else {
             request.session.cookie.expires = false;
         }
+        request.session.userId = user.id;
         request.session.login = user.login;
         response.json({ok: true, caption: 'Вы успешно авторизовались', login: user.login});
     }

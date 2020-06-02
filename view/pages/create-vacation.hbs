@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <h1>{{title}}</h1>
+
+    <div class="content">
+        <div class="card">
+            <form id="vacation-form" class="card-body">
+                <div class="form-group">
+                    <label for="country">Выберите страну</label>
+                    <input id="country"
+                           type="text"
+                           class="form-control"
+                           name="country"
+                           placeholder="Начните вводить"
+                           list="countries-list">
+                    <datalist id="countries-list">
+                        <option>Россия</option>
+                        <option>Молдова</option>
+                        <option>Индия</option>
+                        <option>США</option>
+                        <option>Испания</option>
+                        <option>Нидерланды</option>
+                        <option>Малайзия</option>
+                        <option>Польша</option>
+                        <option>Литва</option>
+                    </datalist>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="dateFrom">Дата начала</label>
+                            <input id="dateFrom" type="date" class="form-control" name="dateFrom" placeholder="">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="dateTo">Дата завершения</label>
+                            <input id="dateTo" type="date" class="form-control" name="dateTo" placeholder="">
+                        </div>
+                    </div>
+                </div>
+                <div class="btns text-right">
+                    <button type="submit" class="btn btn-success">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

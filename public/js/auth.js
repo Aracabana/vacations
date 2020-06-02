@@ -41,7 +41,7 @@ async function submitLogin(e){
             return;
         }
         serverFeedback.hidden = true;
-    }, 2000);
+    }, 500);
 
     // const x = await fetch("http://api.geonames.org/searchJSON?countryCode=RU&lang=ru&username=antondrik");
     // const z = await x.json();

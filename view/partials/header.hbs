@@ -1,0 +1,14 @@
+<nav class="navbar navbar-dark bg-dark">
+    <div class="avatar-wrapper">
+        <div class="avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <p class="avatar-name text-white text-center">{{login}}</p>
+    </div>
+    <a href="{{btn.link}}" class="btn {{btn.class}}">
+        {{#if btn.icon}}
+            <i class="fas {{btn.icon}}"></i>
+        {{/if}}
+        {{btn.title}}
+    </a>
+</nav>

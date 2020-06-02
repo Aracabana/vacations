@@ -12,6 +12,9 @@ body {
             color: #ffffff;
         }
     }
+    &.main-body {
+        background-color: #f2f2f2;
+    }
 }
 .form-check-input {
     margin-top: 0.4rem;
@@ -42,4 +45,42 @@ body {
     padding: 30px;
     max-width: 460px;
     background-color: fade(#ffffff, 60%);
+}
+
+.avatar {
+    margin-right: 8px;
+    .border-radius(50%);
+    height: 32px;
+    width: 32px;
+    font-size: 16px;
+    line-height: 32px;
+    text-align: center;
+    background-color: #ffffff;
+    &-wrapper {
+        .flex();
+        .align-items-center();
+        .flex-start();
+    }
+    &-name {
+        margin-bottom: 0;
+        font-size: 14px;
+    }
+}
+.btn .fas {
+    position: relative;
+    bottom: -1px;
+}
+
+.page-wrapper {
+    padding: 24px 0;
+}
+.content {
+    padding-top: 64px;
+    .card {
+        max-width: 1100px;
+    }
+}
+
+.vacations-table tr td {
+    cursor: pointer;
 }

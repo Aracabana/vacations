@@ -9,6 +9,7 @@ const http           = require('http');
 const path           = require('path');
 const cors           = require('cors');
 const auth           = require('./routes/auth');
+const vacation       = require('./routes/vacation');
 const hbs            = require('express-handlebars');
 
 const port = process.env.PORT || '8080';
@@ -62,9 +63,18 @@ app.engine( 'hbs', hbs({ // Устанавливает настройки для
     Уставливает обработчики для всех путей в приложении
  */
 app.use('/auth', auth);
+app.use('/vacation', vacation);
 app.get('/', access, function(request, response) { // Стартовая страница
     response.render('home', {
-        title: 'Hello!'
+        pageTitle: 'Главная',
+        title: 'Мои отпуска',
+        login: request.session.login,
+        btn: {
+            link: '/vacation',
+            title: 'Создать отпуск',
+            class: 'btn-success'
+        },
+        script: 'home'
     });
 });
 
