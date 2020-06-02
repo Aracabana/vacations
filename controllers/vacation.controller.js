@@ -1,4 +1,5 @@
 const { Vacation } = require('../models');
+const { geoNames, countries } = require('../helpers/geonames');
 
 async function getAllByUserId(request, response) {
     const userId = request.session.userId;
@@ -36,7 +37,7 @@ async function validateVacationData(country, dateFrom, dateTo) {
 
     }
     catch (err) {
-        if (err) throw err;
+        throw err;
     }
 }
 async function save(request, response) {

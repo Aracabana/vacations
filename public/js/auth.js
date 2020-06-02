@@ -1,9 +1,3 @@
-// const geonames = new Geonames({
-//     username: 'antondrik',
-//     lang: 'ru',
-//     encoding: 'JSON'
-// });
-
 window.onload = function() {
     const loginForm = document.querySelector('#login-form');
     const registrationForm = document.querySelector('#registration-form');
