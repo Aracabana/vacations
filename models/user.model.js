@@ -9,19 +9,20 @@ async function insert(user) {
     try {
         const result = await connection.query(sql, [values]);
         return result[0].affectedRows;
-    } catch (e) {
-        if (e) throw e;
+    } catch (err) {
+        if (err) throw err;
     }
 }
 
 async function getUser(login) {
     const sql = 'SELECT * FROM users WHERE users.login = ?';
     try {
+        // throw new SyntaxError("Данные некорректны");
         const result = await connection.query(sql, [login]);
         const user = JSON.parse(JSON.stringify(result[0]));
-        return user;
-    } catch (e) {
-        if (e) throw e;
+        return user[0];
+    } catch (err) {
+        if (err) throw err;
     }
 }
 
