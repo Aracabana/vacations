@@ -9,6 +9,7 @@ window.onload = function() {
     const registrationForm = document.querySelector('#registration-form');
     if (loginForm) {
         loginForm.addEventListener('submit', submitLogin);
+        setListeners(loginForm);
     }
     if (registrationForm) {
         registrationForm.addEventListener('submit', submitRegistration);
@@ -22,25 +23,25 @@ async function submitLogin(e){
     const password = document.getElementById('authPassword').value;
     const setSession = document.getElementById('authRememberMe').checked;
     const formData = {login, password, setSession};
-    try {
-        const response = await fetch('/auth/login', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        console.log(data);
-        if(data.ok) {
+    const response = await fetch('/auth/login', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    console.log(data);
+    const serverFeedback = setServerFeedback(data);
+    setTimeout(() => {
+        if (data.ok) {
+            localStorage.setItem('login', data.login);
             window.location.href = '/';
+            return;
         }
-    }
-    catch (err) {
-        console.log(err)
-    }
-
+        serverFeedback.hidden = true;
+    }, 2000);
 
     // const x = await fetch("http://api.geonames.org/searchJSON?countryCode=RU&lang=ru&username=antondrik");
     // const z = await x.json();
@@ -114,9 +115,7 @@ function setListeners(form) {
                 }
             }
         });
-        input.addEventListener('keyup', function () {
-            removeFeedback(input, feedback);
-        });
+        input.addEventListener('keyup', removeFeedback.bind(this, input, feedback));
     })
 }
 function checkIsEmpty(input, feedback) {

@@ -3,20 +3,21 @@
     <div class="container">
         <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
         <form id="login-form" class="auth-form">
+            <div id="serverFeedback" class="alert" hidden></div>
             <div class="form-group">
                 <label for="authLogin">Логин</label>
-                <input type="text" class="form-control" id="authLogin" name="authLogin">
-                <small id="authLoginHelp" class="form-text text-muted"></small>
+                <input type="text" class="form-control" id="authLogin" name="login">
+                <div class="invalid-feedback"></div>
             </div>
             <div class="form-group">
                 <label for="authPassword">Пароль</label>
-                <input type="password" class="form-control" id="authPassword" name="authPassword">
-                <small id="authPasswordHelp" class="form-text text-muted"></small>
+                <input type="password" class="form-control" id="authPassword" name="password">
+                <div class="invalid-feedback"></div>
             </div>
             <div class="form-group">
                 <div class="row">
-                    <div class="col">
-                        <a href="" class="text-white">Забыли пароль?</a>
+                    <div class="col" hidden>
+                        <a href="">Забыли пароль?</a>
                     </div>
                     <div class="col">
                         <div class="form-check text-right">
@@ -26,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-success btn-block">Войти</button>
+            <button type="submit" class="btn btn-success btn-block" disabled>Войти</button>
         </form>
     </div>
 </section>
