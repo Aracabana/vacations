@@ -22,16 +22,25 @@ async function submitLogin(e){
     const password = document.getElementById('authPassword').value;
     const setSession = document.getElementById('authRememberMe').checked;
     const formData = {login, password, setSession};
-    const response = await fetch('/auth/login', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        if(data.ok) {
+            window.location.href = '/';
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+
 
     // const x = await fetch("http://api.geonames.org/searchJSON?countryCode=RU&lang=ru&username=antondrik");
     // const z = await x.json();
@@ -60,24 +69,29 @@ async function submitRegistration(e) {
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const formData = {login, email, password, confirmPassword};
-    const response = await fetch('/auth/registration', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
-    const data = await response.json();
-    console.log(data);
-    const serverFeedback = setServerFeedback(data);
-    setTimeout(() => {
-        if (data.ok) {
-            window.location.href = '/auth/login';
-            return;
-        }
-        serverFeedback.hidden = true;
-    }, 2000);
+    try {
+        const response = await fetch('/auth/registration', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        const serverFeedback = setServerFeedback(data);
+        setTimeout(() => {
+            if (data.ok) {
+                window.location.href = '/auth/login';
+                return;
+            }
+            serverFeedback.hidden = true;
+        }, 2000);
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 
 function setListeners(form) {
@@ -100,7 +114,9 @@ function setListeners(form) {
                 }
             }
         });
-        input.addEventListener('keyup', removeFeedback.bind(this, input, feedback));
+        input.addEventListener('keyup', function () {
+            removeFeedback(input, feedback);
+        });
     })
 }
 function checkIsEmpty(input, feedback) {

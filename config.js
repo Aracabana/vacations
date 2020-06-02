@@ -6,4 +6,4 @@ const sqlConnection = {
     database: process.env.DB_NAME
 }
 
-module.exports = {sqlConnection};
+module.exports = { sqlConnection };

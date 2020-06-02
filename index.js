@@ -1,10 +1,13 @@
 const express        = require('express');
+const { v4: uuidv4 } = require('uuid');
 const cookieParser   = require('cookie-parser');
 const bodyParser     = require('body-parser');
+const session        = require('express-session');
 const access         = require('./routes/access');
 const dotenv         = require('dotenv').config();
 const http           = require('http');
 const path           = require('path');
+const cors           = require('cors');
 const auth           = require('./routes/auth');
 const hbs            = require('express-handlebars');
 
@@ -21,6 +24,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // Парсит данные, которые приходят с клиента. Данные находятся в request.body
 app.use(cookieParser('abcd')); // Парсит куки с клиента
 app.use(express.static(path.join(__dirname, 'public'))); // Указываем приложению откуда брать статические файлы
+
+/*
+    Устанавливает основные настройки для сессии
+ */
+app.use(session({
+    genid: (req) => {
+        return uuidv4();
+    },
+    secret: process.env.SESSION_SECRET_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 24 * 60 * 60 * 1000,
+        secure: false,
+        httpOnly: true
+    }
+}));
+
+// app.use(cors());
 
 /*
     Конфигурирует сервер для работы с шаблонизатором
