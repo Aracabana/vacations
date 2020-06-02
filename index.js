@@ -1,16 +1,18 @@
-const express        = require('express');
-const { v4: uuidv4 } = require('uuid');
-const cookieParser   = require('cookie-parser');
-const bodyParser     = require('body-parser');
-const session        = require('express-session');
-const access         = require('./routes/access');
-const dotenv         = require('dotenv').config();
-const http           = require('http');
-const path           = require('path');
-const cors           = require('cors');
-const auth           = require('./routes/auth');
-const vacation       = require('./routes/vacation');
-const hbs            = require('express-handlebars');
+const express               = require('express');
+const { homeController }    = require('./controllers');
+const { v4: uuidv4 }        = require('uuid');
+const cookieParser          = require('cookie-parser');
+const bodyParser            = require('body-parser');
+const vacation              = require('./routes/vacation');
+const session               = require('express-session');
+const access                = require('./routes/access');
+const dotenv                = require('dotenv').config();
+const http                  = require('http');
+const path                  = require('path');
+const cors                  = require('cors');
+const auth                  = require('./routes/auth');
+const hbs                   = require('express-handlebars');
+
 
 const port = process.env.PORT || '8080';
 const app = express(); // инициализация приложения
@@ -23,7 +25,7 @@ const app = express(); // инициализация приложения
  */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // Парсит данные, которые приходят с клиента. Данные находятся в request.body
-app.use(cookieParser('abcd')); // Парсит куки с клиента
+app.use(cookieParser(process.env.SESSION_SECRET_KEY)); // Парсит куки с клиента
 app.use(express.static(path.join(__dirname, 'public'))); // Указываем приложению откуда брать статические файлы
 
 /*
@@ -62,22 +64,9 @@ app.engine( 'hbs', hbs({ // Устанавливает настройки для
 /*
     Уставливает обработчики для всех путей в приложении
  */
+app.get('/', access, homeController.getPage); // стартовая страница
 app.use('/auth', auth);
-app.use('/vacation', vacation);
-app.get('/', access, function(request, response) { // Стартовая страница
-    response.render('home', {
-        pageTitle: 'Главная',
-        title: 'Мои отпуска',
-        login: request.session.login,
-        btn: {
-            link: '/vacation',
-            title: 'Создать отпуск',
-            class: 'btn-success'
-        },
-        script: 'home'
-    });
-});
-
+app.use('/vacation', access, vacation);
 
 const server = http.createServer(app); // Создание сервера
 server.listen(port, () => { // Запуск сервера
