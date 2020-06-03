@@ -11,6 +11,7 @@ const http                  = require('http');
 const path                  = require('path');
 const cors                  = require('cors');
 const auth                  = require('./routes/auth.router');
+const api                   = require('./routes/api.router');
 const hbs                   = require('express-handlebars');
 
 
@@ -67,6 +68,7 @@ app.engine( 'hbs', hbs({ // Устанавливает настройки для
 app.get('/', access, homeController.getPage); // стартовая страница
 app.use('/auth', auth);
 app.use('/vacation', access, vacation);
+app.use('/api', access, api);
 
 const server = http.createServer(app); // Создание сервера
 server.listen(port, () => { // Запуск сервера

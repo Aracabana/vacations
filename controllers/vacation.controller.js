@@ -2,7 +2,7 @@ const { Vacation }          = require('../models');
 const { countries }         = require('../helpers/geonames');
 const { vacationValidator } = require('../helpers/validators');
 
-async function getPage(request, response) {
+async function createPage(request, response) {
     try {
         const countryNames = await countries.getAllNames();
         response.render('create-vacation', {
@@ -25,23 +25,10 @@ async function getPage(request, response) {
         })
     }
 }
-async function getAllByUserId(request, response) {
-    const userId = request.session.userId;
-    if (userId) {
-        try {
-            const vacations = await Vacation.getAllByUserId(userId);
-            response.json({
-                ok: true,
-                vacations
-            })
-        } catch (err) {
-            response.json({
-                ok: false,
-                caption: err.message
-            });
-        }
-    }
+async function vacationPage(request, response) {
+    response.json({ok: true});
 }
+
 async function add(request, response) {
     const {country, dateFrom, dateTo} = request.body;
     try {
@@ -66,4 +53,4 @@ async function add(request, response) {
     }
 }
 
-module.exports = { getAllByUserId, add, getPage };
+module.exports = { add, createPage, vacationPage };

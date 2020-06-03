@@ -1,3 +1,5 @@
+const spinner = document.querySelector('#spinner');
+
 window.onload = function() {
     const loginForm = document.querySelector('#login-form');
     const registrationForm = document.querySelector('#registration-form');
@@ -19,38 +21,13 @@ async function submitLogin(e){
     const password = document.getElementById('authPassword').value;
     const setSession = document.getElementById('authRememberMe').checked;
     const formData = {login, password, setSession};
-    try {
-        const response = await fetch('/auth/login', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        console.log(data);
-        const serverFeedback = setServerFeedback(data);
-        setTimeout(() => {
-            if (data.ok) {
-                localStorage.setItem('login', data.login);
-                window.location.href = '/';
-                return;
-            }
-            serverFeedback.hidden = true;
-        }, 500);
-    }
-    catch (err) {
-        console.log(err);
-    }
-
-
+    spinner.hidden = false;
+    await sendResponse('/auth/login', '/', formData);
     // const x = await fetch("http://api.geonames.org/searchJSON?countryCode=RU&lang=ru&username=antondrik");
     // const z = await x.json();
     // console.log(z);
     // const img = document.getElementById('x');
     // img.src = z[0].flag;
-
     // try{
     //     const countries = await geonames.countryInfo({country: 'BY'});
     //     const cities = await geonames.children({geonameId: countries.geonames[0].geonameId});
@@ -63,7 +40,6 @@ async function submitLogin(e){
     // }catch(err){
     //     console.error(err);
     // }
-    
 }
 async function submitRegistration(e) {
     e.preventDefault();
@@ -74,8 +50,13 @@ async function submitRegistration(e) {
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const formData = {login, email, password, confirmPassword};
+    spinner.hidden = false;
+    await sendResponse('/auth/registration', '/auth/login', formData);
+}
+
+async function sendResponse(url, redirectUrl, formData) {
     try {
-        const response = await fetch('/auth/registration', {
+        const response = await fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -84,19 +65,22 @@ async function submitRegistration(e) {
             body: JSON.stringify(formData)
         });
         const data = await response.json();
-        console.log(data);
-        const serverFeedback = setServerFeedback(data);
-        setTimeout(() => {
-            if (data.ok) {
-                window.location.href = '/auth/login';
-                return;
-            }
-            serverFeedback.hidden = true;
-        }, 2000);
+        setServerFeedback(data);
+        if (data.ok) {
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 500);
+        }
     }
     catch (err) {
-        console.log(err);
+        setServerFeedback({ ok: false, caption: err });
+    }
+    finally {
+        setTimeout(() => {
+            spinner.hidden = true;
+        }, 500)
     }
 }
+
 
 

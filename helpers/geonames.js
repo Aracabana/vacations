@@ -33,7 +33,7 @@ class Countries {
     async searchCountryBy(field, value) {
         await this.setCountries();
         const foundCountry = this.storage.find(item => item[field] === value);
-        return foundCountry
+        return foundCountry;
     }
 }
 const countries = new Countries();
