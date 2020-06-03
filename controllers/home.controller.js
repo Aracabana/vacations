@@ -8,7 +8,7 @@ function getPage(request, response) {
             title: 'Создать отпуск',
             class: 'btn-success'
         },
-        script: 'home'
+        scripts: ['home']
     });
 }
 

@@ -16,7 +16,7 @@ async function getPage(request, response) {
                 class: 'btn-light'
             },
             countryNames,
-            script: 'create-vacation'
+            scripts: ['validator', 'create-vacation']
         });
     } catch (err) {
         response.json({
@@ -54,7 +54,12 @@ async function add(request, response) {
             status: 'Ожидаемый'
         };
         const userId = request.session.userId;
-        await Vacation.insert(vacation, userId);
+        const vacationId = await Vacation.insert(vacation, userId);
+        response.json({
+            ok: true,
+            caption: 'Отпуск успешно создан',
+            vacationId
+        })
     }
     catch (err) {
         response.json({ ok: false, caption: err.message });

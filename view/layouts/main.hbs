@@ -16,6 +16,9 @@
 </div>
 
 
-<script src="/js/{{script}}.js"></script>
+
+{{#each scripts}}
+    <script src="/js/{{this}}.js"></script>
+{{/each}}
 </body>
 </html>

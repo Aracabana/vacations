@@ -12,7 +12,9 @@
 <body class="auth-body">
 {{{body}}}
 
-<!--<script src="/js/geonames.min.js"></script>-->
-<script src="/js/auth.js"></script>
+
+{{#each scripts}}
+    <script src="/js/{{this}}.js"></script>
+{{/each}}
 </body>
 </html>
