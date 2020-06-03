@@ -4,13 +4,13 @@ const { homeController }    = require('./controllers');
 const { v4: uuidv4 }        = require('uuid');
 const cookieParser          = require('cookie-parser');
 const bodyParser            = require('body-parser');
-const vacation              = require('./routes/vacation');
+const vacation              = require('./routes/vacation.router');
 const session               = require('express-session');
-const access                = require('./routes/access');
+const access                = require('./routes/access.router');
 const http                  = require('http');
 const path                  = require('path');
 const cors                  = require('cors');
-const auth                  = require('./routes/auth');
+const auth                  = require('./routes/auth.router');
 const hbs                   = require('express-handlebars');
 
 
@@ -66,7 +66,7 @@ app.engine( 'hbs', hbs({ // Устанавливает настройки для
  */
 app.get('/', access, homeController.getPage); // стартовая страница
 app.use('/auth', auth);
-// app.use('/vacation', access, vacation);
+app.use('/vacation', access, vacation);
 
 const server = http.createServer(app); // Создание сервера
 server.listen(port, () => { // Запуск сервера

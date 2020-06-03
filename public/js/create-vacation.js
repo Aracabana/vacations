@@ -22,6 +22,14 @@ async function submitVacation(e) {
         });
         const data = await response.json();
         console.log(data);
+        const serverFeedback = setServerFeedback(data);
+        setTimeout(() => {
+            if (data.ok) {
+                // window.location.href = '';
+                return;
+            }
+            serverFeedback.hidden = true;
+        }, 2000);
     }
     catch (err) {
         console.log(err);
@@ -35,4 +43,12 @@ function setDatePickersOptions() {
     const minForDateTo = new Date();
     minForDateTo.setDate(minForDateTo.getDate() + 1);
     vacationDateTo.min = minForDateTo.toISOString().split("T")[0];
+}
+function setServerFeedback(data) {
+    const serverFeedback = document.querySelector('#serverFeedback');
+    serverFeedback.classList.remove('alert-success', 'alert-danger');
+    serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');
+    serverFeedback.hidden = false;
+    serverFeedback.innerText = data.caption;
+    return serverFeedback;
 }

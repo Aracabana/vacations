@@ -5,7 +5,6 @@ const { vacationValidator } = require('../helpers/validators');
 async function getPage(request, response) {
     try {
         const countryNames = await countries.getAllNames();
-        console.log(countryNames);
         response.render('create-vacation', {
             pageTitle: 'Создать отпуск',
             title: 'Создать отпуск',
@@ -46,7 +45,19 @@ async function getAllByUserId(request, response) {
 async function add(request, response) {
     const {country, dateFrom, dateTo} = request.body;
     try {
-        await vacationValidator.validate(country, dateFrom, dateTo);
+        const countryCode = await vacationValidator.validate(country, dateFrom, dateTo);
+        const vacation = {
+            countryName: country,
+            countryCode,
+            dateFrom,
+            dateTo,
+            status: 'Ожидаемый'
+        };
+        const userId = request.session.userId;
+        const result = await Vacation.insert(vacation, userId);
+        if (!result) {
+            throw new Error('Внутренняя ошибка сервера');
+        }
     }
     catch (err) {
         response.json({ ok: false, caption: err.message });
