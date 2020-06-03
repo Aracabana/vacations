@@ -1,3 +1,5 @@
+const { countries } = require('../geonames');
+
 async function validate(country, dateFrom, dateTo) {
 
     const valueOfDateFrom = new Date(dateFrom).valueOf();
@@ -15,7 +17,11 @@ async function validate(country, dateFrom, dateTo) {
         throw new Error('Некорректные даты');
     }
     try {
-
+        const foundCountry = await countries.searchCountryBy('countryName', country);
+        if (!foundCountry) {
+            throw new Error('Некорретное название страны');
+        }
+        return foundCountry.countryCode;
     }
     catch (err) {
         throw err;

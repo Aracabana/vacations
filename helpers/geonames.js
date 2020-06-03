@@ -11,18 +11,29 @@ class Countries {
     constructor() {
         this.storage = [];
     }
-
-    async getAllNames() {
+    
+    async setCountries() {
         if (!this.storage.length) {
             try {
                 const countries = await geoNames.countryInfo({});
-                this.storage = countries.geonames.map(country => country.countryName);
+                this.storage = countries.geonames;
             }
             catch (err) {
                 throw err;
             }
         }
-        return this.storage;
+    }
+
+    async getAllNames() {
+        await this.setCountries();
+        const countryNames = this.storage.map(country => country.countryName);
+        return countryNames;
+    }
+    
+    async searchCountryBy(field, value) {
+        await this.setCountries();
+        const foundCountry = this.storage.find(item => item[field] === value);
+        return foundCountry
     }
 }
 const countries = new Countries();

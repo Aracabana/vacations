@@ -2,10 +2,10 @@ const connection = require('../db');
 
 async function insert(vacation, userId) {
     const {countryName, countryCode, dateFrom, dateTo, status} = vacation;
-    const sql = 'INSERT INTO vacations (countryName, countryCode, dateFrom, dateTo, status, user_id) VALUES ?';
-    const values = [countryName, countryCode, dateFrom, dateTo, 'Ожидаемый', userId];
+    const sql = 'INSERT INTO vacations (countryName, countryCode, dateFrom, dateTo, status, user_id) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [countryName, countryCode, dateFrom, dateTo, status, userId];
     try {
-        const result = await connection.query(sql, [values]);
+        const result = await connection.query(sql, values);
         return result[0].affectedRows;
     } catch (err) {
         if (err) throw err;

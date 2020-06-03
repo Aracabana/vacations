@@ -39,17 +39,18 @@ function fillTableBy(data, tableBody) {
         const tr = document.createElement('tr');
         tableBody.appendChild(tr);
         tr.addEventListener('click', function () {
+            // редирект на страницу отпуска
         });
         const tdCountryName = document.createElement('td');
         tdCountryName.innerText = vacations[i].countryName;
         tr.appendChild(tdCountryName);
         const tdDateFrom = document.createElement('td');
         tdDateFrom.classList.add('text-center');
-        tdDateFrom.innerText = vacations[i].dateFrom;
+        tdDateFrom.innerText = new Date(vacations[i].dateFrom).toLocaleDateString();
         tr.appendChild(tdDateFrom);
         const tdDateTo = document.createElement('td');
         tdDateTo.classList.add('text-center');
-        tdDateTo.innerText = vacations[i].dateTo;
+        tdDateTo.innerText = new Date(vacations[i].dateTo).toLocaleDateString();
         tr.appendChild(tdDateTo);
         const tdStatus = document.createElement('td');
         tr.appendChild(tdStatus);
