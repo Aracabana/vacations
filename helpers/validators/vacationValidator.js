@@ -13,16 +13,15 @@ async function validate(country, dateFrom, dateTo) {
         throw new Error('Не все поля заполнены');
     }
     if (valueOfDateFrom >= valueOfDateTo) {
-        console.log('here1')
         throw new Error('Некорректные даты');
     }
     if (valueOfDateFrom < nowUTC0 || valueOfDateTo < tomorrow) {
-        console.log('here2');
         throw new Error('Некорректные даты');
     }
     try {
         const vacationOnThisDate = await Vacation.getVacationByDate(dateFrom, dateTo);
-        if (vacationOnThisDate) {
+        console.log(vacationOnThisDate);
+        if (vacationOnThisDate.length) {
             throw new Error('Отпуск на этот период уже есть');
         }
     }

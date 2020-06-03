@@ -2,10 +2,12 @@ window.onload = function() {
     setDatePickersOptions();
     const vacationForm = document.querySelector('#vacation-form');
     vacationForm.addEventListener('submit', submitVacation);
-    // setListeners(vacationForm);
+    setListeners(vacationForm);
 }
 async function submitVacation(e) {
     e.preventDefault();
+    const error = validate(this);
+    if (error) return;
     const country = document.getElementById('country').value;
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
@@ -43,12 +45,4 @@ function setDatePickersOptions() {
     const minForDateTo = new Date();
     minForDateTo.setDate(minForDateTo.getDate() + 1);
     vacationDateTo.min = minForDateTo.toISOString().split("T")[0];
-}
-function setServerFeedback(data) {
-    const serverFeedback = document.querySelector('#serverFeedback');
-    serverFeedback.classList.remove('alert-success', 'alert-danger');
-    serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');
-    serverFeedback.hidden = false;
-    serverFeedback.innerText = data.caption;
-    return serverFeedback;
 }
