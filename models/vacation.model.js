@@ -13,10 +13,9 @@ async function insert(vacation, userId) {
 }
 
 async function getAllByUserId(userId) {
-    const value = [userId];
     const sql = 'SELECT countryName, dateFrom, dateTo, status FROM vacations WHERE user_id = ?';
     try {
-        const result = await connection.query(sql, [value]);
+        const result = await connection.query(sql, [userId]);
         const vacations = JSON.parse(JSON.stringify(result[0]));
         return vacations;
     } catch (err) {
@@ -24,4 +23,16 @@ async function getAllByUserId(userId) {
     }
 }
 
-module.exports = {insert, getAllByUserId}
+async function getVacationByDate(dateFrom, dateTo) {
+    const sql = 'SELECT * FROM vacations WHERE dateFrom = ? and dateTo = ?';
+    try {
+        const result = await connection.query(sql, [dateFrom, dateTo]);
+        const vacations = JSON.parse(JSON.stringify(result[0]));
+        return vacations;
+    }
+    catch (err) {
+        if (err) throw err;
+    }
+}
+
+module.exports = { insert, getAllByUserId, getVacationByDate };

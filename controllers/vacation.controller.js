@@ -54,10 +54,7 @@ async function add(request, response) {
             status: 'Ожидаемый'
         };
         const userId = request.session.userId;
-        const result = await Vacation.insert(vacation, userId);
-        if (!result) {
-            throw new Error('Внутренняя ошибка сервера');
-        }
+        await Vacation.insert(vacation, userId);
     }
     catch (err) {
         response.json({ ok: false, caption: err.message });

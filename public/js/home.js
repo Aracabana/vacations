@@ -2,7 +2,6 @@ window.onload = function() {
     const vacationsTable = document.querySelector('#vacations-table');
     const vacationsTableBody = document.querySelector('#vacations-table tbody');
     getVacations(vacationsTableBody);
-
 }
 
 async function getVacations(tableBody) {
@@ -25,7 +24,7 @@ async function getVacations(tableBody) {
 function fillTableBy(data, tableBody) {
     const vacations = data.vacations;
     console.log(vacations);
-    if (!vacations) {
+    if (!vacations.length) {
         const tr = document.createElement('tr');
         tableBody.appendChild(tr);
         const td = document.createElement('td');
