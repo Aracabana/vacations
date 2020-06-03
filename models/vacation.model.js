@@ -6,14 +6,16 @@ async function insert(vacation, userId) {
     const values = [countryName, countryCode, dateFrom, dateTo, status, userId];
     try {
         const result = await connection.query(sql, values);
-        return result[0].affectedRows;
+        return result[0].insertId;
     } catch (err) {
         if (err) throw err;
     }
 }
 
+
+
 async function getAllByUserId(userId) {
-    const sql = 'SELECT countryName, dateFrom, dateTo, status FROM vacations WHERE user_id = ?';
+    const sql = 'SELECT id, countryName, dateFrom, dateTo FROM vacations WHERE user_id = ?';
     try {
         const result = await connection.query(sql, [userId]);
         const vacations = JSON.parse(JSON.stringify(result[0]));

@@ -20,7 +20,6 @@ async function validate(country, dateFrom, dateTo) {
     }
     try {
         const vacationOnThisDate = await Vacation.getVacationByDate(dateFrom, dateTo);
-        console.log(vacationOnThisDate);
         if (vacationOnThisDate.length) {
             throw new Error('Отпуск на этот период уже есть');
         }

@@ -12,7 +12,6 @@ function setListeners(form) {
 }
 
 function checkInputIsEmpty(input) {
-    console.log(input.value);
     if (!input.value) {
         return 'Поле обязательное для заполнения';
     }
@@ -83,11 +82,14 @@ function removeFeedback(input, feedback) {
     input.classList.remove('is-invalid');
     feedback.style.display = 'none';
 }
-function setServerFeedback(data) {
+function setServerFeedback(data, time = 4000) {
     const serverFeedback = document.querySelector('#serverFeedback');
     serverFeedback.classList.remove('alert-success', 'alert-danger');
     serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');
     serverFeedback.hidden = false;
     serverFeedback.innerText = data.caption;
+    setTimeout(() => {
+        serverFeedback.hidden = true;
+    }, time)
     return serverFeedback;
 }
