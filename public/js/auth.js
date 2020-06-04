@@ -71,11 +71,9 @@ async function sendResponse(url, redirectUrl, formData) {
                 window.location.href = redirectUrl;
             }, 500);
         }
-    }
-    catch (err) {
+    } catch (err) {
         setServerFeedback({ ok: false, caption: err });
-    }
-    finally {
+    } finally {
         setTimeout(() => {
             spinner.hidden = true;
         }, 500)
