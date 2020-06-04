@@ -136,3 +136,5 @@ body.main-body {
   justify-content: space-around;
   align-items: center;
 }
+
+#map { height: 580px; }

@@ -32,7 +32,7 @@ async function validate(country, dateFrom, dateTo) {
         if (!foundCountry) {
             throw new Error('Некорретное название страны');
         }
-        return foundCountry.countryCode;
+        return foundCountry;
     }
     catch (err) {
         throw err;

@@ -4,7 +4,7 @@ const { vacationValidator } = require('../helpers/validators');
 
 async function createPage(request, response) {
     try {
-        const countryNames = await countries.getAllNames();
+        const countriesWithCode = await countries.getForSelect();
         response.render('create-vacation', {
             pageTitle: 'Создать отпуск',
             title: 'Создать отпуск',
@@ -15,8 +15,9 @@ async function createPage(request, response) {
                 icon: 'fa-angle-left',
                 class: 'btn-light'
             },
-            countryNames,
-            scripts: ['validator', 'create-vacation']
+            countriesWithCode,
+            scripts: ['validator', 'create-vacation', 'leaflet'],
+            styles: ['leaflet']
         });
     } catch (err) {
         response.json({
@@ -33,10 +34,10 @@ async function vacationPage(request, response) {
 async function add(request, response) {
     const {country, dateFrom, dateTo} = request.body;
     try {
-        const countryCode = await vacationValidator.validate(country, dateFrom, dateTo);
+        const selectedCountry = await vacationValidator.validate(country, dateFrom, dateTo);
         const vacation = {
             countryName: country,
-            countryCode,
+            countryCode: selectedCountry.isoAlpha3,
             dateFrom,
             dateTo,
             status: 'Ожидаемый'
@@ -62,5 +63,22 @@ async function remove(request, response) {
         response.json({ok: false, caption: err});
     }
 }
+async function getAll(request, response) {
+    const userId = request.session.userId;
+    if (userId) {
+        try {
+            const vacations = await Vacation.getAllByUserId(userId);
+            response.json({
+                ok: true,
+                vacations
+            })
+        } catch (err) {
+            response.json({
+                ok: false,
+                caption: err.message
+            });
+        }
+    }
+}
 
-module.exports = { add, remove, createPage, vacationPage };
+module.exports = { add, remove, getAll, createPage, vacationPage };
