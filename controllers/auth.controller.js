@@ -32,6 +32,11 @@ async function login(request, response) {
         response.json({ ok: false, caption: err.message});
     }
 }
+function logout (request, response) {
+    request.session.destroy(() => {
+        response.redirect('/auth/login');
+    });
+}
 
 function registrationPage(request, response) {
     response.render('registration', {
@@ -49,4 +54,4 @@ function loginPage(request, response) {
 }
 
 
-module.exports = { register, login, registrationPage, loginPage };
+module.exports = { register, login, logout, registrationPage, loginPage };

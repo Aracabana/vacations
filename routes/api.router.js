@@ -1,23 +1,13 @@
-const express = require('express');
-const { Vacation } = require("../models");
-const router = express.Router();
+const express                   = require('express');
+const router                    = express.Router();
+const { apiController }         = require('../controllers');
+const { vacationController }    = require('../controllers');
 
-router.get('/getVacations', async function(request, response) {
-    const userId = request.session.userId;
-    if (userId) {
-        try {
-            const vacations = await Vacation.getAllByUserId(userId);
-            response.json({
-                ok: true,
-                vacations
-            })
-        } catch (err) {
-            response.json({
-                ok: false,
-                caption: err.message
-            });
-        }
-    }
-});
+router.get('/getVacations', vacationController.getAll);
+router.get('/getGeoJSON', apiController.getGeoJSON);
+
+router.post('/getCountry', apiController.getCountry);
+
+
 
 module.exports = router;

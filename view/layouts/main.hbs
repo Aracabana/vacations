@@ -8,14 +8,15 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/all.min.css">
     <link rel="stylesheet" href="/css/styles.css">
+    {{#each styles}}
+        <link rel="stylesheet" href="/css/{{this}}.css">
+    {{/each}}
 </head>
 <body class="main-body">
 {{>header}}
 <div class="page-wrapper">
     {{{body}}}
 </div>
-
-
 
 {{#each scripts}}
     <script src="/js/{{this}}.js"></script>

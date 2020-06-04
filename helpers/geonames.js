@@ -24,10 +24,15 @@ class Countries {
         }
     }
 
-    async getAllNames() {
+    async getForSelect() {
         await this.setCountries();
-        const countryNames = this.storage.map(country => country.countryName);
-        return countryNames;
+        const countries = this.storage.map(country => {
+            return {
+                name: country.countryName,
+                code: country.isoAlpha3
+            }
+        });
+        return countries;
     }
     
     async searchCountryBy(field, value) {
