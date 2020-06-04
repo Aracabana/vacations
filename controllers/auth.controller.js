@@ -1,56 +1,10 @@
 const { User } = require('../models');
-const bcrypt = require('bcrypt');
+const { registerValidator, loginValidator } = require('../helpers/validators');
 
-async function validateReg(login, email, password, confirmPassword) {
-    const emailRegExp = /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/gi;
-    if (!login || !email || !password || !confirmPassword) {
-        throw new Error('Не все поля заполнены');
-    }
-    if (login.length < 4 || password.length < 4) {
-        throw new Error('Поле должно содержать больше 3-х символов');
-    }
-    if (!emailRegExp.test(email)) {
-        throw new Error('Неверный E-mail');
-    }
-    if (password !== confirmPassword) {
-        throw new Error('Пароли не совпадают');
-    }
-    try {
-        const user = await User.getUser(login);
-        if (user) {
-            throw new Error('Пользователь с таким логином уже существует');
-        }
-    }
-    catch (err) {
-       if (err) throw err;
-    }
-}
-
-async function validateLogin(login, password) {
-    if (!login || !password) {
-        throw new Error('Не все поля заполнены');
-    }
-    try {
-        const user = await User.getUser(login);
-        if (user) {
-            try {
-                const isValid = await bcrypt.compare(password, user.password);
-                if (!isValid) throw new Error('Неверный логин или пароль');
-                return user;
-            } catch (err) {
-                if (err) throw err;
-            }
-        }
-        throw new Error('Неверный логин или пароль');
-    } catch (err) {
-        if (err) throw err;
-    }
-}
-
-async function regUser(request, response) {
+async function register(request, response) {
     const {login, email, password, confirmPassword} = request.body;
     try {
-        await validateReg(login, email, password, confirmPassword);
+        await registerValidator.validate(login, email, password, confirmPassword);
         const result = await User.insert({login, email, password});
         if(result) {
             response.json({ ok: true,  caption: 'Вы успешно зарегистрировались'});
@@ -60,11 +14,10 @@ async function regUser(request, response) {
         response.json({ ok: false, caption: err.message });
     }
 }
-
 async function login(request, response) {
     const {login, password, setSession} = request.body;
     try {
-        const user = await validateLogin(login, password);
+        const user = await loginValidator.validate(login, password);
         if (setSession) {
             request.session.cookie.expires = 14 * 24 * 60 * 60 * 1000;
         }
@@ -80,5 +33,20 @@ async function login(request, response) {
     }
 }
 
+function registrationPage(request, response) {
+    response.render('registration', {
+        layout: 'auth',
+        pageTitle: 'Регистрация',
+        scripts: ['validator', 'auth']
+    })
+}
+function loginPage(request, response) {
+    response.render('login', {
+        layout: 'auth',
+        pageTitle: 'Авторизация',
+        scripts: ['validator', 'auth']
+    })
+}
 
-module.exports = { regUser, login };
+
+module.exports = { register, login, registrationPage, loginPage };

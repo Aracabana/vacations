@@ -16,9 +16,9 @@ function checkInputIsEmpty(input) {
         return 'Поле обязательное для заполнения';
     }
 }
-function checkLength(input, maxValue) {
-    if (input.value.length < maxValue) {
-        return 'Поле должно содержать больше 3-х символов';
+function checkLength(input, mixValue) {
+    if (input.value.length < mixValue) {
+        return `Поле должно содержать больше ${mixValue-1}-х символов`;
     }
 }
 function matchPasswords(password, confirmPassword) {
@@ -26,51 +26,48 @@ function matchPasswords(password, confirmPassword) {
         return 'Пароли не совпадают';
     }
 }
-function checkEmail(input) {
-    const emailRegExp = /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/gi;
-    if (!emailRegExp.test(input.value)) {
+function checkPattern(input, pattern) {
+    const regExp = new RegExp(pattern, 'gi');
+    if (!regExp.test(input.value)) {
         return 'Неверный E-mail';
     }
 }
 
-function validateInput(input, form) {
-    let error = checkInputIsEmpty(input);
-    if (error) return error;
-    if (input === form.login || input === form.password) {
-        error = checkLength(input, 4);
+function validateInput(input) {
+    const inputData = input.dataset;
+    let error;
+    if(input.hasAttribute('required')) {
+        error = checkInputIsEmpty(input);
         if (error) return error;
     }
-    if (input === form.confirmPassword) {
-        let password = form.password;
+    if(inputData.min) {
+        error = checkLength(input, inputData.min);
+        if (error) return error;
+    }
+    if (inputData.pattern) {
+        error = checkPattern(input, inputData.pattern);
+        if (error) return error;
+    }
+    if(inputData.comparewith) {
+        let password = document.getElementById(inputData.comparewith);
         error = matchPasswords(password, input);
-        if (error) return error;
-    }
-    if (input === form.email) {
-        error = checkEmail(input);
         if (error) return error;
     }
     return false;
 }
 function validate(form) {
     const formControls = Array.from(form.querySelectorAll('.form-control'));
-    const errors = [];
+    let hasError = false;
     for (let i = 0; i < formControls.length; i++) {
         const feedback = formControls[i].closest('.form-group').querySelector('.invalid-feedback');
+        removeFeedback(formControls[i], feedback);
         const error = validateInput(formControls[i], form);
         if (error) {
-            errors.push({
-                input: formControls[i],
-                feedback,
-                error
-            });
+            setFeedback(formControls[i], feedback, error);
+            hasError = true;
         }
     }
-    if (errors.length) {
-        for (let i = 0; i < errors.length; i++) {
-            setFeedback(errors[i].input, errors[i].feedback, errors[i].error);
-        }
-        return true;
-    }
+    if(hasError) return true;
 }
 
 function setFeedback(input, feedback, feedbackText) {
@@ -91,5 +88,4 @@ function setServerFeedback(data, time = 4000) {
     setTimeout(() => {
         serverFeedback.hidden = true;
     }, time)
-    return serverFeedback;
 }

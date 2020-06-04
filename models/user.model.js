@@ -14,10 +14,10 @@ async function insert(user) {
     }
 }
 
-async function getUser(login) {
-    const sql = 'SELECT * FROM users WHERE users.login = ?';
+async function getUser(field = 'login', value) {
+    const sql = `SELECT * FROM users WHERE users.${field} = ?`;
     try {
-        const result = await connection.query(sql, [login]);
+        const result = await connection.query(sql, [value]);
         const user = JSON.parse(JSON.stringify(result[0]));
         return user[0];
     } catch (err) {

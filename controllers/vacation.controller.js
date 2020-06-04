@@ -26,7 +26,8 @@ async function createPage(request, response) {
     }
 }
 async function vacationPage(request, response) {
-    response.json({ok: true});
+    const id = request.params.id;
+    response.json({ok: true, id});
 }
 
 async function add(request, response) {
@@ -52,5 +53,14 @@ async function add(request, response) {
         response.json({ ok: false, caption: err.message });
     }
 }
+async function remove(request, response) {
+    const { id } = request.body;
+    try {
+        await Vacation.remove(id);
+        response.json({ok: true, caption: 'Отпуск успешно удален'});
+    } catch (err) {
+        response.json({ok: false, caption: err});
+    }
+}
 
-module.exports = { add, createPage, vacationPage };
+module.exports = { add, remove, createPage, vacationPage };

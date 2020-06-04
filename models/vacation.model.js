@@ -12,7 +12,15 @@ async function insert(vacation, userId) {
     }
 }
 
-
+async function remove(id) {
+    const sql = 'DELETE  FROM vacations WHERE id = ?';
+    try {
+        const result = await connection.query(sql, [id]);
+        return result[0].affectedRows;
+    } catch (err) {
+        if (err) throw err;
+    }
+}
 
 async function getAllByUserId(userId) {
     const sql = 'SELECT id, countryName, dateFrom, dateTo FROM vacations WHERE user_id = ?';
@@ -37,4 +45,4 @@ async function getVacationByDate(dateFrom, dateTo) {
     }
 }
 
-module.exports = { insert, getAllByUserId, getVacationByDate };
+module.exports = { insert, remove, getAllByUserId, getVacationByDate };
