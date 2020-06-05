@@ -1,5 +1,4 @@
 const serverFeedback = document.querySelector('#serverFeedback');
-const vacationsTable = document.querySelector('#vacations-table');
 const vacationsTableBody = document.querySelector('#vacations-table tbody');
 const byName = document.getElementById('byName');
 const byDateTo = document.getElementById('byDateTo');
@@ -13,11 +12,9 @@ window.onload = async function() {
     try {
         await table.loadData();
         table.fill();
-    }
-    catch (err) {
+    } catch (err) {
         setServerFeedback({ok: false, caption: err});
-    }
-    finally {
+    } finally {
         spinner.hidden = true;
     }
     console.log(table)
@@ -90,7 +87,6 @@ class Vacations {
     }
 }
 
-
 class VacationsTable extends Vacations {
     constructor() {
         super();
@@ -107,7 +103,7 @@ class VacationsTable extends Vacations {
 
     formatDateCell(cell, date) {
         cell.classList.add('text-center');
-        cell.innerText = new Date(date).toLocaleDateString();
+        cell.innerText = date
     }
     formatStatusCell(parent, data ,status) {
         parent.style.position = 'relative';
@@ -122,7 +118,7 @@ class VacationsTable extends Vacations {
 
         const edit = this.createActionItem(['fa-pen-square', 'text-warning']);
         edit.addEventListener('click', function () {
-            vacation.edit();
+            window.location.href = '/vacation/' + vacation.id;
         });
         wrapper.appendChild(edit);
 
@@ -130,18 +126,20 @@ class VacationsTable extends Vacations {
         remove.addEventListener('click', async () => {
             const bool = confirm("Вы хотите удалить запись?");
             if (bool) {
-                const result = await vacation.remove();
-                if (result) {
+                spinner.hidden = false;
+                const data = await vacation.remove();
+                setServerFeedback(data);
+                if (data.ok) {
                     this.removeFromStorage(vacation);
                     this.fill();
                 }
+                spinner.hidden = true;
             }
         });
         wrapper.appendChild(remove);
 
         parent.appendChild(wrapper);
     }
-
     createActionItem(actionClass) {
         const edit = document.createElement('i');
         edit.classList.add('fas', 'fa-2x', ...actionClass);
@@ -157,11 +155,11 @@ class VacationsTable extends Vacations {
         td.innerText = 'У вас пока нет отпусков';
         tr.appendChild(td);
     }
-
     renderRow(vacation) {
         const tr = document.createElement('tr');
         tr.classList.add('table-row');
         vacationsTableBody.appendChild(tr);
+
         const values = vacation.getFieldsArray();
         for (let index = 0; index < values.length; index++) {
             const td = document.createElement('td');

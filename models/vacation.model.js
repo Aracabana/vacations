@@ -45,12 +45,12 @@ async function getVacationByDate(dateFrom, dateTo) {
     }
 }
 
-async function getVacationById(id) {
-    const sql = 'SELECT * FROM vacations WHERE id = ?';
+async function getVacationById(id, user_id) {
+    const sql = 'SELECT * FROM vacations WHERE id = ? AND user_id = ?';
     try {
-        const result = await connection.query(sql, [id]);
+        const result = await connection.query(sql, [id, user_id]);
         const vacation = JSON.parse(JSON.stringify(result[0]));
-        return vacation;
+        return vacation[0];
     }
     catch (err) {
         if (err) throw err;

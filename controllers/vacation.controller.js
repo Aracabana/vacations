@@ -93,18 +93,20 @@ async function getAll(request, response) {
     }
 }
 async function getOne(request, response) {
-    const id = request.params.id;
+    const id = request.query.id;
+    const userId = request.session.userId;
+    if (!id) {
+        response.json({ok: false, caption: 'Неверные параметры'});
+        return;
+    }
     try {
-        const vacation = await Vacation.getVacationById(id);
-        response.json({
-            ok: true,
-            vacation
-        })
+        const vacation = await Vacation.getVacationById(id, userId);
+        if (!vacation) {
+            throw new Error('Отпуск не найден');
+        }
+        response.json({ ok: true, vacation });
     } catch (err) {
-        response.json({
-            ok: false,
-            caption: err.message
-        });
+        response.json({ ok: false, caption: err });
     }
 }
 

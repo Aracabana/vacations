@@ -2,8 +2,8 @@ class Vacation {
     constructor(vacation) {
         this.id = vacation.id;
         this.countryName = vacation.countryName;
-        this.dateFrom = vacation.dateFrom;
-        this.dateTo = vacation.dateTo;
+        this.dateFrom = new Date(vacation.dateFrom).toLocaleDateString();
+        this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
         this.status = Vacation.calculateStatus(vacation.dateFrom, vacation.dateTo);
     }
     
@@ -24,7 +24,6 @@ class Vacation {
     }
     
     async remove() {
-        spinner.hidden = false;
         try {
             const response = await fetch('/vacation', {
                 method: 'DELETE',
@@ -33,16 +32,14 @@ class Vacation {
                 body: JSON.stringify({id: this.id})
             });
             const data = await response.json();
-            setServerFeedback(data);
-            return data.ok;
+            return data;
         } catch (err) {
-            setServerFeedback({ok: false, caption: err});
-        } finally {
-            spinner.hidden = true;
+            return {ok: false, caption: 'Вутрення ошибка сервера'};
         }
     }
     
     edit() {
-        window.location.href = '/vacation/' + this.id;
+        console.log(this);
+        // window.location.href = '/vacation/' + this.id;
     }
 }
