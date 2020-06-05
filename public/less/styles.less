@@ -122,4 +122,33 @@ body {
     align-items: center;
 }
 
-#map { height: 180px; }
+.map-wrapper {
+    margin-top: 32px;
+}
+#map { height: 300px; }
+
+.filter {
+    .flex();
+    .space-between();
+    .align-items-center();
+    margin-bottom: 24px;
+    &-label {
+        margin-right: 16px;
+    }
+    &-search {
+        .flex();
+        .align-items-center();
+    }
+    .form-control {
+        max-width: 300px;
+    }
+}
+
+.vacation-page {
+    position: relative;
+}
+.vacation-btns-bar {
+    position: absolute;
+    top: 0;
+    right: 15px;
+}

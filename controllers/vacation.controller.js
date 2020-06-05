@@ -28,7 +28,19 @@ async function createPage(request, response) {
 }
 async function vacationPage(request, response) {
     const id = request.params.id;
-    response.json({ok: true, id});
+    response.render('vacation', {
+        pageTitle: 'Отпуск',
+        title: '',
+        login: request.session.login,
+        btn: {
+            link: '/',
+            title: 'Вернуться к списку отпусков',
+            icon: 'fa-angle-left',
+            class: 'btn-light'
+        },
+        scripts: ['vacation-entity', 'vacation', 'leaflet'],
+        styles: ['leaflet']
+    });
 }
 
 async function add(request, response) {
@@ -80,5 +92,20 @@ async function getAll(request, response) {
         }
     }
 }
+async function getOne(request, response) {
+    const id = request.params.id;
+    try {
+        const vacation = await Vacation.getVacationById(id);
+        response.json({
+            ok: true,
+            vacation
+        })
+    } catch (err) {
+        response.json({
+            ok: false,
+            caption: err.message
+        });
+    }
+}
 
-module.exports = { add, remove, getAll, createPage, vacationPage };
+module.exports = { add, remove, getAll, createPage, vacationPage, getOne };

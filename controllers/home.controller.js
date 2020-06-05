@@ -6,9 +6,10 @@ function getPage(request, response) {
         btn: {
             link: '/vacation',
             title: 'Создать отпуск',
+            icon: 'fa-plus',
             class: 'btn-success'
         },
-        scripts: ['home']
+        scripts: ['vacation-entity', 'home']
     });
 }
 

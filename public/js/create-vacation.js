@@ -2,6 +2,7 @@ const vacationForm = document.querySelector('#vacation-form');
 const dataList = document.querySelector('#countries-list');
 const countryInput = document.querySelector('#country');
 const spinner = document.querySelector('#spinner');
+const mapWrapper = document.querySelector('#map-wrapper');
 let map;
 const mapOptions = {
     tilesUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -89,33 +90,56 @@ async function showCountryInfo(countryCode) {
         if (data.ok) {
             try {
                 const country = data.foundCountry;
-                const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${country.isoAlpha3}?fields=latlng`);
-                if(response.status === 404) {
-                    throw new Error('Карта для данной страны не найдена');
-                }
-                const { latlng } = await response.json();
-                await setMap(latlng, country.isoAlpha3);
+                setCountryInfo(country);
+                await setMap(country.isoAlpha3);
             } catch (err) {
-                setServerFeedback({ ok: false, caption: err });
+                setServerFeedback({ ok: false, caption: err.message });
             }
         }
 
     } catch (err) {
-        setServerFeedback({ ok: false, caption: err });
+        setServerFeedback({ ok: false, caption: err.message });
     }
 }
-async function setMap(latLng, countryCode) {
-    if(map) {
+async function setMap(countryCode) {
+    mapWrapper.hidden = true;
+    if (map) {
         map.off();
         map.remove();
+        map = null;
     }
-    const url = `/api/getGeoJSON?countryCode=${countryCode.toUpperCase()}`;
-    const response = await fetch(url);
-    const geoJson = await response.json();
-    map = L.map('map').setView(latLng, 3);
-    L.tileLayer(mapOptions.tilesUrl, mapOptions.init).addTo(map);
-    const f = L.geoJson(geoJson, {style: setStyle}).addTo(map);
-    map.fitBounds(f.getBounds());
+    try {
+        const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}?fields=latlng`);
+        if (response.status === 404) {
+            throw new Error('Карта для данной страны не найдена');
+        }
+        mapWrapper.hidden = false;
+        const { latlng } = await response.json();
+        map = L.map('map').setView(latlng, 3);
+        L.tileLayer(mapOptions.tilesUrl, mapOptions.init).addTo(map);
+        const url = `/api/getGeoJSON?countryCode=${countryCode.toUpperCase()}`;
+        const responsePolygon = await fetch(url);
+        if (responsePolygon.status === 500) {
+            throw new Error('Границы для данной страны не найдены');
+        }
+        const geoJson = await responsePolygon.json();
+        const f = L.geoJson(geoJson, {style: setStyle}).addTo(map);
+        map.fitBounds(f.getBounds());
+    } catch (err) {
+        throw err;
+    }
+}
+function setCountryInfo(country) {
+    const countryInfo = document.querySelector('#country-info');
+    const countryName = document.querySelector('#name');
+    const countryCapital = document.querySelector('#capital');
+    const countryArea = document.querySelector('#area');
+    const countryPopulation = document.querySelector('#population');
+    countryInfo.hidden = false;
+    countryName.innerText = country.countryName;
+    countryCapital.innerText = country.capital;
+    countryArea.innerHTML = country.areaInSqKm + ' км <sup>2</sup>';
+    countryPopulation.innerText = country.population;
 }
 
 function checkExists(inputValue) {
