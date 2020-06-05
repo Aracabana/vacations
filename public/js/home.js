@@ -17,7 +17,6 @@ window.onload = async function() {
     } finally {
         spinner.hidden = true;
     }
-    console.log(table)
     byName.addEventListener('click', table.sortBy.bind(table, 'countryName'));
     byDateTo.addEventListener('click', table.sortBy.bind(table, 'dateTo'));
     byStatus.addEventListener('click', table.sortBy.bind(table, 'status'));
@@ -52,6 +51,7 @@ class Vacations {
             const result = await response.json();
             for (let i = 0; i < result.vacations.length; i++) {
                 const vacation = new Vacation(result.vacations[i]);
+                await vacation.setFlag();
                 this.storage.push(vacation);
             }
         }
@@ -101,6 +101,17 @@ class VacationsTable extends Vacations {
         this.fill();
     }
 
+    formatNameCell(cell, vacation) {
+        if (vacation.flag) {
+            const flagImg = document.createElement('img');
+            flagImg.classList.add('flag');
+            flagImg.src = vacation.flag;
+            cell.appendChild(flagImg);
+        }
+        const name = document.createElement('span');
+        name.innerText = vacation.countryName;
+        cell.appendChild(name);
+    }
     formatDateCell(cell, date) {
         cell.classList.add('text-center');
         cell.innerText = date
@@ -145,7 +156,7 @@ class VacationsTable extends Vacations {
         edit.classList.add('fas', 'fa-2x', ...actionClass);
         return edit;
     }
-
+    
     renderEmptyRow() {
         const tr = document.createElement('tr');
         vacationsTableBody.appendChild(tr);
@@ -163,8 +174,8 @@ class VacationsTable extends Vacations {
         const values = vacation.getFieldsArray();
         for (let index = 0; index < values.length; index++) {
             const td = document.createElement('td');
-            if(index === 0) {
-                td.innerText = values[index].toString();
+            if (!index) {
+                this.formatNameCell(td, vacation);
             }
             if (index === 1 || index === 2) {
                 this.formatDateCell(td, values[index]);

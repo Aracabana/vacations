@@ -23,7 +23,7 @@ async function remove(id) {
 }
 
 async function getAllByUserId(userId) {
-    const sql = 'SELECT id, countryName, dateFrom, dateTo FROM vacations WHERE user_id = ?';
+    const sql = 'SELECT * FROM vacations WHERE user_id = ?';
     try {
         const result = await connection.query(sql, [userId]);
         const vacations = JSON.parse(JSON.stringify(result[0]));
