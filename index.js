@@ -66,6 +66,12 @@ app.get('/', routes.access, homeController.getPage); // стартовая ст�
 app.use('/auth', routes.auth);
 app.use('/vacation', routes.access, routes.vacation);
 app.use('/api', routes.access, routes.api);
+app.get('/404', function (request, response) {
+    response.render('404');
+})
+app.get('*', function(request, response){
+    response.render('404');
+});
 
 const server = http.createServer(app); // Создание сервера
 server.listen(port, () => { // Запуск сервера
