@@ -2,6 +2,7 @@ class Vacation {
     constructor(vacation) {
         this.id = vacation.id;
         this.countryName = vacation.countryName;
+        this.countryCode = vacation.countryCode;
         this.dateFrom = new Date(vacation.dateFrom).toLocaleDateString();
         this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
         this.status = Vacation.calculateStatus(vacation.dateFrom, vacation.dateTo);
@@ -21,6 +22,20 @@ class Vacation {
     
     getFieldsArray() {
         return [this.countryName, this.dateFrom, this.dateTo, this.status];
+    }
+    
+    async setFlag() {
+        try {
+            const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.countryCode}?fields=flag`);
+            if (response.status === 404) {
+                throw new Error('Флаг для данной страны не найден');
+            }
+            const data = await response.json();
+            this.flag = data.flag;
+        } catch (err) {
+            console.log(err);
+        }
+        
     }
     
     async remove() {

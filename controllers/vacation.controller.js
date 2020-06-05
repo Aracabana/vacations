@@ -110,4 +110,4 @@ async function getOne(request, response) {
     }
 }
 
-module.exports = { add, remove, getAll, createPage, vacationPage, getOne };
+module.exports = { add, remove, getAll, getOne, createPage, vacationPage };

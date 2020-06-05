@@ -6,7 +6,7 @@ const removeVacationBtn = document.querySelector('#remove-vacation-btn');
 window.onload = async function() {
     const data = await loadVacation();
     const vacation = new VacationPage(data);
-    vacation.init();
+    await vacation.init();
     console.log(vacation);
 }
 
@@ -37,8 +37,16 @@ class VacationPage extends Vacation {
     }
 
     renderInfo() {
-        title.innerHTML = this.countryName;
-        dates.innerHTML = `DateFrom: ${this.dateFrom} - DateTo: ${this.dateTo}`;
+        if (this.flag) {
+            const flagImg = document.createElement('img');
+            flagImg.classList.add('flag');
+            flagImg.src = this.flag;
+            title.appendChild(flagImg);
+        }
+        const name = document.createElement('span');
+        name.innerText = this.countryName;
+        title.appendChild(name);
+        dates.innerHTML = `${this.dateFrom} - ${this.dateTo}`;
     }
 
     setListeners() {
@@ -59,7 +67,8 @@ class VacationPage extends Vacation {
         }
     }
 
-    init() {
+    async init() {
+        await this.setFlag();
         this.renderInfo();
         this.setListeners();
     }

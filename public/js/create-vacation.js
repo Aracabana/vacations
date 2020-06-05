@@ -12,10 +12,10 @@ const mapOptions = {
 }
 
 window.onload = function() {
-    countryInput.addEventListener('input', function () {
+    countryInput.addEventListener('input', async function () {
         const countryCode = checkExists(this.value);
-        if(countryCode) {
-            showCountryInfo(countryCode);
+        if (countryCode) {
+            await showCountryInfo(countryCode);
         }
     });
     vacationForm.addEventListener('submit', submitVacation);
@@ -86,12 +86,16 @@ async function showCountryInfo(countryCode) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(responseData)
         });
-        const data = await response.json();
+        const data = await response.json(); //geonames object
         if (data.ok) {
             try {
                 const country = data.foundCountry;
-                setCountryInfo(country);
-                await setMap(country.isoAlpha3);
+                const countryAdditionalInfo = await getAdditionalInfo(countryCode);
+                setCountryInfo(country, countryAdditionalInfo);
+                mapWrapper.hidden = true;
+                if (countryAdditionalInfo) {
+                    await setMap(countryCode, countryAdditionalInfo.latlng);
+                }
             } catch (err) {
                 setServerFeedback({ ok: false, caption: err.message });
             }
@@ -101,20 +105,51 @@ async function showCountryInfo(countryCode) {
         setServerFeedback({ ok: false, caption: err.message });
     }
 }
-async function setMap(countryCode) {
-    mapWrapper.hidden = true;
+async function getAdditionalInfo(countryCode) {
+    try {
+        const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}?fields=latlng;languages`);
+        if (response.status === 404) {
+            throw new Error('Не удалось загрузить дополнительную информацию');
+        }
+        const { latlng, languages } = await response.json();
+        return { latlng, languages};
+    } catch (err) {
+        return false;
+    }
+}
+function setCountryLanguages(languages) {
+    const countryLanguages = document.querySelector('#languages');
+    countryLanguages.innerText = '';
+    languages.forEach(item => {
+        countryLanguages.innerHTML += `<span>${item.name}</span>`;
+    })
+}
+function setCountryInfo(country, countryAdditionalInfo) {
+    const countryInfo = document.querySelector('#country-info');
+    const countryName = document.querySelector('#name');
+    const countryCapital = document.querySelector('#capital');
+    const countryArea = document.querySelector('#area');
+    const countryPopulation = document.querySelector('#population');
+    const countryLanguages = document.querySelector('#languages-wrapper');
+    countryInfo.hidden = false;
+    countryLanguages.hidden = true;
+    countryName.innerText = country.countryName;
+    countryCapital.innerText = country.capital;
+    countryArea.innerHTML = country.areaInSqKm + ' км <sup>2</sup>';
+    countryPopulation.innerText = country.population;
+    if (countryAdditionalInfo) {
+        countryLanguages.hidden = false;
+        setCountryLanguages(countryAdditionalInfo.languages);
+    }
+}
+async function setMap(countryCode, latlng) {
     if (map) {
         map.off();
         map.remove();
         map = null;
     }
     try {
-        const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${countryCode}?fields=latlng`);
-        if (response.status === 404) {
-            throw new Error('Карта для данной страны не найдена');
-        }
         mapWrapper.hidden = false;
-        const { latlng } = await response.json();
         map = L.map('map').setView(latlng, 3);
         L.tileLayer(mapOptions.tilesUrl, mapOptions.init).addTo(map);
         const url = `/api/getGeoJSON?countryCode=${countryCode.toUpperCase()}`;
@@ -128,18 +163,6 @@ async function setMap(countryCode) {
     } catch (err) {
         throw err;
     }
-}
-function setCountryInfo(country) {
-    const countryInfo = document.querySelector('#country-info');
-    const countryName = document.querySelector('#name');
-    const countryCapital = document.querySelector('#capital');
-    const countryArea = document.querySelector('#area');
-    const countryPopulation = document.querySelector('#population');
-    countryInfo.hidden = false;
-    countryName.innerText = country.countryName;
-    countryCapital.innerText = country.capital;
-    countryArea.innerHTML = country.areaInSqKm + ' км <sup>2</sup>';
-    countryPopulation.innerText = country.population;
 }
 
 function checkExists(inputValue) {
