@@ -2,8 +2,8 @@ const connection = require('../db');
 
 async function insert(vacation, userId) {
     const {countryName, countryCode, dateFrom, dateTo, status} = vacation;
-    const sql = 'INSERT INTO vacations (countryName, countryCode, dateFrom, dateTo, status, user_id) VALUES (?, ?, ?, ?, ?, ?)';
-    const values = [countryName, countryCode, dateFrom, dateTo, status, userId];
+    const sql = 'INSERT INTO vacations (countryName, countryCode, dateFrom, dateTo, user_id) VALUES (?, ?, ?, ?, ?)';
+    const values = [countryName, countryCode, dateFrom, dateTo, userId];
     try {
         const result = await connection.query(sql, values);
         return result[0].insertId;
@@ -45,4 +45,16 @@ async function getVacationByDate(dateFrom, dateTo) {
     }
 }
 
-module.exports = { insert, remove, getAllByUserId, getVacationByDate };
+async function getVacationById(id) {
+    const sql = 'SELECT * FROM vacations WHERE id = ?';
+    try {
+        const result = await connection.query(sql, [id]);
+        const vacation = JSON.parse(JSON.stringify(result[0]));
+        return vacation;
+    }
+    catch (err) {
+        if (err) throw err;
+    }
+}
+
+module.exports = { insert, remove, getAllByUserId, getVacationByDate, getVacationById };

@@ -1,10 +1,18 @@
 <div class="container-fluid">
     <h1>{{title}}</h1>
-    <button id="byName" type="button" class="btn btn-info">Страна</button>
-    <button id="byDateTo" type="button" class="btn btn-info">Дата прибытия</button>
-    <button id="byStatus" type="button" class="btn btn-info">Статус</button>
-    <input id="x" type="text">
     <div class="content">
+        <div class="filter">
+            <div>
+                <span class="filter-label">Сортировать по:</span>
+                <button id="byName" type="button" class="btn btn-sm btn-info">Страна</button>
+                <button id="byDateTo" type="button" class="btn btn-sm btn-info">Дата прибытия</button>
+                <button id="byStatus" type="button" class="btn btn-sm btn-info">Статус</button>
+            </div>
+            <div class="filter-search">
+                <span class="filter-label">Найти</span>
+                <input id="search" type="text" class="form-control">
+            </div>
+        </div>
         <div class="table-responsive">
             <div id="serverFeedback" class="alert alert-danger" hidden></div>
             <div id="spinner" class="spinner-wrapper" hidden>

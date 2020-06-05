@@ -3,7 +3,7 @@
 
     <div class="content">
         <div class="row">
-            <div class="col-8">
+            <div class="col-6">
                 <div class="card">
                     <form id="vacation-form" class="card-body" novalidate>
                         <div id="serverFeedback" class="alert" hidden></div>
@@ -63,11 +63,19 @@
                     </form>
                 </div>
             </div>
-            <div class="col-12">
-                <div class="card">
-                    <div class="map-wrapper">
-                        <div id="map"></div>
+            <div class="col-6">
+                <div id="country-info" hidden class="card">
+                    <div class="card-body">
+                        <h5 id="name" class="card-title"></h5>
+                        <p><strong>Столица: </strong><span id="capital"></span></p>
+                        <p><strong>Площадь: </strong><span id="area"></span></p>
+                        <p><strong>Население: </strong><span id="population"></span></p>
                     </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div id="map-wrapper" class="map-wrapper card-img-bottom">
+                    <div id="map"></div>
                 </div>
             </div>
         </div>

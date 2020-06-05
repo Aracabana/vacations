@@ -101,15 +101,12 @@ body.main-body {
 .vacations-table tr td {
   cursor: pointer;
 }
-
 .table-responsive {
   position: relative;
 }
-
 .table-row:hover .action-block {
   transform: translateX(1px);
 }
-
 .spinner-wrapper {
   position: absolute;
   left: 0;
@@ -122,7 +119,6 @@ body.main-body {
   background-color: #f6f6f669;
   z-index: 2;
 }
-
 .action-block {
   position: absolute;
   right: 0;
@@ -136,5 +132,48 @@ body.main-body {
   justify-content: space-around;
   align-items: center;
 }
-
-#map { height: 580px; }
+.map-wrapper {
+  margin-top: 32px;
+}
+#map {
+  height: 300px;
+}
+.filter {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.filter-label {
+  margin-right: 16px;
+}
+.filter-search {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.filter .form-control {
+  max-width: 300px;
+}
+.vacation-page {
+  position: relative;
+}
+.vacation-btns-bar {
+  position: absolute;
+  top: 0;
+  right: 15px;
+}
