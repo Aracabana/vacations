@@ -19,7 +19,6 @@ class Vacation {
     getStatusClass() {
         return (this.status === 'Ожидание') ? 'success' : (this.status === 'В процессе') ? 'warning' : 'danger';
     }
-    
     getFieldsArray() {
         return [this.countryName, this.dateFrom, this.dateTo, this.status];
     }
@@ -35,9 +34,24 @@ class Vacation {
         } catch (err) {
             console.log(err);
         }
-        
+    }
+    async setLatlng() {
+        try {
+            const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.countryCode}?fields=latlng`);
+            if (response.status === 404) {
+                throw new Error('Latlng для данной страны не найден');
+            }
+            const data = await response.json();
+            this.latlng = data.latlng;
+        } catch (err) {
+            console.log(err);
+        }
     }
     
+    edit() {
+        console.log(this);
+        // window.location.href = '/vacation/' + this.id;
+    }
     async remove() {
         try {
             const response = await fetch('/vacation', {
@@ -51,10 +65,5 @@ class Vacation {
         } catch (err) {
             return {ok: false, caption: 'Вутрення ошибка сервера'};
         }
-    }
-    
-    edit() {
-        console.log(this);
-        // window.location.href = '/vacation/' + this.id;
     }
 }
