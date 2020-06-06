@@ -117,23 +117,28 @@ class VacationsTable extends Vacations {
         cell.innerText = date
     }
     formatStatusCell(parent, data ,status) {
-        parent.style.position = 'relative';
         const span = document.createElement('span');
         span.classList.add('badge', `badge-${status}`);
         span.innerText = data;
         parent.appendChild(span);
     }
+    createActionCell(parent, vacation) {
+        const td = document.createElement('td');
+        td.classList.add('action-td');
+        this.createActionBlock(td, vacation);
+        parent.appendChild(td);
+    }
     createActionBlock(parent, vacation) {
         const wrapper = document.createElement('div');
-        wrapper.classList.add('action-block', 'bg-info');
+        wrapper.classList.add('action-block');
 
-        const edit = this.createActionItem(['fa-pen-square', 'text-warning']);
+        const edit = this.createActionItem(['fa-pen', 'text-warning']);
         edit.addEventListener('click', function () {
-            window.location.href = '/vacation/' + vacation.id;
+            // window.location.href = '/vacation/' + vacation.id;
         });
         wrapper.appendChild(edit);
 
-        const remove = this.createActionItem(['fa-times', 'text-danger']);
+        const remove = this.createActionItem(['fa-trash-alt', 'text-danger']);
         remove.addEventListener('click', async () => {
             const bool = confirm("Вы хотите удалить запись?");
             if (bool) {
@@ -152,9 +157,12 @@ class VacationsTable extends Vacations {
         parent.appendChild(wrapper);
     }
     createActionItem(actionClass) {
-        const edit = document.createElement('i');
-        edit.classList.add('fas', 'fa-2x', ...actionClass);
-        return edit;
+        const actionBtn = document.createElement('button');
+        actionBtn.classList.add('btn');
+        const actionBtnItem = document.createElement('i');
+        actionBtn.appendChild(actionBtnItem);
+        actionBtn.classList.add('fas', ...actionClass);
+        return actionBtn;
     }
     
     renderEmptyRow() {
@@ -169,6 +177,9 @@ class VacationsTable extends Vacations {
     renderRow(vacation) {
         const tr = document.createElement('tr');
         tr.classList.add('table-row');
+        tr.addEventListener('click', function () {
+            window.location.href = '/vacation/' + vacation.id;
+        });
         vacationsTableBody.appendChild(tr);
 
         const values = vacation.getFieldsArray();
@@ -183,15 +194,16 @@ class VacationsTable extends Vacations {
             if (index === 3) {
                 const status = vacation.getStatusClass();
                 this.formatStatusCell(td, values[index], status);
-                this.createActionBlock(td, vacation);
             }
             tr.appendChild(td);
         }
+        
+        this.createActionCell(tr, vacation);
     }
 
     fill() {
         vacationsTableBody.innerHTML = '';
-        if(!this.storage.length) {
+        if (!this.storage.length) {
             this.renderEmptyRow();
             return;
         }
