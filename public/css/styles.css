@@ -1,6 +1,9 @@
 html {
   min-height: 100%;
 }
+body {
+  min-height: 100vh;
+}
 body.auth-body {
   height: 100vh;
   background-image: linear-gradient(0deg, #79F1A4 10%, #0E5CAD 100%);
@@ -14,6 +17,11 @@ body.main-body {
 .form-check-input {
   margin-top: 0.4rem;
 }
+.btn .fas {
+  position: relative;
+  bottom: -1px;
+}
+/****AUTH****/
 .auth-main {
   position: relative;
   display: -webkit-box;
@@ -52,6 +60,8 @@ body.main-body {
   max-width: 460px;
   background-color: rgba(255, 255, 255, 0.6);
 }
+/****MAIN****/
+/*Header*/
 .avatar {
   margin-right: 8px;
   -webkit-border-radius: 50%;
@@ -82,36 +92,22 @@ body.main-body {
   margin-bottom: 0;
   font-size: 14px;
 }
-.btn .fas {
-  position: relative;
-  bottom: -1px;
+.logout {
+  margin-left: 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  color: #ffffff;
 }
+.logout a {
+  margin-left: 8px;
+  color: #ffffff;
+}
+/*Content*/
 .page-wrapper {
   padding: 24px 0;
 }
 .content {
-  padding-top: 64px;
-}
-.content .card {
-  max-width: 1100px;
-}
-.flag {
-  position: relative;
-  top: -2px;
-  margin-right: 16px;
-  max-width: 40px;
-}
-.vacations-table {
-  overflow: hidden;
-}
-.vacations-table tr td {
-  cursor: pointer;
-}
-.table-responsive {
-  position: relative;
-}
-.table-row:hover .action-block {
-  transform: translateX(1px);
+  padding-top: 56px;
 }
 .spinner-wrapper {
   position: absolute;
@@ -125,25 +121,13 @@ body.main-body {
   background-color: #f6f6f669;
   z-index: 2;
 }
-.action-block {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 178px;
-  transform: translateX(205px);
-  transition: all 0.5s ease-in-out;
-  background-color: aquamarine;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+.flag {
+  position: relative;
+  top: -2px;
+  margin-right: 16px;
+  max-width: 40px;
 }
-.map-wrapper {
-  margin-top: 32px;
-}
-#map {
-  height: 300px;
-}
+/*Home*/
 .filter {
   display: -webkit-box;
   display: -webkit-flex;
@@ -175,6 +159,42 @@ body.main-body {
 .filter .form-control {
   max-width: 300px;
 }
+.vacations-table {
+  overflow: hidden;
+}
+.vacations-table tr td {
+  cursor: pointer;
+}
+.table-responsive {
+  position: relative;
+}
+.table-row:hover .action-block {
+  opacity: 1;
+}
+.action-block {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+  width: 100px;
+  background-color: transparent;
+  opacity: 0;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  transition: all ease 0.3s;
+}
+/*Create vacation*/
+.country-info {
+  height: 100%;
+}
 .country-info p {
   display: -webkit-box;
   display: -webkit-flex;
@@ -191,14 +211,69 @@ body.main-body {
 .country-info span span {
   display: block;
 }
+.map-wrapper {
+  margin-top: 32px;
+}
+#map {
+  height: 300px;
+}
+/*Vacation*/
 .vacation-page {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  height: -webkit-calc(46vh);
+  height: calc(100vh - 54px);
+}
+.vacation-page-main {
   position: relative;
+  padding: 16px 0;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
 }
 .vacation-btns-bar {
   position: absolute;
-  top: 0;
+  top: 16px;
   right: 16px;
 }
 .vacation-page-title .flag {
   max-width: 50px;
+}
+.widget-menu-wrapper {
+  -webkit-box-flex: 0;
+  -webkit-flex-grow: 0;
+  -ms-flex-positive: 0;
+  flex-grow: 0;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  padding-top: 16px;
+  width: 300px;
+  background-color: #3c4146;
+}
+.widget-menu-item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-bottom: 1px solid #ffffff;
+  padding: 8px 15px;
+}
+.widget-menu-item:last-child {
+  border-bottom: 0;
 }
