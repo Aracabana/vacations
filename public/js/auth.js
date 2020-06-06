@@ -5,11 +5,11 @@ window.onload = function() {
     const registrationForm = document.querySelector('#registration-form');
     if (loginForm) {
         loginForm.addEventListener('submit', submitLogin);
-        setListeners(loginForm);
+        setValidateListeners(loginForm);
     }
     if (registrationForm) {
         registrationForm.addEventListener('submit', submitRegistration);
-        setListeners(registrationForm);
+        setValidateListeners(registrationForm);
     }
 }
 

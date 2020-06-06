@@ -8,9 +8,11 @@ async function getCountry (request, response) {
         const foundCountry = await countries.searchCountryBy(searchField, value);
         if (foundCountry) {
             response.json({ok: true, foundCountry});
+            return;
         }
+        throw new Error('Страна не найдена');
     } catch (err) {
-        response({ok: false, caption: err});
+        response.json({ok: false, caption: err.message});
     }
 
 }

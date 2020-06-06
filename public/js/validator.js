@@ -1,4 +1,4 @@
-function setListeners(form) {
+function setValidateListeners(form) {
     const formControls = Array.from(form.querySelectorAll('.form-control'));
     const btn = form.querySelector('button');
     formControls.forEach(input => {
