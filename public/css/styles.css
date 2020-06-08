@@ -159,6 +159,9 @@ body.main-body {
 .filter .form-control {
   max-width: 300px;
 }
+.vacation-table-wrapper {
+  max-height: 600px;
+}
 .vacations-table {
   overflow: hidden;
 }
@@ -273,7 +276,14 @@ body.main-body {
   align-items: center;
   border-bottom: 1px solid #ffffff;
   padding: 8px 15px;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  transition: all ease 0.3s;
 }
 .widget-menu-item:last-child {
   border-bottom: 0;
+}
+.widget-menu-item:hover {
+  background-color: #343a40;
 }

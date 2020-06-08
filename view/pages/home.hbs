@@ -3,7 +3,7 @@
         <h1>{{title}}</h1>
         <div class="content">
             <div class="filter">
-                <div>
+                <div id="filter-buttons">
                     <span class="filter-label">Сортировать по:</span>
                     <button id="byName" type="button" class="btn btn-sm btn-info">Страна</button>
                     <button id="byDateTo" type="button" class="btn btn-sm btn-info">Дата прибытия</button>
@@ -14,7 +14,7 @@
                     <input id="search" type="text" class="form-control">
                 </div>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive vacation-table-wrapper">
                 <div id="serverFeedback" class="alert alert-danger" hidden></div>
                 <div id="spinner" class="spinner-wrapper" hidden>
                     <div class="spinner-border text-success" role="status">
