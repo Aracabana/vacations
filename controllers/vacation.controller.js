@@ -16,7 +16,7 @@ async function createPage(request, response) {
                 class: 'btn-light'
             },
             countriesWithCode,
-            scripts: ['validator', 'create-vacation', 'leaflet'],
+            scripts: 'create-vacation',
             styles: ['leaflet']
         });
     } catch (err) {
@@ -38,7 +38,7 @@ async function vacationPage(request, response) {
             icon: 'fa-angle-left',
             class: 'btn-light'
         },
-        scripts: ['vacation-entity', 'vacation', 'leaflet'],
+        scripts: 'vacation',
         styles: ['leaflet']
     });
 }

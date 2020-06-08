@@ -1,3 +1,5 @@
+import './script';
+
 const vacationForm = document.querySelector('#vacation-form');
 const dataList = document.querySelector('#countries-list');
 const countryInput = document.querySelector('#country');

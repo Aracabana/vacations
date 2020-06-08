@@ -1,4 +1,5 @@
-const serverFeedback = document.querySelector('#serverFeedback');
+import './script';
+
 const vacationsTableBody = document.querySelector('#vacations-table tbody');
 const filterButtonsWrapper = document.querySelector('#filter-buttons');
 const filterButtons = Array.from(filterButtonsWrapper.querySelectorAll('button'));
@@ -34,16 +35,6 @@ window.onload = async function() {
     search.addEventListener('input', function () {
         table.filterBy( 'countryName', this.value);
     });
-}
-
-function setServerFeedback(data, time = 4000) {
-    serverFeedback.classList.remove('alert-success', 'alert-danger');
-    serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');
-    serverFeedback.hidden = false;
-    serverFeedback.innerText = data.caption;
-    setTimeout(() => {
-        serverFeedback.hidden = true;
-    }, time)
 }
 
 class Vacations {

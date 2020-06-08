@@ -1,3 +1,5 @@
+import './script';
+
 const title = document.querySelector('#vacation-country');
 const dates = document.querySelector('#vacation-dates');
 const editVacationBtn = document.querySelector('#edit-vacation-btn');

@@ -1,3 +1,5 @@
+import './script';
+
 const spinner = document.querySelector('#spinner');
 
 window.onload = function() {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "build": "webpack --mode development",
+    "start": "nodemon index.js ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,5 +25,10 @@
     "mysql2": "^2.1.0",
     "nodemon": "^2.0.4",
     "uuid": "^8.1.0"
+  },
+  "devDependencies": {
+    "imports-loader": "^0.8.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }
