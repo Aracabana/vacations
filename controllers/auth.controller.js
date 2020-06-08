@@ -42,14 +42,14 @@ function registrationPage(request, response) {
     response.render('registration', {
         layout: 'auth',
         pageTitle: 'Регистрация',
-        scripts: ['validator', 'auth']
+        scripts: ['server-feedback', 'validator', 'auth']
     })
 }
 function loginPage(request, response) {
     response.render('login', {
         layout: 'auth',
         pageTitle: 'Авторизация',
-        scripts: ['validator', 'auth']
+        scripts: ['server-feedback', 'validator', 'auth']
     })
 }
 
