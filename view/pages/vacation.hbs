@@ -6,13 +6,13 @@
         <ul class="widget-menu list-unstyled">
             <li class="widget-menu-item text-white">
                 <span>Текущее время</span>
-                <button class="btn btn-light btn-sm" type="button">
+                <button id="time-widget-add-btn" class="btn btn-light btn-sm" type="button">
                     <i class="fas fa-plus"></i>
                 </button>
             </li>
             <li class="widget-menu-item text-white">
                 <span>Погода</span>
-                <button class="btn btn-light btn-sm" type="button">
+                <button id="weather-widget-add-btn" class="btn btn-light btn-sm" type="button">
                     <i class="fas fa-plus"></i>
                 </button>
             </li>
@@ -31,7 +31,8 @@
                 </button>
             </div>
 
-            <div class="content">
+            <div id="widgets-wrapper" class="content">
+                <div id="serverFeedback" class="alert" hidden></div>
 
             </div>
         </div>

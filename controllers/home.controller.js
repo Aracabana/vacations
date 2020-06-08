@@ -9,7 +9,7 @@ function getPage(request, response) {
             icon: 'fa-plus',
             class: 'btn-success'
         },
-        scripts: ['vacation-entity', 'home']
+        scripts: ['server-feedback', 'vacation-entity', 'home']
     });
 }
 
