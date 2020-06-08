@@ -1,5 +1,7 @@
 const serverFeedback = document.querySelector('#serverFeedback');
 const vacationsTableBody = document.querySelector('#vacations-table tbody');
+const filterButtonsWrapper = document.querySelector('#filter-buttons');
+const filterButtons = Array.from(filterButtonsWrapper.querySelectorAll('button'));
 const byName = document.getElementById('byName');
 const byDateTo = document.getElementById('byDateTo');
 const byStatus = document.getElementById('byStatus');
@@ -7,6 +9,7 @@ const search = document.getElementById('search');
 const spinner = document.querySelector('#spinner');
 
 window.onload = async function() {
+    
     const table = new VacationsTable();
     spinner.hidden = false;
     try {
@@ -17,6 +20,14 @@ window.onload = async function() {
     } finally {
         spinner.hidden = true;
     }
+    
+    filterButtonsWrapper.addEventListener('click', function (e) {
+        const target = e.target;
+        if (target.tagName === 'BUTTON') {
+            filterButtons.forEach(button => button.classList.remove('active'));
+            target.classList.add('active');
+        }
+    });
     byName.addEventListener('click', table.sortBy.bind(table, 'countryName'));
     byDateTo.addEventListener('click', table.sortBy.bind(table, 'dateTo'));
     byStatus.addEventListener('click', table.sortBy.bind(table, 'status'));
@@ -133,13 +144,15 @@ class VacationsTable extends Vacations {
         wrapper.classList.add('action-block');
 
         const edit = this.createActionItem(['fa-pen', 'text-warning']);
-        edit.addEventListener('click', function () {
+        edit.addEventListener('click', function (e) {
+            e.stopPropagation();
             // window.location.href = '/vacation/' + vacation.id;
         });
         wrapper.appendChild(edit);
 
         const remove = this.createActionItem(['fa-trash-alt', 'text-danger']);
-        remove.addEventListener('click', async () => {
+        remove.addEventListener('click', async (e) => {
+            e.stopPropagation();
             const bool = confirm("Вы хотите удалить запись?");
             if (bool) {
                 spinner.hidden = false;
@@ -169,18 +182,18 @@ class VacationsTable extends Vacations {
         const tr = document.createElement('tr');
         vacationsTableBody.appendChild(tr);
         const td = document.createElement('td');
-        td.colSpan = 4;
+        td.colSpan = 5;
         td.classList.add('text-center');
         td.innerText = 'У вас пока нет отпусков';
         tr.appendChild(td);
     }
-    renderRow(vacation) {
+    renderRow(vacation, body) {
         const tr = document.createElement('tr');
         tr.classList.add('table-row');
         tr.addEventListener('click', function () {
             window.location.href = '/vacation/' + vacation.id;
         });
-        vacationsTableBody.appendChild(tr);
+        body.appendChild(tr);
 
         const values = vacation.getFieldsArray();
         for (let index = 0; index < values.length; index++) {
@@ -204,11 +217,11 @@ class VacationsTable extends Vacations {
     fill() {
         vacationsTableBody.innerHTML = '';
         if (!this.storage.length) {
-            this.renderEmptyRow();
+            this.renderEmptyRow(vacationsTableBody);
             return;
         }
         for (let i = 0; i < this.storage.length; i++) {
-            this.renderRow(this.storage[i]);
+            this.renderRow(this.storage[i], vacationsTableBody);
         }
     }
 }
