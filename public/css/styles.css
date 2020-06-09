@@ -287,3 +287,20 @@ body.main-body {
 .widget-menu-item:hover {
   background-color: #343a40;
 }
+.widget-card-wrapper {
+  margin-bottom: 24px;
+}
+.widget-header {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
