@@ -54,9 +54,14 @@ async function submitVacation(e) {
 async function selectCountry() {
     const countryCode = checkExists(this.value);
     if (countryCode) {
-        const country = new Country(countryCode);
-        await country.loadData();
-        country.showInfo();
+        const countryInfo = new CountryInfo(countryCode);
+        try {
+            await countryInfo.loadData(['latlng', 'languages']);
+            await countryInfo.show();
+        } catch (err) {
+            setServerFeedback({ok: false, caption: err.message});
+        }
+        
     }
 }
 function formatDate(date) {
@@ -85,42 +90,12 @@ function checkExists(inputValue) {
     return countryCode;
 }
 
-class Country {
+
+class CountryInfo extends Country {
     constructor(code) {
-        this.data = '';
-        this.code = code;
+        super(code);
     }
-    async loadData() {
-        const requestBody = {
-            searchField: 'isoAlpha3',
-            value: this.code
-        }
-        try {
-            const response = await fetch('/api/getCountry', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(requestBody)
-            });
-            const data = await response.json(); // geonames object
-            if (!data.ok) {
-                throw new Error(data.caption);
-            }
-            this.data = data.foundCountry;
-            await this.loadAdditionalData(['latlng', 'languages']);
-        } catch (err) {
-            setServerFeedback({ok: false, caption: err.message});
-        }
-    }
-    async loadAdditionalData(fieldsArray) {
-        const joinedFields = fieldsArray.join(';');
-        const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.code}?fields=${joinedFields}`);
-        if (response.status === 404) {
-            throw new Error('Не удалось загрузить дополнительную информацию (карту и языки)');
-        }
-        this.data.additional = await response.json();
-    }
-    async showInfo() {
+    async show() {
         countryInfo.hidden = true;
         countryLanguagesWrapper.hidden = true;
         mapWrapper.hidden = true;
@@ -150,7 +125,7 @@ class Country {
             await map.load();
         }
         catch (err) {
-            setServerFeedback({ok: false, caption: err.message});
+            throw err;
         }
     }
 }

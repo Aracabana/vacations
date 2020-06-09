@@ -32,19 +32,19 @@ class Vacation {
             const data = await response.json();
             this.flag = data.flag;
         } catch (err) {
-            console.log(err);
+            // console.log(err);
         }
     }
-    async setLatlng() {
+    async setCountryData() {
+        let country;
         try {
-            const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.countryCode}?fields=latlng`);
-            if (response.status === 404) {
-                throw new Error('Latlng для данной страны не найден');
-            }
-            const data = await response.json();
-            this.latlng = data.latlng;
+            country = new Country(this.countryCode);
+            await country.loadData(['latlng', 'languages', 'flag']);
         } catch (err) {
-            console.log(err);
+            console.log('Доп. данные не загружены');
+        }
+        finally {
+            this.countryInfo = country.data;
         }
     }
     
