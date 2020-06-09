@@ -56,7 +56,6 @@ class VacationPage extends Vacation {
     }
     
     async loadWidgets() {
-        console.log(this)
         try {
             const url = `/api/getWidgets?vacationId=${this.id}`;
             const response = await fetch(url, {
@@ -67,15 +66,21 @@ class VacationPage extends Vacation {
             const data = await response.json();
             if (data.ok) {
                 data.widgets.forEach(item => {
-                    item.additional = this.countryInfo.additional;
                     let widget;
-                    if(item.id === 1) {
+                    if (item.id === 1) {
+                        item.additional = this.countryInfo.additional;
                         widget = new TimeWidget(item, this.id);
                         widget.init();
                     }
-                    if(item.id === 2) {
+                    if (item.id === 2) {
+                        item.bbox = {
+                            west: this.countryInfo.west,
+                            north: this.countryInfo.north,
+                            south: this.countryInfo.south,
+                            east: this.countryInfo.east
+                        }
                         widget = new WeatherWidget(item, this.id);
-                        // widget.init();
+                        widget.init();
                     }
                     this.widgets.push(widget);
                 });
@@ -118,29 +123,20 @@ class Widget {
         this.name = widgetData.name;
         this.vacationId = vacationId;
         this.isActive = widgetData.isActive;
+        this.spinner = '';
         this.widgetCard = '';
         this.body = '';
         this.headerControls = [
-            {
-                classes: [ 'fa-expand-alt', 'text-secondary'],
-                action: this.expand
-            },
-            {
-                classes: [ 'fa-cog', 'text-secondary'],
-                action: this.showOptions
-            },
-            {
-                classes: ['fa-trash-alt', 'text-danger'],
-                action: this.remove
-            }
-        ]
+            {classes: [ 'fa-expand-alt', 'text-secondary'], action: this.expand},
+            {classes: [ 'fa-cog', 'text-secondary'], action: this.showOptions},
+            {classes: ['fa-trash-alt', 'text-danger']}
+        ];
         this.requestLoader = false;
     };
     
     showOptions() {
         console.log(this.id);
     }
-    
     expand() {
         console.log('expand');
     }
@@ -148,44 +144,53 @@ class Widget {
     async sendRequest(url, method) {
         if (!this.requestLoader) {
             this.requestLoader = true;
+            if(this.spinner) {
+                this.spinner.hidden = false;
+            }
             try {
-                const responseData = {
-                    widgetId: this.id,
-                    vacationId: this.vacationId
-                }
+                const responseData = { widgetId: this.id, vacationId: this.vacationId };
                 const response = await fetch(url, {
                     method: method,
                     credentials: 'same-origin',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(responseData)
                 });
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
                 const data = await response.json();
                 if (!data.ok) {
                     throw new Error(data.caption);
                 }
                 return true;
             } catch (err) {
-                console.log(err);
                 setServerFeedback({ok: false, caption: err.message});
             } finally {
                 this.requestLoader = false;
+                if(this.spinner) {
+                    this.spinner.hidden = true;
+                }
             }
         }
         return false;
     }
     
-    async remove() {
+    async removeFromDashboard() {
         const result = await this.sendRequest('/api/removeWidget', 'DELETE');
         if (result) {
             this.widgetCard.remove();
             this.widgetCard = '';
+            this.body = '';
             this.isActive = false;
-            await this.init();
         }
+        return result;
     }
-    
-    async save() {
+    async addToDashboard(li) {
         const result = await this.sendRequest('/api/saveWidget', 'POST');
+        if (result) {
+            li.remove();
+            this.isActive = true;
+        }
         return result;
     }
     
@@ -199,9 +204,8 @@ class Widget {
         const i = document.createElement('i');
         i.classList.add('fas', 'fa-plus');
         btn.append(i);
-        return {btn, li, span};
+        return {btn, span, li};
     }
-    
     renderHeader(parent) {
         const header = document.createElement('div');
         header.classList.add('card-header', 'widget-header');
@@ -228,13 +232,60 @@ class Widget {
         header.appendChild(headerControls);
         parent.appendChild(header);
     }
-    
     renderBody(parent) {
         this.body = document.createElement('div');
         this.body.classList.add('card-body');
+        this.createSpinner();
         parent.appendChild(this.body);
     }
-    
+    renderEmptyWidgetContent() {
+        const err = document.createElement('span');
+        err.innerText = this.data;
+        this.body.append(err);
+    }
+
+    createSpinner() {
+        this.spinner = document.createElement('div');
+        this.spinner.classList.add('spinner-wrapper');
+        this.spinner.hidden = true;
+        const spinnerBody = document.createElement('div');
+        spinnerBody.classList.add('spinner-border', 'text-success');
+        const span = document.createElement('span');
+        span.classList.add('sr-only');
+        span.innerText = 'Loading...';
+        spinnerBody.append(span);
+        this.spinner.append(spinnerBody);
+        this.widgetCard.append(this.spinner);
+    }
+
+    async setData(url = undefined) {
+        if (!url) {
+            this.data = 'Данных для виджета нет';
+            return;
+        }
+        let data;
+        try {
+            this.spinner.hidden = false;
+            data = await this.loadData(url);
+            if (typeof data === 'string') {
+                throw new Error(data);
+            }
+        } catch (err) {
+            data = err.message;
+        } finally {
+            this.spinner.hidden = true;
+        }
+        this.data = data;
+    }
+    async loadData(url) {
+        try {
+            const response = await fetch(url);
+            return await response.json();
+        } catch (err) {
+            throw err;
+        }
+    }
+
     render () {
         this.widgetCard = document.createElement('div');
         this.widgetCard.classList.add('col-12', 'col-md-6', 'col-lg-4', 'widget-card-wrapper');
@@ -243,7 +294,6 @@ class Widget {
         this.renderHeader(widget);
         this.renderBody(widget);
         this.widgetCard.appendChild(widget);
-        widgetsWrapper.appendChild(this.widgetCard);
         // const x = new Promise((res, rej) => {
         //     setTimeout(() => {
         //         res(this.constructor.name);
@@ -253,60 +303,121 @@ class Widget {
         //     console.log(result);
         // });
     }
-
-    // async init() {
-    //     if (this.isActive) {
-    //         this.render();
-    //         return;
-    //     }
-    //     this.renderControl();
-    // }
 }
 
 class TimeWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
         this.latlng = (widgetData.additional) ? widgetData.additional.latlng : undefined;
+        this.headerControls[2].action = this.removeFromDashboard;
     }
-    async loadData() {
-        if(this.latlng) {
-            const url = `http://api.geonames.org/timezoneJSON?lat=${this.latlng[0]}&lng=${this.latlng[1]}&username=antondrik`;
-            const response = await fetch(url);
-            const data = await response.json();
-            this.data = data;
-            return;
+
+    async addToDashboard(li) {
+        const result = await super.addToDashboard(li);
+        if(result) {
+            await this.init();
         }
-        this.data = 'Данных для данного виджета нет';
     }
-    
+    async removeFromDashboard() {
+        const result = await super.removeFromDashboard();
+        if (result) {
+            await this.init();
+        }
+    }
     renderControl() {
-        const {btn, li, span} = super.renderControl();
+        const {btn, span, li } = super.renderControl();
         btn.addEventListener('click',  async () => {
-            const result = await this.save();
-            if (result) {
-                li.remove();
-                this.isActive = true;
-                await this.init();
-            }
+            await this.addToDashboard(li);
         });
         li.append(span, btn);
         widgetsSidebar.append(li);
     }
-    
+
+    async render() {
+        let url;
+        if (this.latlng) {
+            url = `http://api.geonames.org/timezoneJSON?lat=${this.latlng[0]}&lng=${this.latlng[1]}&username=antondrik`;
+        }
+        await super.render();
+        await super.setData(url);
+        this.showWidgetContent();
+        widgetsWrapper.appendChild(this.widgetCard);
+    }
+
+    showWidgetContent() {
+        if (typeof this.data === 'string') {
+            super.renderEmptyWidgetContent();
+            return;
+        }
+        const time = document.createElement('span');
+        const date = new Date(this.data.time);
+        time.innerText = date.toLocaleTimeString();
+        this.body.append(time);
+    }
+
     async init() {
         if (this.isActive) {
-            await this.loadData();
-            this.render();
+            await this.render();
             return;
         }
         this.renderControl();
-        console.log(this);
     }
 }
 
 class WeatherWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
+        this.bbox = widgetData.bbox;
+        this.headerControls[2].action = this.removeFromDashboard;
     }
 
+    async addToDashboard(li) {
+        const result = await super.addToDashboard(li);
+        if(result) {
+            await this.init();
+        }
+    }
+    async removeFromDashboard() {
+        const result = await super.removeFromDashboard();
+        if (result) {
+            await this.init();
+        }
+    }
+    renderControl() {
+        const {btn, span, li } = super.renderControl();
+        btn.addEventListener('click',  async () => {
+            await this.addToDashboard(li);
+        });
+        li.append(span, btn);
+        widgetsSidebar.append(li);
+    }
+
+    async render() {
+        let url;
+        url = `http://api.geonames.org/weatherJSON?north=${this.bbox.north}&south=${this.bbox.south}&east=${this.bbox.east}&west=${this.bbox.west}&lang=ru&username=antondrik`;
+        await super.render();
+        await super.setData(url);
+        this.showWidgetContent();
+        widgetsWrapper.appendChild(this.widgetCard);
+    }
+
+    showWidgetContent() {
+        if (typeof this.data === 'string') {
+            super.renderEmptyWidgetContent();
+            return;
+        }
+        console.log(this.data);
+        // const time = document.createElement('span');
+        // const date = new Date(this.data.time);
+        // time.innerText = date.toLocaleTimeString();
+        // this.body.append(time);
+    }
+
+    async init() {
+        if (this.isActive) {
+            await this.render();
+            return;
+        }
+        this.renderControl();
+    }
 }
