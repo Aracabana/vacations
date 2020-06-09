@@ -14,7 +14,7 @@ async function insert(user) {
 }
 
 async function getAllByVacationId(vacationId) {
-    const sql = `SELECT widgets.name FROM active_widgets LEFT JOIN widgets ON active_widgets.widget_id=widgets.id WHERE active_widgets.vacation_id=?`;
+    const sql = `SELECT widgets.id, widgets.name, active_widgets.id as vacation_id  FROM widgets LEFT OUTER JOIN (SELECT * FROM active_widgets WHERE active_widgets.vacation_id=?) as active_widgets ON widgets.id=active_widgets.widget_id`;
     try {
         const result = await connection.query(sql, [vacationId]);
         const widgets = JSON.parse(JSON.stringify(result[0]));

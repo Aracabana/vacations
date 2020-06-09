@@ -3,14 +3,14 @@ const dates = document.querySelector('#vacation-dates');
 const editVacationBtn = document.querySelector('#edit-vacation-btn');
 const removeVacationBtn = document.querySelector('#remove-vacation-btn');
 const widgetsWrapper = document.querySelector('#widgets-wrapper');
+const widgetsSidebar = document.querySelector('#widgets-sidebar');
 
-const timeWidgetAddBtn = document.querySelector('#time-widget-add-btn');
-// const weatherWidgetAddBtn = document.querySelector('#weather-widget-add-btn');
-timeWidgetAddBtn.addEventListener('click', function () {
-    
-    const timeWidget = new TimeWidget();
-    timeWidget.render();
-});
+// const timeWidgetAddBtn = document.querySelector('#time-widget-add-btn');
+// timeWidgetAddBtn.addEventListener('click', function () {
+//
+//     const timeWidget = new TimeWidget();
+//     timeWidget.render();
+// });
 
 window.onload = async function() {
     const data = await loadVacation();
@@ -42,6 +42,7 @@ async function loadVacation() {
 class VacationPage extends Vacation {
     constructor(vacation) {
         super(vacation);
+        this.widgets = [];
     }
 
     renderInfo() {
@@ -67,8 +68,26 @@ class VacationPage extends Vacation {
             });
             const data = await response.json();
             if (data.ok) {
-                console.log(data);
+                data.widgets.forEach(item => {
+                    let widget;
+                    if (item.vacation_id) {
+                        if(item.id === 1) {
+                            widget = new TimeWidget(item.id, item.name);
+                            widget.init();
+                        }
+                        if(item.id === 2) {
+                            widget = new Weather(item.id, item.name);
+                            widget.init();
+                        }
+
+                    } else {
+                        widget = new NotInitedWidget(item.id, item.name);
+                        widget.renderControl();
+                    }
+                    this.widgets.push(widget);
+                });
             }
+            console.log(this.widgets);
         }
         catch (err) {
             setServerFeedback({ ok: false, caption: err.message });
@@ -102,25 +121,43 @@ class VacationPage extends Vacation {
 }
 
 class Widget {
-    constructor() {
+    constructor(widgetID, name) {
         this.widget = document.createElement('div');
-        this.name = '';
+        this.id = widgetID;
+        this.name = name;
     };
-    async static checkExist() {
-        try {
-            const url = `/api/getWidgets?vacationId=${this.id}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {'Content-Type': 'application/json'}
-            });
-        }
-        catch {
-        
-        }
+    // async static checkExist() {
+    //     try {
+    //         // const url = `/api/getWidgets?vacationId=${this.id}`;
+    //         const response = await fetch(url, {
+    //             method: 'GET',
+    //             credentials: 'same-origin',
+    //             headers: {'Content-Type': 'application/json'}
+    //         });
+    //     }
+    //     catch {
+    //
+    //     }
+    // }
+
+    renderControl() {
+        const li = document.createElement('li');
+        li.classList.add('widget-menu-item', 'text-white');
+        const span = document.createElement('span');
+        span.innerText = this.name;
+        const btn = document.createElement('button');
+        btn.classList.add('btn', 'btn-light', 'btn-sm');
+        const i = document.createElement('i');
+        i.classList.add('fas', 'fa-plus');
+        btn.append(i);
+        btn.addEventListener('click',  () => {
+            console.log(this.id);
+        });
+        li.append(span, btn);
+        widgetsSidebar.append(li);
     }
     
-    render() {
+    renderBody() {
         this.widget.classList.add('card');
         const header = document.createElement('div');
         header.classList.add('card-header');
@@ -131,6 +168,10 @@ class Widget {
         this.widget.appendChild(body);
         widgetsWrapper.appendChild(this.widget);
     }
+
+    async init() {
+        this.renderBody();
+    }
     
     save() {
     
@@ -138,8 +179,21 @@ class Widget {
 }
 
 class TimeWidget extends Widget {
-    constructor() {
-        super();
-        this.name = 'Текущее время'
+    constructor(widgetID, name) {
+        super(widgetID, name);
+    }
+}
+
+class Weather extends Widget {
+    constructor(widgetID, name) {
+        super(widgetID, name);
+    }
+
+}
+
+class NotInitedWidget extends Widget {
+    constructor(widgetID, name) {
+        super(widgetID, name);
+        this.notActive = true;
     }
 }
