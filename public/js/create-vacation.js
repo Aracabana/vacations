@@ -143,7 +143,10 @@ class Map {
             fillOpacity: 0.7
         };
         this.options = {
-            tilesUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            tilesUrls: [
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=bedcbe351dba38c968e2b2e42d5d3040'
+            ],
             init: {
                 maxZoom: 18
             }
@@ -153,7 +156,9 @@ class Map {
         try {
             mapWrapper.hidden = false;
             this.map = L.map('map').setView(this.latlng, 6);
-            L.tileLayer(this.options.tilesUrl, this.options.init).addTo(this.map);
+            this.options.tilesUrls.forEach(tile => {
+                L.tileLayer(tile, this.options.init).addTo(this.map);
+            });
             const url = `/api/getGeoJSON?countryCode=${this.countryCode.toUpperCase()}`;
             const responsePolygon = await fetch(url);
             if (responsePolygon.status === 500) {
