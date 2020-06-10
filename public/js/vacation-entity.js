@@ -39,7 +39,7 @@ class Vacation {
         let country;
         try {
             country = new Country(this.countryCode);
-            await country.loadData(['latlng', 'languages', 'flag']);
+            await country.loadData(['latlng', 'languages', 'flag', 'callingCodes', 'borders', 'currencies']);
         } catch (err) {
             console.log('Доп. данные не загружены');
         }

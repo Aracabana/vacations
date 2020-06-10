@@ -40,6 +40,7 @@ class VacationPage extends Vacation {
     constructor(vacation) {
         super(vacation);
         this.widgets = [];
+        console.log(this);
     }
 
     renderInfo() {
@@ -73,13 +74,13 @@ class VacationPage extends Vacation {
                         widget.init();
                     }
                     if (item.id === 2) {
-                        item.bbox = {
-                            west: this.countryInfo.west,
-                            north: this.countryInfo.north,
-                            south: this.countryInfo.south,
-                            east: this.countryInfo.east
-                        }
+                        item.additional = this.countryInfo.additional;
                         widget = new WeatherWidget(item, this.id);
+                        widget.init();
+                    }
+                    if (item.id === 3) {
+                        item.info = this.countryInfo;
+                        widget = new InfoWidget(item, this.id);
                         widget.init();
                     }
                     this.widgets.push(widget);
@@ -124,7 +125,8 @@ class Widget {
         this.vacationId = vacationId;
         this.isActive = widgetData.isActive;
         this.spinner = '';
-        this.widgetCard = '';
+        this.widgetCardWrapper = '';
+        this.widgetCardClasses = ['col-12', 'col-md-6', 'col-lg-3'];
         this.body = '';
         this.headerControls = [
             {classes: [ 'fa-expand-alt', 'text-secondary'], action: this.expand},
@@ -144,9 +146,6 @@ class Widget {
     async sendRequest(url, method) {
         if (!this.requestLoader) {
             this.requestLoader = true;
-            if(this.spinner) {
-                this.spinner.hidden = false;
-            }
             try {
                 const responseData = { widgetId: this.id, vacationId: this.vacationId };
                 const response = await fetch(url, {
@@ -167,9 +166,6 @@ class Widget {
                 setServerFeedback({ok: false, caption: err.message});
             } finally {
                 this.requestLoader = false;
-                if(this.spinner) {
-                    this.spinner.hidden = true;
-                }
             }
         }
         return false;
@@ -178,8 +174,8 @@ class Widget {
     async removeFromDashboard() {
         const result = await this.sendRequest('/api/removeWidget', 'DELETE');
         if (result) {
-            this.widgetCard.remove();
-            this.widgetCard = '';
+            this.widgetCardWrapper.remove();
+            this.widgetCardWrapper = '';
             this.body = '';
             this.isActive = false;
         }
@@ -206,7 +202,7 @@ class Widget {
         btn.append(i);
         return {btn, span, li};
     }
-    renderHeader(parent) {
+    renderHeader() {
         const header = document.createElement('div');
         header.classList.add('card-header', 'widget-header');
         
@@ -230,17 +226,17 @@ class Widget {
         });
         
         header.appendChild(headerControls);
-        parent.appendChild(header);
+        this.widgetCard.appendChild(header);
     }
-    renderBody(parent) {
+    renderBody() {
         this.body = document.createElement('div');
         this.body.classList.add('card-body');
-        this.createSpinner();
-        parent.appendChild(this.body);
+        this.widgetCard.appendChild(this.body);
     }
     renderEmptyWidgetContent() {
-        const err = document.createElement('span');
-        err.innerText = this.data;
+        const err = document.createElement('p');
+        err.innerHTML = this.data;
+        err.classList.add('empty-widget');
         this.body.append(err);
     }
 
@@ -255,25 +251,23 @@ class Widget {
         span.innerText = 'Loading...';
         spinnerBody.append(span);
         this.spinner.append(spinnerBody);
-        this.widgetCard.append(this.spinner);
+        this.widgetCardWrapper.append(this.spinner);
     }
 
     async setData(url = undefined) {
         if (!url) {
-            this.data = 'Данных для виджета нет';
+            this.data = '<i class="far fa-2x fa-sad-tear"></i> ' +
+                '<span>Не удалось получить данные для виджета</span>';
             return;
         }
         let data;
         try {
-            this.spinner.hidden = false;
             data = await this.loadData(url);
             if (typeof data === 'string') {
                 throw new Error(data);
             }
         } catch (err) {
             data = err.message;
-        } finally {
-            this.spinner.hidden = true;
         }
         this.data = data;
     }
@@ -287,28 +281,27 @@ class Widget {
     }
 
     render () {
+        this.preload();
+        this.renderHeader();
+        this.renderBody();
+        this.widgetCardWrapper.appendChild(this.widgetCard);
+    }
+    
+    preload() {
+        this.widgetCardWrapper = document.createElement('div');
+        this.widgetCardWrapper.classList.add(...this.widgetCardClasses, 'widget-card-wrapper');
         this.widgetCard = document.createElement('div');
-        this.widgetCard.classList.add('col-12', 'col-md-6', 'col-lg-4', 'widget-card-wrapper');
-        const widget = document.createElement('div');
-        widget.classList.add('card', 'widget-card');
-        this.renderHeader(widget);
-        this.renderBody(widget);
-        this.widgetCard.appendChild(widget);
-        // const x = new Promise((res, rej) => {
-        //     setTimeout(() => {
-        //         res(this.constructor.name);
-        //     }, this.time)
-        // });
-        // x.then(result => {
-        //     console.log(result);
-        // });
+        this.widgetCard.classList.add('card', 'widget-card');
+        this.createSpinner();
+        this.spinner.hidden = false;
+        widgetsWrapper.appendChild(this.widgetCardWrapper);
     }
 }
 
 class TimeWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
-        this.latlng = (widgetData.additional) ? widgetData.additional.latlng : undefined;
+        this.url = (widgetData.additional) ? `http://api.openweathermap.org/data/2.5/weather?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
         this.headerControls[2].action = this.removeFromDashboard;
     }
 
@@ -321,6 +314,7 @@ class TimeWidget extends Widget {
     async removeFromDashboard() {
         const result = await super.removeFromDashboard();
         if (result) {
+            clearInterval(this.interval);
             await this.init();
         }
     }
@@ -334,14 +328,27 @@ class TimeWidget extends Widget {
     }
 
     async render() {
-        let url;
-        if (this.latlng) {
-            url = `http://api.geonames.org/timezoneJSON?lat=${this.latlng[0]}&lng=${this.latlng[1]}&username=antondrik`;
-        }
         await super.render();
-        await super.setData(url);
+        await super.setData(this.url);
         this.showWidgetContent();
-        widgetsWrapper.appendChild(this.widgetCard);
+        setTimeout(() => {
+            this.spinner.hidden = true;
+        });
+    }
+    
+    calculateTime(timeOffset) {
+        const date = new Date();
+        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds() + timeOffset, 0);
+    }
+    calculateSun(ms, timeOffset) {
+        const date = new Date(ms * 1000);
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getUTCSeconds() + timeOffset, 0).toUTCString().split(' ')[4];
+    }
+    timer(date, timeHTML) {
+        this.interval = setInterval(() => {
+            date.setSeconds(date.getSeconds() + 1);
+            timeHTML.innerHTML = date.toLocaleTimeString();
+        }, 1000);
     }
 
     showWidgetContent() {
@@ -349,10 +356,28 @@ class TimeWidget extends Widget {
             super.renderEmptyWidgetContent();
             return;
         }
-        const time = document.createElement('span');
-        const date = new Date(this.data.time);
-        time.innerText = date.toLocaleTimeString();
-        this.body.append(time);
+        const timeHTML = document.createElement('p');
+        timeHTML.classList.add('time', 'text-center');
+        const time =  this.calculateTime(this.data.timezone);
+        timeHTML.innerText = time.toLocaleTimeString();
+        this.timer(time, timeHTML);
+        this.body.append(timeHTML);
+        const sunInfo = document.createElement('div');
+        sunInfo.classList.add('time-sun-info');
+        const sunInfoItems = [
+            {name: 'sunrise', class: 'fas', caption: 'Восход'},
+            {name: 'sunset', class: 'far', caption: 'Закат'}
+        ];
+        for (let i = 0; i < sunInfoItems.length; i++) {
+            const sunInfoItem = document.createElement('p');
+            const time = this.calculateSun(this.data.sys[sunInfoItems[i].name], this.data.timezone);
+            sunInfoItem.innerHTML = `
+                <i class="${sunInfoItems[i].class} fa-sun"></i>
+                <strong>${sunInfoItems[i].caption}: </strong> ${time}
+            `;
+            sunInfo.appendChild(sunInfoItem);
+        }
+        this.body.append(sunInfo);
     }
 
     async init() {
@@ -367,8 +392,9 @@ class TimeWidget extends Widget {
 class WeatherWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
-        this.bbox = widgetData.bbox;
+        this.url = (widgetData.additional) ? `http://api.openweathermap.org/data/2.5/forecast?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
         this.headerControls[2].action = this.removeFromDashboard;
+        this.widgetCardClasses = ['col-12', 'col-lg-8'];
     }
 
     async addToDashboard(li) {
@@ -393,12 +419,12 @@ class WeatherWidget extends Widget {
     }
 
     async render() {
-        let url;
-        url = `http://api.geonames.org/weatherJSON?north=${this.bbox.north}&south=${this.bbox.south}&east=${this.bbox.east}&west=${this.bbox.west}&lang=ru&username=antondrik`;
         await super.render();
-        await super.setData(url);
+        await super.setData(this.url);
         this.showWidgetContent();
-        widgetsWrapper.appendChild(this.widgetCard);
+        setTimeout(() => {
+            this.spinner.hidden = true;
+        });
     }
 
     showWidgetContent() {
@@ -406,18 +432,153 @@ class WeatherWidget extends Widget {
             super.renderEmptyWidgetContent();
             return;
         }
-        console.log(this.data);
-        // const time = document.createElement('span');
-        // const date = new Date(this.data.time);
-        // time.innerText = date.toLocaleTimeString();
-        // this.body.append(time);
+        const weatherCardRow = document.createElement('div');
+        weatherCardRow.classList.add('row');
+        this.body.append(weatherCardRow);
+        for (let i = 0; i < 4; i++) {
+            const list = this.data.list[i];
+            const weatherItem = document.createElement('div');
+            weatherItem.classList.add('weather-item', 'col-12', 'col-sm-6');
+            weatherItem.innerHTML = `
+                <p class="weather-date"><strong>${new Date(list.dt_txt).toLocaleDateString()}</strong></p>
+                <p class="weather-item-time"><strong>${list.dt_txt.substring(11, 16)}</strong></p>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="weather-item-temp">${list.main.temp}°C</p>
+                        <p><strong>Ощущается как: </strong> ${list.main.feels_like}°C</p>
+                        <p><strong>Влажность: </strong> ${list.main.humidity} %</p>
+                        <p><strong>Давление: </strong> ${list.main.pressure} мм рт. ст.</p>
+                    </div>
+                    <div class="col-6">
+                        <p><img src="http://openweathermap.org/img/w/${list.weather[0].icon}.png" alt=""></p>
+                        <p>${list.weather[0].description}</p>
+                        <p><strong>Скорость ветра: </strong> ${list.wind.speed} м/с</p>
+                    </div>
+                </div>`;
+            weatherCardRow.append(weatherItem);
+        }
     }
 
     async init() {
         if (this.isActive) {
-            await this.render();
+                await this.render();
+                return;
+            }
+        this.renderControl();
+    }
+}
+
+class InfoWidget extends Widget {
+    constructor(widgetData, vacationId) {
+        super(widgetData, vacationId);
+        this.info = widgetData.info;
+        this.headerControls[2].action = this.removeFromDashboard;
+        this.widgetCardClasses = ['col-12', 'col-lg-7', 'country-info'];
+    }
+    
+    async addToDashboard(li) {
+        const result = await super.addToDashboard(li);
+        if(result) {
+            await this.init();
+        }
+    }
+    async removeFromDashboard() {
+        const result = await super.removeFromDashboard();
+        if (result) {
+            await this.init();
+        }
+    }
+    renderControl() {
+        const {btn, span, li } = super.renderControl();
+        btn.addEventListener('click',  async () => {
+            await this.addToDashboard(li);
+        });
+        li.append(span, btn);
+        widgetsSidebar.append(li);
+    }
+    
+    async render() {
+        await super.render();
+        await this.showWidgetContent();
+        setTimeout(() => {
+            this.spinner.hidden = true;
+        });
+    }
+    
+    getAdditionalInfo(options, params) {
+        if (this.info.additional) {
+            let additionalInfo = '';
+            this.info.additional[options].forEach(option => {
+                let values =  params.map(param => (typeof option === 'object') ? option[param] : option);
+                values = (values.length > 1) ? values.join(', ') : values[0];
+                additionalInfo += `<span>${values}</span>`;
+            });
+            return additionalInfo;
+        }
+        return `<i class="far fa-sad-tear"></i> Не удалось загрузить`;
+    }
+    
+    getMap() {
+        let map;
+        if (this.info.additional) {
+            map = new Map(this.info.additional.latlng, this.info.isoAlpha3);
+            return map;
+        }
+        return '<i class="far fa-2x fa-sad-tear"></i> <span>Не удалось загрузить карту</span>';
+    }
+    
+    async showWidgetContent() {
+        if (typeof this.data === 'string') {
+            super.renderEmptyWidgetContent();
             return;
         }
-        this.renderControl();
+        let languages = this.getAdditionalInfo('languages', ['name']);
+        let currencies = this.getAdditionalInfo('currencies', ['name', 'symbol']);
+        let callingCodes = this.getAdditionalInfo('callingCodes', ['name']);
+        const map = this.getMap();
+        
+        const countryInfoRow = document.createElement('div');
+        countryInfoRow.classList.add('row');
+        const countryInfoColLeft = document.createElement('div');
+        countryInfoColLeft.classList.add('col-12', 'col-lg-5');
+        countryInfoColLeft.innerHTML = `
+            <p><strong>Столица: </strong><span>${this.info.capital}</span></p>
+            <p><strong>Население: </strong><span>${this.info.population} чел.</span></p>
+            <p><strong>Площадь: </strong><span>${this.info.areaInSqKm} км <sup>2</sup></span></p>
+            <p><strong>Телефонный код: </strong><span>${callingCodes}</span></p>
+            <p><strong>Языки: </strong><span>${languages}</span></p>
+            <p><strong>Валюта: </strong><span>${currencies}</span></p>
+        `;
+        countryInfoRow.appendChild(countryInfoColLeft);
+        
+        const countryInfoColRight = document.createElement('div');
+        countryInfoColRight.classList.add('col-12', 'col-lg-7');
+        
+        const mapWrapper = document.createElement('div');
+        mapWrapper.id = 'map';
+        countryInfoColRight.appendChild(mapWrapper);
+        countryInfoRow.appendChild(countryInfoColRight);
+        this.body.appendChild(countryInfoRow);
+        if (typeof map !== 'string') {
+            setTimeout(async () => {
+                await map.load(mapWrapper);
+            });
+        } else {
+            mapWrapper.classList.add('empty-map');
+            mapWrapper.innerHTML = map;
+        }
+    }
+    
+    async init() {
+        try {
+            if (this.isActive) {
+                await this.render();
+                return;
+            }
+            this.renderControl();
+        } finally {
+        
+        }
+        
     }
 }
