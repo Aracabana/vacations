@@ -6,7 +6,7 @@ async function validate(login, password) {
         throw new Error('Не все поля заполнены');
     }
     try {
-        const user = await User.getUser('login',login);
+        const user = await User.getOne('login',login);
         if (user) {
             try {
                 const isValid = await bcrypt.compare(password, user.password);

@@ -1,21 +1,19 @@
 const express                   = require('express');
-const router                    = express.Router();
+const widgetsRouter             = require('./widgets/widgets.router');
 const {
     apiController,
-    vacationController,
-    widgetController
+    vacationController
 }                               = require('../controllers');
+const router                    = express.Router();
 
+router.use('/widgets', widgetsRouter);
 
 router.get('/getVacations', vacationController.getAll);
 router.get('/getVacation', vacationController.getOne);
+
 router.get('/getGeoJSON', apiController.getGeoJSON);
-router.get('/getWidgets', widgetController.getAll);
 
 router.post('/getCountry', apiController.getCountry);
-router.post('/saveWidget', widgetController.insert);
-
-router.delete('/removeWidget', widgetController.remove);
 
 
 module.exports = router;

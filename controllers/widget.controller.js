@@ -1,4 +1,4 @@
-const { ActiveWidgets } = require('../models');
+const { ActiveWidgets, BudgetWidget } = require('../models');
 
 async function insert(request, response) {
     const { vacationId, widgetId } = request.body;
@@ -37,4 +37,14 @@ async function getAll (request, response) {
     }
 }
 
-module.exports = { insert, remove, getAll };
+async function getBudgetInfoByVacationId(request, response) {
+    const { vacationId } = request.query;
+    try {
+        const info = await BudgetWidget.getInfoByVacationId(vacationId);
+        response.json({ok: true, info});
+    } catch (err) {
+        response.json({ok: false, caption: err.message});
+    }
+}
+
+module.exports = { insert, remove, getAll, getBudgetInfoByVacationId };

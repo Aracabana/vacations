@@ -56,6 +56,16 @@ body {
 
 /****MAIN****/
 /*Header*/
+.header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    + .page-wrapper {
+        padding-top: 80px;
+    }
+}
 .avatar {
     margin-right: 8px;
     .border-radius(50%);
@@ -176,13 +186,10 @@ body {
 
 /*Vacation*/
 .vacation-page {
-    .flex();
-    .flex-start();
-    height: -webkit-calc(100vh - 54px);
-    height: calc(100vh - 54px);
+    padding-top: 54px;
     &-main {
         position: relative;
-        padding: 16px 0;
+        padding: 16px 0 16px 250px;
         .flex-grow(1);
     }
 }
@@ -197,10 +204,13 @@ body {
     }
 }
 .widget-menu-wrapper {
-    .flex-grow(0);
-    .flex-shrink(0);
+    position: fixed;
+    top: 54px;
+    left: 0;
+    z-index: 90;
     padding-top: 16px;
     width: 250px;
+    height: 100%;
     background-color: #3c4146;
 }
 .widget-menu {
@@ -238,7 +248,13 @@ body {
         margin-right: 24px;
     }
 }
+.weather-item-header {
+    .flex();
+    .flex-start();
+    .align-items-center();
+}
 .weather-date {
+    margin-right: 16px;
     font-weight: bold;
     font-size: 1.2em;
 }
@@ -273,4 +289,62 @@ body {
     span {
         display: block;
     }
+}
+.budget-category {
+    margin-bottom: 1em;
+}
+
+/*=POPUP=*/
+.popup-bg {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 110;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: rgba(0,0,0,0.75);
+}
+.popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    max-width: 475px;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+.popup-content {
+    position: relative;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin: 0 auto;
+    padding: 40px 32px 32px;
+    background-color: #ffffff;
+}
+.popup-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    .flex();
+    .flex-center();
+    .align-items-center();
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    color: #343a40;
+    cursor: pointer;
+    .transition();
+    &:hover, &:active, &:focus {
+        color: #007bff;
+    }
+}
+.popup-title {
+    margin-bottom: 32px;
 }

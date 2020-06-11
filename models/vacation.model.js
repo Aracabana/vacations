@@ -12,6 +12,17 @@ async function insert(vacation, userId) {
     }
 }
 
+async function edit(dateFrom, dateTo, vacationId, userId) {
+    const sql = 'UPDATE vacations SET dateFrom = ?, dateTo = ? WHERE id = ?';
+    try {
+        const result = await connection.query(sql, [dateFrom, dateTo, vacationId]);
+        const record = await this.getOneById(vacationId, userId);
+        return record;
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function remove(id) {
     const sql = 'DELETE  FROM vacations WHERE id = ?';
     try {
@@ -33,7 +44,7 @@ async function getAllByUserId(userId) {
     }
 }
 
-async function getVacationByDate(dateFrom, dateTo) {
+async function getOneByDate(dateFrom, dateTo) {
     const sql = 'SELECT * FROM vacations WHERE dateFrom = ? and dateTo = ?';
     try {
         const result = await connection.query(sql, [dateFrom, dateTo]);
@@ -45,16 +56,16 @@ async function getVacationByDate(dateFrom, dateTo) {
     }
 }
 
-async function getVacationById(id, user_id) {
+async function getOneById(id, userId) {
     const sql = 'SELECT * FROM vacations WHERE id = ? AND user_id = ?';
     try {
-        const result = await connection.query(sql, [id, user_id]);
+        const result = await connection.query(sql, [id, userId]);
         const vacation = JSON.parse(JSON.stringify(result[0]));
         return vacation[0];
     }
     catch (err) {
-        if (err) throw err;
+        throw err;
     }
 }
 
-module.exports = { insert, remove, getAllByUserId, getVacationByDate, getVacationById };
+module.exports = { insert, edit, remove, getAllByUserId, getOneByDate, getOneById };

@@ -123,20 +123,20 @@ class VacationsTable extends Vacations {
         span.innerText = data;
         parent.appendChild(span);
     }
-    createActionCell(parent, vacation) {
+    createActionCell(parent) {
         const td = document.createElement('td');
         td.classList.add('action-td');
-        this.createActionBlock(td, vacation);
         parent.appendChild(td);
+        return td;
     }
-    createActionBlock(parent, vacation) {
+    createActionBtns(parent, vacation) {
         const wrapper = document.createElement('div');
         wrapper.classList.add('action-block');
-
+        
         const edit = this.createActionItem(['fa-pen', 'text-warning']);
-        edit.addEventListener('click', function (e) {
+        edit.addEventListener('click', (e) => {
             e.stopPropagation();
-            // window.location.href = '/vacation/' + vacation.id;
+            editPopup('edit-popup', vacation, this.fill.bind(this));
         });
         wrapper.appendChild(edit);
 
@@ -201,7 +201,10 @@ class VacationsTable extends Vacations {
             tr.appendChild(td);
         }
         
-        this.createActionCell(tr, vacation);
+        const td = this.createActionCell(tr, vacation);
+        if (vacation.status !== 'Завершен') {
+            this.createActionBtns(td, vacation);
+        }
     }
 
     fill() {

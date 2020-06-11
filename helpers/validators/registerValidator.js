@@ -15,8 +15,8 @@ async function validate(login, email, password, confirmPassword) {
         throw new Error('Пароли не совпадают');
     }
     try {
-        const userByLogin = await User.getUser('login', login);
-        const userByMail = await User.getUser('email', email);
+        const userByLogin = await User.getOne('login', login);
+        const userByMail = await User.getOne('email', email);
         if (userByLogin) {
             throw new Error('Пользователь с таким логином уже существует');
         }

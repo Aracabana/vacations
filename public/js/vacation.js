@@ -40,7 +40,6 @@ class VacationPage extends Vacation {
     constructor(vacation) {
         super(vacation);
         this.widgets = [];
-        console.log(this);
     }
 
     renderInfo() {
@@ -58,7 +57,7 @@ class VacationPage extends Vacation {
     
     async loadWidgets() {
         try {
-            const url = `/api/getWidgets?vacationId=${this.id}`;
+            const url = `/api/widgets?vacationId=${this.id}`;
             const response = await fetch(url, {
                 method: 'GET',
                 credentials: 'same-origin',
@@ -66,6 +65,7 @@ class VacationPage extends Vacation {
             });
             const data = await response.json();
             if (data.ok) {
+                console.log(data);
                 data.widgets.forEach(item => {
                     let widget;
                     if (item.id === 1) {
@@ -83,6 +83,10 @@ class VacationPage extends Vacation {
                         widget = new InfoWidget(item, this.id);
                         widget.init();
                     }
+                    if (item.id === 4) {
+                        widget = new BudgetWidget(item, this.id);
+                        widget.init();
+                    }
                     this.widgets.push(widget);
                 });
             }
@@ -94,8 +98,15 @@ class VacationPage extends Vacation {
     }
 
     setListeners() {
-        editVacationBtn.addEventListener('click', this.edit.bind(this));
-        removeVacationBtn.addEventListener('click', this.remove.bind(this));
+        editVacationBtn.addEventListener('click',  () => {
+            console.log(this);
+            editPopup('edit-popup', this, () => {
+                dates.innerHTML = `${this.dateFrom} - ${this.dateTo}`;
+            });
+        });
+        removeVacationBtn.addEventListener('click', () => {
+            this.remove.bind(this);
+        });
     }
 
     async remove() {
@@ -114,7 +125,13 @@ class VacationPage extends Vacation {
     async init() {
         this.renderInfo();
         await this.loadWidgets();
-        this.setListeners();
+        if (this.status !== 'Завершен') {
+            this.setListeners();
+        }
+        else {
+            editVacationBtn.remove();
+            removeVacationBtn.remove();
+        }
     }
 }
 
@@ -172,7 +189,7 @@ class Widget {
     }
     
     async removeFromDashboard() {
-        const result = await this.sendRequest('/api/removeWidget', 'DELETE');
+        const result = await this.sendRequest('/api/widgets', 'DELETE');
         if (result) {
             this.widgetCardWrapper.remove();
             this.widgetCardWrapper = '';
@@ -182,7 +199,7 @@ class Widget {
         return result;
     }
     async addToDashboard(li) {
-        const result = await this.sendRequest('/api/saveWidget', 'POST');
+        const result = await this.sendRequest('/api/widgets', 'POST');
         if (result) {
             li.remove();
             this.isActive = true;
@@ -440,12 +457,14 @@ class WeatherWidget extends Widget {
             const weatherItem = document.createElement('div');
             weatherItem.classList.add('weather-item', 'col-12', 'col-sm-6');
             weatherItem.innerHTML = `
-                <p class="weather-date"><strong>${new Date(list.dt_txt).toLocaleDateString()}</strong></p>
-                <p class="weather-item-time"><strong>${list.dt_txt.substring(11, 16)}</strong></p>
+                <div class="weather-item-header">
+                    <p class="weather-date"><strong>${new Date(list.dt_txt).toLocaleDateString()}</strong></p>
+                    <p class="weather-item-time"><strong>${list.dt_txt.substring(11, 16)}</strong></p>
+                </div>
                 <div class="row">
                     <div class="col-6">
-                        <p class="weather-item-temp">${list.main.temp}°C</p>
-                        <p><strong>Ощущается как: </strong> ${list.main.feels_like}°C</p>
+                        <p class="weather-item-temp">${Math.round(list.main.temp)}°C</p>
+                        <p><strong>Ощущается как: </strong> ${Math.round(list.main.feels_like)}°C</p>
                         <p><strong>Влажность: </strong> ${list.main.humidity} %</p>
                         <p><strong>Давление: </strong> ${list.main.pressure} мм рт. ст.</p>
                     </div>
@@ -528,10 +547,6 @@ class InfoWidget extends Widget {
     }
     
     async showWidgetContent() {
-        if (typeof this.data === 'string') {
-            super.renderEmptyWidgetContent();
-            return;
-        }
         let languages = this.getAdditionalInfo('languages', ['name']);
         let currencies = this.getAdditionalInfo('currencies', ['name', 'symbol']);
         let callingCodes = this.getAdditionalInfo('callingCodes', ['name']);
@@ -570,15 +585,123 @@ class InfoWidget extends Widget {
     }
     
     async init() {
-        try {
-            if (this.isActive) {
-                await this.render();
-                return;
-            }
-            this.renderControl();
-        } finally {
-        
+        if (this.isActive) {
+            await this.render();
+            return;
         }
-        
+        this.renderControl();
     }
+}
+
+class BudgetWidget extends Widget {
+    constructor(widgetData, vacationId) {
+        super(widgetData, vacationId);
+        this.url = `/api/widgets/budgetInfo?vacationId=${vacationId}`;
+        this.headerControls[2].action = this.removeFromDashboard;
+        this.widgetCardClasses = ['col-12', 'col-lg-7', 'country-info'];
+    }
+    
+    async addToDashboard(li) {
+        const result = await super.addToDashboard(li);
+        if(result) {
+            await this.init();
+        }
+    }
+    async removeFromDashboard() {
+        const result = await super.removeFromDashboard();
+        if (result) {
+            await this.init();
+        }
+    }
+    renderControl() {
+        const {btn, span, li } = super.renderControl();
+        btn.addEventListener('click',  async () => {
+            await this.addToDashboard(li);
+        });
+        li.append(span, btn);
+        widgetsSidebar.append(li);
+    }
+    
+    adaptData() {
+        const info = this.data.info;
+        const result = [];
+        info.forEach(item => {
+            const category = item.category;
+            const find = result.find(x => x.category === category);
+            if (find) {
+                find.items.push(item);
+            } else {
+                result.push({
+                    category: item.category,
+                    items: [item]
+                });
+            }
+        });
+        this.data = result;
+    }
+    
+    async render() {
+        await super.render();
+        await super.setData(this.url);
+        console.log(this.data);
+        this.adaptData();
+        await this.showWidgetContent();
+        setTimeout(() => {
+            this.spinner.hidden = true;
+        });
+    }
+    
+    async showWidgetContent() {
+        console.log(this.data);
+        for (let i = 0; i < this.data.length; i++) {
+            const budgetCategory = document.createElement('div');
+            budgetCategory.classList.add('budget-category');
+            const budgetCategoryTable = document.createElement('table');
+            budgetCategoryTable.classList.add('table', 'table-bordered', 'table-striped', 'table-hover', 'budget-table');
+            
+            const budgetCategoryThead = document.createElement('thead');
+            budgetCategoryThead.classList.add('thead-dark');
+            const budgetCategoryTheadTr = document.createElement('tr');
+            const budgetCategoryTheadTh1 = document.createElement('th');
+            budgetCategoryTheadTh1.innerHTML = `<span>${this.data[i].category}</span>`;
+            const budgetCategoryTheadTh2 = document.createElement('th');
+            budgetCategoryTheadTr.appendChild(budgetCategoryTheadTh1);
+            budgetCategoryTheadTr.appendChild(budgetCategoryTheadTh2);
+            budgetCategoryThead.appendChild(budgetCategoryTheadTr);
+            budgetCategoryTable.appendChild(budgetCategoryThead);
+    
+            const budgetCategoryBtn = document.createElement('button');
+            budgetCategoryBtn.classList.add('btn', 'btn-success', 'btn-sm');
+            budgetCategoryBtn.type = 'button';
+            budgetCategoryBtn.innerHTML = '<i class="fas fa-plus"></i>';
+            budgetCategoryTheadTh1.appendChild(budgetCategoryBtn);
+            
+            const budgetCategoryTbody = document.createElement('tbody');
+            
+            for (let j = 0; j < this.data[i].items.length; j++) {
+                const budgetCategoryTbodyTr = document.createElement('tr');
+                const budgetCategoryTbodyTd1 = document.createElement('td');
+                budgetCategoryTbodyTd1.innerText = this.data[i].items[j].name;
+                const budgetCategoryTbodyTd2 = document.createElement('td');
+                budgetCategoryTbodyTd2.innerText = this.data[i].items[j].price;
+                budgetCategoryTbodyTr.appendChild(budgetCategoryTbodyTd1);
+                budgetCategoryTbodyTr.appendChild(budgetCategoryTbodyTd2);
+                budgetCategoryTbody.appendChild(budgetCategoryTbodyTr);
+            }
+            
+            budgetCategoryTable.appendChild(budgetCategoryTbody);
+            budgetCategory.appendChild(budgetCategoryTable);
+    
+            this.body.appendChild(budgetCategory);
+        }
+    }
+    
+    async init() {
+        if (this.isActive) {
+            await this.render();
+            return;
+        }
+        this.renderControl();
+    }
+    
 }

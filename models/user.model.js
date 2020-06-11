@@ -14,7 +14,7 @@ async function insert(user) {
     }
 }
 
-async function getUser(field = 'login', value) {
+async function getOne(field = 'login', value) {
     const sql = `SELECT * FROM users WHERE users.${field} = ?`;
     try {
         const result = await connection.query(sql, [value]);
@@ -25,4 +25,4 @@ async function getUser(field = 'login', value) {
     }
 }
 
-module.exports = {insert, getUser}
+module.exports = {insert, getOne}
