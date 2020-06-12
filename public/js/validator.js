@@ -29,7 +29,7 @@ function matchPasswords(password, confirmPassword) {
 function checkPattern(input, pattern) {
     const regExp = new RegExp(pattern, 'gi');
     if (!regExp.test(input.value)) {
-        return 'Неверный E-mail';
+        return 'Неверный формат данных';
     }
 }
 

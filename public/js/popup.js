@@ -41,9 +41,11 @@ popupCloseBtn.addEventListener('click', function () {
 });
 // document.addEventListener('mouseup', function(e) {
 //     const popup = document.querySelector('.js-popup');
-//     const popupWrapper = document.querySelector('.js-popup-wrapper');
-//     if (e.target !== popup) {
-//         closePopup(popupWrapper);
+//     let target = e.target;
+//     let its_popup = target === popup || popup.contains(target);
+//
+//     if (!its_popup) {
+//         closePopup();
 //     }
 // });
 document.addEventListener('keyup', function(e) {

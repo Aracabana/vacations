@@ -6,7 +6,9 @@ async function insert(request, response) {
         const result = await ActiveWidgets.insert(vacationId, widgetId);
         if (result) {
            response.json({ok: true});
+           return;
         }
+        throw new Error('Ошибка сервера');
     } catch (err) {
         response.json({ok: false, caption: err.message});
     }
@@ -47,4 +49,18 @@ async function getBudgetInfoByVacationId(request, response) {
     }
 }
 
-module.exports = { insert, remove, getAll, getBudgetInfoByVacationId };
+async function insertBudgetInfo(request, response) {
+    const { data, vacationId } = request.body;
+    try {
+        const result = await BudgetWidget.insert(data.categoryId, data.name, data.price, vacationId);
+        if (result) {
+            response.json({ok: true});
+            return;
+        }
+        throw new Error('Ошибка сервера');
+    } catch (err) {
+        response.json({ok: false, caption: err.message});
+    }
+}
+
+module.exports = { insert, remove, getAll, getBudgetInfoByVacationId, insertBudgetInfo };

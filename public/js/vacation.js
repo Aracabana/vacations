@@ -160,11 +160,15 @@ class Widget {
         console.log('expand');
     }
     
-    async sendRequest(url, method) {
+    async sendRequest(url, method, additionalData = undefined) {
         if (!this.requestLoader) {
             this.requestLoader = true;
             try {
-                const responseData = { widgetId: this.id, vacationId: this.vacationId };
+                const responseData = {
+                    widgetId: this.id,
+                    vacationId: this.vacationId,
+                    data: additionalData
+                };
                 const response = await fetch(url, {
                     method: method,
                     credentials: 'same-origin',
@@ -598,7 +602,7 @@ class BudgetWidget extends Widget {
         super(widgetData, vacationId);
         this.url = `/api/widgets/budgetInfo?vacationId=${vacationId}`;
         this.headerControls[2].action = this.removeFromDashboard;
-        this.widgetCardClasses = ['col-12', 'col-lg-7', 'country-info'];
+        this.widgetCardClasses = ['col-12', 'col-lg-4', 'budget'];
     }
     
     async addToDashboard(li) {
@@ -623,21 +627,7 @@ class BudgetWidget extends Widget {
     }
     
     adaptData() {
-        const info = this.data.info;
-        const result = [];
-        info.forEach(item => {
-            const category = item.category;
-            const find = result.find(x => x.category === category);
-            if (find) {
-                find.items.push(item);
-            } else {
-                result.push({
-                    category: item.category,
-                    items: [item]
-                });
-            }
-        });
-        this.data = result;
+        this.data = this.data.info;
     }
     
     async render() {
@@ -653,47 +643,77 @@ class BudgetWidget extends Widget {
     
     async showWidgetContent() {
         console.log(this.data);
+        const budgetCategoriesWrapper = document.createElement('div');
+        budgetCategoriesWrapper.classList.add('budget-categories-wrapper');
         for (let i = 0; i < this.data.length; i++) {
-            const budgetCategory = document.createElement('div');
-            budgetCategory.classList.add('budget-category');
-            const budgetCategoryTable = document.createElement('table');
-            budgetCategoryTable.classList.add('table', 'table-bordered', 'table-striped', 'table-hover', 'budget-table');
-            
-            const budgetCategoryThead = document.createElement('thead');
-            budgetCategoryThead.classList.add('thead-dark');
-            const budgetCategoryTheadTr = document.createElement('tr');
-            const budgetCategoryTheadTh1 = document.createElement('th');
-            budgetCategoryTheadTh1.innerHTML = `<span>${this.data[i].category}</span>`;
-            const budgetCategoryTheadTh2 = document.createElement('th');
-            budgetCategoryTheadTr.appendChild(budgetCategoryTheadTh1);
-            budgetCategoryTheadTr.appendChild(budgetCategoryTheadTh2);
-            budgetCategoryThead.appendChild(budgetCategoryTheadTr);
-            budgetCategoryTable.appendChild(budgetCategoryThead);
-    
-            const budgetCategoryBtn = document.createElement('button');
-            budgetCategoryBtn.classList.add('btn', 'btn-success', 'btn-sm');
-            budgetCategoryBtn.type = 'button';
-            budgetCategoryBtn.innerHTML = '<i class="fas fa-plus"></i>';
-            budgetCategoryTheadTh1.appendChild(budgetCategoryBtn);
-            
-            const budgetCategoryTbody = document.createElement('tbody');
-            
-            for (let j = 0; j < this.data[i].items.length; j++) {
-                const budgetCategoryTbodyTr = document.createElement('tr');
-                const budgetCategoryTbodyTd1 = document.createElement('td');
-                budgetCategoryTbodyTd1.innerText = this.data[i].items[j].name;
-                const budgetCategoryTbodyTd2 = document.createElement('td');
-                budgetCategoryTbodyTd2.innerText = this.data[i].items[j].price;
-                budgetCategoryTbodyTr.appendChild(budgetCategoryTbodyTd1);
-                budgetCategoryTbodyTr.appendChild(budgetCategoryTbodyTd2);
-                budgetCategoryTbody.appendChild(budgetCategoryTbodyTr);
+            let categoryTbodyRows = [];
+            if (this.data[i].items) {
+                for (let j = 0; j < this.data[i].items.length; j++) {
+                    const categoryTbodyRow = `<tr>
+                    <td>${this.data[i].items[j].name}</td>
+                    <td class="budget-table-price-cell">${this.data[i].items[j].price}</td>
+                </tr>`
+                    categoryTbodyRows.push(categoryTbodyRow);
+                }
             }
             
-            budgetCategoryTable.appendChild(budgetCategoryTbody);
-            budgetCategory.appendChild(budgetCategoryTable);
+            const budgetCategory = document.createElement('div');
+            budgetCategory.classList.add('budget-category');
+            
+            budgetCategory.innerHTML = `
+            <table class="budget-table table table-bordered table-striped table-hover table-sm">
+                <thead class="thead-dark">
+                <tr>
+                    <th class="budget-table-header-cell">
+                        <span>${this.data[i].category}</span>
+                    </th>
+                    <th class="budget-table-price-cell">${this.data[i].sum}</th>
+                </tr>
+                </thead>
+                <tbody class="budget-table-body">${categoryTbodyRows.join('')}</tbody>
+            </table>
+            <form novalidate id="form-${this.data[i].id}" class="budget-category-form form-group">
+                <input type="text" id="budget-name-${i}" class="form-control form-control-sm budget-category-form-name" name="budget-category-name" placeholder="Название" required>
+                <input type="text" id="budget-price-${i}" class="form-control form-control-sm budget-category-form-price" name="budget-category-price" placeholder="Сумма" required data-pattern="^\\d+$">
+                <button class="btn btn-sm btn-success budget-category-form-submit" type="submit"><i class="fas fa-plus"></i></button>
+                <div class="invalid-feedback"></div>
+            </form>`;
+            const budgetHeader = budgetCategory.querySelector('.budget-table-header-cell');
+            const budgetSumHtml = budgetCategory.querySelector('.budget-table-price-cell');
+            const budgetTableBody = budgetCategory.querySelector('.budget-table-body');
+            const form = budgetCategory.querySelector('form');
+            setValidateListeners(form);
+            const submitBtn = budgetCategory.querySelector('.budget-category-form-submit');
+            submitBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const error = validate(form);
+                if (error) return;
+                const name = form.querySelector('#budget-name-'+ i).value;
+                const price = form.querySelector('#budget-price-'+ i).value;
+                const formData = { name, price, categoryId: this.data[i].id };
+                const result = await this.sendRequest('/api/widgets/saveBudgetInfo', 'POST', formData);
+                if (result) {
+                    const categoryTbodyRow = `<tr>
+                        <td>${name}</td>
+                        <td class="budget-table-price-cell">${price}</td>
+                    </tr>`
+                    const updatedSum = Number(budgetSumHtml.innerText) + Number(price);
+                    budgetSumHtml.innerHTML = updatedSum;
+                    budgetTableBody.innerHTML += categoryTbodyRow;
+                    setServerFeedback({ok: true, caption: 'Запись успешно добавлена'});
+                }
+            });
     
-            this.body.appendChild(budgetCategory);
+            budgetHeader.addEventListener('click', function() {
+                this.classList.toggle('open');
+                budgetTableBody.classList.toggle('open');
+                form.classList.toggle('open');
+            });
+    
+            budgetCategoriesWrapper.appendChild(budgetCategory);
         }
+        
+        this.body.appendChild(budgetCategoriesWrapper);
     }
     
     async init() {

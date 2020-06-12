@@ -125,11 +125,20 @@ body.main-body {
   right: 0;
   top: 0;
   bottom: 0;
+  z-index: 99;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
   align-items: center;
   background-color: #f6f6f669;
-  z-index: 999;
 }
 .flag {
   position: relative;
@@ -228,6 +237,7 @@ body.main-body {
   margin-top: 32px;
 }
 #map {
+  z-index: 1;
   height: 300px;
 }
 /*Vacation*/
@@ -389,7 +399,79 @@ body.main-body {
   display: block;
 }
 .budget-category {
-  margin-bottom: 1em;
+  margin-bottom: 32px;
+}
+.budget-table-body {
+  display: none;
+}
+.budget-table-body.open {
+  display: table-row-group;
+}
+.budget-table-price-cell {
+  width: 80px;
+  text-align: right;
+}
+.budget-table-header-cell {
+  cursor: pointer;
+}
+.budget-table-header-cell span::before {
+  content: '\f107';
+  margin-right: 8px;
+  font-family: "Font Awesome 5 Free";
+}
+.budget-table-header-cell.open span::before {
+  content: '\f106';
+  font-family: "Font Awesome 5 Free";
+}
+.budget-categories-wrapper {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 469px;
+}
+.budget-category-form {
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  display: none;
+}
+.budget-category-form.open {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.budget-category-form input {
+  margin-right: 8px;
+}
+.budget-category-form .btn {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-box-flex: 0;
+  -webkit-flex-grow: 0;
+  -ms-flex-positive: 0;
+  flex-grow: 0;
+  width: 32px;
+}
+.budget-category-form .invalid-feedback {
+  width: 100%;
+}
+.budget-category-form-name {
+  width: calc(100% - 128px);
+}
+.budget-category-form-price {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-box-flex: 0;
+  -webkit-flex-grow: 0;
+  -ms-flex-positive: 0;
+  flex-grow: 0;
+  width: 80px;
 }
 /*=POPUP=*/
 .popup-bg {
