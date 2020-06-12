@@ -1,10 +1,10 @@
-function formatDate(date) {
+export function formatDate(date) {
     const year = date.getFullYear();
     const month = (date.getMonth() < 10) ? '0' + (date.getMonth() + 1) : date.getMonth();
     const day = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
     return `${year}-${month}-${day}`;
 }
-function setDatePickersOptions() {
+export function setDatePickersOptions() {
     const now = new Date();
     const vacationDateFrom = document.querySelector('#dateFrom');
     const vacationDateTo = document.querySelector('#dateTo');

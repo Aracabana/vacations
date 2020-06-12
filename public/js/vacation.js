@@ -1,3 +1,9 @@
+import setServerFeedback from "./helpers/server-feedback";
+import Vacation from "./entities/vacation-entity";
+import { setValidateListeners, validate } from "./helpers/validator";
+import editPopup from "./helpers/popup";
+import Map from "./entities/map-entity";
+
 const title = document.querySelector('#vacation-country');
 const dates = document.querySelector('#vacation-dates');
 const editVacationBtn = document.querySelector('#edit-vacation-btn');
@@ -109,7 +115,7 @@ class VacationPage extends Vacation {
         if (bool) {
             // spinner.hidden = false;
             const data = await super.remove();
-            // setServerFeedback(data);
+            setServerFeedback(data);
             if (data.ok) {
                 window.location.href = '/';
             }
@@ -148,10 +154,8 @@ class Widget {
         this.requestLoader = false;
     };
     
-    showOptions() {
-    }
-    expand() {
-    }
+    showOptions() {}
+    expand() {}
     
     async sendRequest(url, method, additionalData = undefined) {
         if (!this.requestLoader) {

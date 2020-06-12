@@ -1,4 +1,6 @@
-class Vacation {
+import Country from "./country-entity";
+
+export default class Vacation {
     constructor(vacation) {
         this.id = vacation.id;
         this.countryName = vacation.countryName;

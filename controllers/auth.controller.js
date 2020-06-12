@@ -42,15 +42,15 @@ function registrationPage(request, response) {
     response.render('registration', {
         layout: 'auth',
         pageTitle: 'Регистрация',
-        scripts: ['server-feedback', 'validator', 'auth']
-    })
+        scripts: 'auth.bundle'
+    });
 }
 function loginPage(request, response) {
     response.render('login', {
         layout: 'auth',
         pageTitle: 'Авторизация',
-        scripts: ['server-feedback', 'validator', 'auth']
-    })
+        scripts: 'auth.bundle'
+    });
 }
 
 

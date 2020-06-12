@@ -1,4 +1,4 @@
-class Country {
+export default class Country {
     constructor(code) {
         this.data = '';
         this.code = code;
@@ -15,6 +15,10 @@ class Country {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(requestBody)
             });
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
             const data = await response.json(); // api geonames object
             if (!data.ok) {
                 throw new Error(data.caption);

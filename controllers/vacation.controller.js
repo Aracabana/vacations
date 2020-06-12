@@ -16,7 +16,7 @@ async function createVacationPage(request, response) {
                 class: 'btn-light'
             },
             countriesWithCode,
-            scripts: ['server-feedback', 'formatDatepickers', 'validator', 'country-entity', 'leaflet', 'map-entity', 'create-vacation'],
+            scripts: 'createVacation.bundle',
             styles: ['leaflet']
         });
     } catch (err) {
@@ -38,7 +38,7 @@ async function vacationPage(request, response) {
             icon: 'fa-angle-left',
             class: 'btn-light'
         },
-        scripts: ['server-feedback', 'validator', 'formatDatepickers', 'popup', 'country-entity','leaflet', 'map-entity', 'vacation-entity', 'vacation'],
+        scripts: 'vacation.bundle',
         styles: ['leaflet']
     });
 }
