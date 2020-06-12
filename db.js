@@ -6,14 +6,14 @@ const {sqlConnection} = require('./config');
    Параметры подключения находятся в файле Config.js.
  */
 
-const connection = mysql.createConnection(sqlConnection).promise(); // Создает строку подключения к базе данных
+const connection = mysql.createPool(sqlConnection).promise(); // Создает строку подключения к базе данных
 
-connection.connect() // Коннектится к базе данных. В случае неудачи выводит ошибку
-    .then(res => {
-        console.log('Подключение к серверу MySQL установлено');
-    })
-    .catch(err => {
-        console.log(err);
-    });
+// connection.connect() // Коннектится к базе данных. В случае неудачи выводит ошибку
+//     .then(res => {
+//         console.log('Подключение к серверу MySQL установлено');
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     });
 
 module.exports = connection;

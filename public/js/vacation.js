@@ -101,9 +101,7 @@ class VacationPage extends Vacation {
                 dates.innerHTML = `${this.dateFrom} - ${this.dateTo}`;
             });
         });
-        removeVacationBtn.addEventListener('click', () => {
-            this.remove.bind(this);
-        });
+        removeVacationBtn.addEventListener('click', this.remove.bind(this));
     }
 
     async remove() {
