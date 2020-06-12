@@ -62,7 +62,7 @@ app.engine( 'hbs', hbs({ // Устанавливает настройки для
 /*
     Уставливает обработчики для всех путей в приложении
  */
-app.get('/', routes.access, homeController.getPage); // стартовая страница
+app.get('/', routes.access, homeController.homePage); // стартовая страница
 app.use('/auth', routes.auth);
 app.use('/vacation', routes.access, routes.vacation);
 app.use('/api', routes.access, routes.api);

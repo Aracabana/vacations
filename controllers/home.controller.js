@@ -1,4 +1,4 @@
-function getPage(request, response) {
+function homePage(request, response) {
     response.render('home', {
         pageTitle: 'Главная',
         title: 'Мои отпуска',
@@ -9,8 +9,8 @@ function getPage(request, response) {
             icon: 'fa-plus',
             class: 'btn-success'
         },
-        scripts: ['server-feedback', 'vacation-entity', 'home']
+        scripts: ['server-feedback', 'formatDatepickers', 'validator', 'popup', 'vacation-entity', 'home']
     });
 }
 
-module.exports = { getPage };
+module.exports = { homePage };

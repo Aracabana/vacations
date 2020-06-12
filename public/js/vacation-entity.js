@@ -48,9 +48,34 @@ class Vacation {
         }
     }
     
-    edit() {
-        console.log(this);
-        // window.location.href = '/vacation/' + this.id;
+    async edit(dates) {
+        try {
+            const requestData = {
+                id: this.id,
+                dateFrom: dates.dateFrom,
+                dateTo: dates.dateTo
+            }
+            const response = await fetch('/vacation', {
+                method: 'PUT',
+                credentials: 'same-origin',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(requestData)
+            });
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+            const data = await response.json();
+            if (!data.ok) {
+                throw new Error(data.caption);
+            }
+            const vacation = data.vacation;
+            this.dateFrom = new Date(vacation.dateFrom).toLocaleDateString();
+            this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
+            this.status = Vacation.calculateStatus(vacation.dateFrom, vacation.dateTo);
+            return {ok: data.ok, caption: data.caption};
+        } catch (err) {
+            return {ok: false, caption: err.message};
+        }
     }
     async remove() {
         try {
@@ -60,6 +85,9 @@ class Vacation {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({id: this.id})
             });
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
             const data = await response.json();
             return data;
         } catch (err) {

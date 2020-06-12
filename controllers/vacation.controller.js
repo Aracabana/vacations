@@ -2,7 +2,7 @@ const { Vacation }          = require('../models');
 const { countries }         = require('../helpers/geonames');
 const { vacationValidator } = require('../helpers/validators');
 
-async function createPage(request, response) {
+async function createVacationPage(request, response) {
     try {
         const countriesWithCode = await countries.getForSelect();
         response.render('create-vacation', {
@@ -16,7 +16,7 @@ async function createPage(request, response) {
                 class: 'btn-light'
             },
             countriesWithCode,
-            scripts: ['server-feedback', 'validator', 'country-entity', 'leaflet', 'map-entity', 'create-vacation'],
+            scripts: ['server-feedback', 'formatDatepickers', 'validator', 'country-entity', 'leaflet', 'map-entity', 'create-vacation'],
             styles: ['leaflet']
         });
     } catch (err) {
@@ -38,7 +38,7 @@ async function vacationPage(request, response) {
             icon: 'fa-angle-left',
             class: 'btn-light'
         },
-        scripts: ['server-feedback', 'country-entity','leaflet', 'map-entity', 'vacation-entity', 'vacation'],
+        scripts: ['server-feedback', 'validator', 'formatDatepickers', 'popup', 'country-entity','leaflet', 'map-entity', 'vacation-entity', 'vacation'],
         styles: ['leaflet']
     });
 }
@@ -66,6 +66,23 @@ async function add(request, response) {
         response.json({ ok: false, caption: err.message });
     }
 }
+
+async function edit(request, response) {
+    const { id, dateFrom, dateTo } = request.body;
+    const userId = request.session.userId;
+    try {
+        await vacationValidator.validateDates(dateFrom, dateTo);
+        const vacation = await Vacation.edit(dateFrom, dateTo, id, userId);
+        if (vacation) {
+            response.json({ok: true, caption: 'Запись успешно изменена', vacation});
+            return;
+        }
+        throw new Error('Запись не изменена');
+    } catch (err) {
+        response.json({ok: false, caption: err.message});
+    }
+}
+
 async function remove(request, response) {
     const { id } = request.body;
     try {
@@ -100,7 +117,7 @@ async function getOne(request, response) {
         return;
     }
     try {
-        const vacation = await Vacation.getVacationById(id, userId);
+        const vacation = await Vacation.getOneById(id, userId);
         if (!vacation) {
             throw new Error('Отпуск не найден');
         }
@@ -110,4 +127,4 @@ async function getOne(request, response) {
     }
 }
 
-module.exports = { add, remove, getAll, getOne, createPage, vacationPage };
+module.exports = { add, edit, remove, getAll, getOne, createVacationPage, vacationPage };

@@ -40,7 +40,6 @@ class VacationPage extends Vacation {
     constructor(vacation) {
         super(vacation);
         this.widgets = [];
-        console.log(this);
     }
 
     renderInfo() {
@@ -58,7 +57,7 @@ class VacationPage extends Vacation {
     
     async loadWidgets() {
         try {
-            const url = `/api/getWidgets?vacationId=${this.id}`;
+            const url = `/api/widgets?vacationId=${this.id}`;
             const response = await fetch(url, {
                 method: 'GET',
                 credentials: 'same-origin',
@@ -66,6 +65,7 @@ class VacationPage extends Vacation {
             });
             const data = await response.json();
             if (data.ok) {
+                console.log(data);
                 data.widgets.forEach(item => {
                     let widget;
                     if (item.id === 1) {
@@ -83,6 +83,10 @@ class VacationPage extends Vacation {
                         widget = new InfoWidget(item, this.id);
                         widget.init();
                     }
+                    if (item.id === 4) {
+                        widget = new BudgetWidget(item, this.id);
+                        widget.init();
+                    }
                     this.widgets.push(widget);
                 });
             }
@@ -94,8 +98,15 @@ class VacationPage extends Vacation {
     }
 
     setListeners() {
-        editVacationBtn.addEventListener('click', this.edit.bind(this));
-        removeVacationBtn.addEventListener('click', this.remove.bind(this));
+        editVacationBtn.addEventListener('click',  () => {
+            console.log(this);
+            editPopup('edit-popup', this, () => {
+                dates.innerHTML = `${this.dateFrom} - ${this.dateTo}`;
+            });
+        });
+        removeVacationBtn.addEventListener('click', () => {
+            this.remove.bind(this);
+        });
     }
 
     async remove() {
@@ -114,7 +125,13 @@ class VacationPage extends Vacation {
     async init() {
         this.renderInfo();
         await this.loadWidgets();
-        this.setListeners();
+        if (this.status !== 'Завершен') {
+            this.setListeners();
+        }
+        else {
+            editVacationBtn.remove();
+            removeVacationBtn.remove();
+        }
     }
 }
 
@@ -143,11 +160,15 @@ class Widget {
         console.log('expand');
     }
     
-    async sendRequest(url, method) {
+    async sendRequest(url, method, additionalData = undefined) {
         if (!this.requestLoader) {
             this.requestLoader = true;
             try {
-                const responseData = { widgetId: this.id, vacationId: this.vacationId };
+                const responseData = {
+                    widgetId: this.id,
+                    vacationId: this.vacationId,
+                    data: additionalData
+                };
                 const response = await fetch(url, {
                     method: method,
                     credentials: 'same-origin',
@@ -172,7 +193,7 @@ class Widget {
     }
     
     async removeFromDashboard() {
-        const result = await this.sendRequest('/api/removeWidget', 'DELETE');
+        const result = await this.sendRequest('/api/widgets', 'DELETE');
         if (result) {
             this.widgetCardWrapper.remove();
             this.widgetCardWrapper = '';
@@ -182,7 +203,7 @@ class Widget {
         return result;
     }
     async addToDashboard(li) {
-        const result = await this.sendRequest('/api/saveWidget', 'POST');
+        const result = await this.sendRequest('/api/widgets', 'POST');
         if (result) {
             li.remove();
             this.isActive = true;
@@ -440,12 +461,14 @@ class WeatherWidget extends Widget {
             const weatherItem = document.createElement('div');
             weatherItem.classList.add('weather-item', 'col-12', 'col-sm-6');
             weatherItem.innerHTML = `
-                <p class="weather-date"><strong>${new Date(list.dt_txt).toLocaleDateString()}</strong></p>
-                <p class="weather-item-time"><strong>${list.dt_txt.substring(11, 16)}</strong></p>
+                <div class="weather-item-header">
+                    <p class="weather-date"><strong>${new Date(list.dt_txt).toLocaleDateString()}</strong></p>
+                    <p class="weather-item-time"><strong>${list.dt_txt.substring(11, 16)}</strong></p>
+                </div>
                 <div class="row">
                     <div class="col-6">
-                        <p class="weather-item-temp">${list.main.temp}°C</p>
-                        <p><strong>Ощущается как: </strong> ${list.main.feels_like}°C</p>
+                        <p class="weather-item-temp">${Math.round(list.main.temp)}°C</p>
+                        <p><strong>Ощущается как: </strong> ${Math.round(list.main.feels_like)}°C</p>
                         <p><strong>Влажность: </strong> ${list.main.humidity} %</p>
                         <p><strong>Давление: </strong> ${list.main.pressure} мм рт. ст.</p>
                     </div>
@@ -528,10 +551,6 @@ class InfoWidget extends Widget {
     }
     
     async showWidgetContent() {
-        if (typeof this.data === 'string') {
-            super.renderEmptyWidgetContent();
-            return;
-        }
         let languages = this.getAdditionalInfo('languages', ['name']);
         let currencies = this.getAdditionalInfo('currencies', ['name', 'symbol']);
         let callingCodes = this.getAdditionalInfo('callingCodes', ['name']);
@@ -570,15 +589,139 @@ class InfoWidget extends Widget {
     }
     
     async init() {
-        try {
-            if (this.isActive) {
-                await this.render();
-                return;
+        if (this.isActive) {
+            await this.render();
+            return;
+        }
+        this.renderControl();
+    }
+}
+
+class BudgetWidget extends Widget {
+    constructor(widgetData, vacationId) {
+        super(widgetData, vacationId);
+        this.url = `/api/widgets/budgetInfo?vacationId=${vacationId}`;
+        this.headerControls[2].action = this.removeFromDashboard;
+        this.widgetCardClasses = ['col-12', 'col-lg-4', 'budget'];
+    }
+    
+    async addToDashboard(li) {
+        const result = await super.addToDashboard(li);
+        if(result) {
+            await this.init();
+        }
+    }
+    async removeFromDashboard() {
+        const result = await super.removeFromDashboard();
+        if (result) {
+            await this.init();
+        }
+    }
+    renderControl() {
+        const {btn, span, li } = super.renderControl();
+        btn.addEventListener('click',  async () => {
+            await this.addToDashboard(li);
+        });
+        li.append(span, btn);
+        widgetsSidebar.append(li);
+    }
+    
+    adaptData() {
+        this.data = this.data.info;
+    }
+    
+    async render() {
+        await super.render();
+        await super.setData(this.url);
+        console.log(this.data);
+        this.adaptData();
+        await this.showWidgetContent();
+        setTimeout(() => {
+            this.spinner.hidden = true;
+        });
+    }
+    
+    async showWidgetContent() {
+        console.log(this.data);
+        const budgetCategoriesWrapper = document.createElement('div');
+        budgetCategoriesWrapper.classList.add('budget-categories-wrapper');
+        for (let i = 0; i < this.data.length; i++) {
+            let categoryTbodyRows = [];
+            if (this.data[i].items) {
+                for (let j = 0; j < this.data[i].items.length; j++) {
+                    const categoryTbodyRow = `<tr>
+                    <td>${this.data[i].items[j].name}</td>
+                    <td class="budget-table-price-cell">${this.data[i].items[j].price}</td>
+                </tr>`
+                    categoryTbodyRows.push(categoryTbodyRow);
+                }
             }
-            this.renderControl();
-        } finally {
-        
+            
+            const budgetCategory = document.createElement('div');
+            budgetCategory.classList.add('budget-category');
+            
+            budgetCategory.innerHTML = `
+            <table class="budget-table table table-bordered table-striped table-hover table-sm">
+                <thead class="thead-dark">
+                <tr>
+                    <th class="budget-table-header-cell">
+                        <span>${this.data[i].category}</span>
+                    </th>
+                    <th class="budget-table-price-cell">${this.data[i].sum}</th>
+                </tr>
+                </thead>
+                <tbody class="budget-table-body">${categoryTbodyRows.join('')}</tbody>
+            </table>
+            <form novalidate id="form-${this.data[i].id}" class="budget-category-form form-group">
+                <input type="text" id="budget-name-${i}" class="form-control form-control-sm budget-category-form-name" name="budget-category-name" placeholder="Название" required>
+                <input type="text" id="budget-price-${i}" class="form-control form-control-sm budget-category-form-price" name="budget-category-price" placeholder="Сумма" required data-pattern="^\\d+$">
+                <button class="btn btn-sm btn-success budget-category-form-submit" type="submit"><i class="fas fa-plus"></i></button>
+                <div class="invalid-feedback"></div>
+            </form>`;
+            const budgetHeader = budgetCategory.querySelector('.budget-table-header-cell');
+            const budgetSumHtml = budgetCategory.querySelector('.budget-table-price-cell');
+            const budgetTableBody = budgetCategory.querySelector('.budget-table-body');
+            const form = budgetCategory.querySelector('form');
+            setValidateListeners(form);
+            const submitBtn = budgetCategory.querySelector('.budget-category-form-submit');
+            submitBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const error = validate(form);
+                if (error) return;
+                const name = form.querySelector('#budget-name-'+ i).value;
+                const price = form.querySelector('#budget-price-'+ i).value;
+                const formData = { name, price, categoryId: this.data[i].id };
+                const result = await this.sendRequest('/api/widgets/saveBudgetInfo', 'POST', formData);
+                if (result) {
+                    const categoryTbodyRow = `<tr>
+                        <td>${name}</td>
+                        <td class="budget-table-price-cell">${price}</td>
+                    </tr>`
+                    const updatedSum = Number(budgetSumHtml.innerText) + Number(price);
+                    budgetSumHtml.innerHTML = updatedSum;
+                    budgetTableBody.innerHTML += categoryTbodyRow;
+                    setServerFeedback({ok: true, caption: 'Запись успешно добавлена'});
+                }
+            });
+    
+            budgetHeader.addEventListener('click', function() {
+                this.classList.toggle('open');
+                budgetTableBody.classList.toggle('open');
+                form.classList.toggle('open');
+            });
+    
+            budgetCategoriesWrapper.appendChild(budgetCategory);
         }
         
+        this.body.appendChild(budgetCategoriesWrapper);
     }
+    
+    async init() {
+        if (this.isActive) {
+            await this.render();
+            return;
+        }
+        this.renderControl();
+    }
+    
 }
