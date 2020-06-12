@@ -317,7 +317,7 @@ class Widget {
 class TimeWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
-        this.url = (widgetData.additional) ? `http://api.openweathermap.org/data/2.5/weather?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
+        this.url = (widgetData.additional) ? `//api.openweathermap.org/data/2.5/weather?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
         this.headerControls[2].action = this.removeFromDashboard;
     }
 
@@ -408,7 +408,7 @@ class TimeWidget extends Widget {
 class WeatherWidget extends Widget {
     constructor(widgetData, vacationId) {
         super(widgetData, vacationId);
-        this.url = (widgetData.additional) ? `http://api.openweathermap.org/data/2.5/forecast?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
+        this.url = (widgetData.additional) ? `//api.openweathermap.org/data/2.5/forecast?lat=${widgetData.additional.latlng[0]}&lon=${widgetData.additional.latlng[1]}&units=metric&lang=ru&appid=bedcbe351dba38c968e2b2e42d5d3040` : undefined;
         this.headerControls[2].action = this.removeFromDashboard;
         this.widgetCardClasses = ['col-12', 'col-lg-8'];
     }
