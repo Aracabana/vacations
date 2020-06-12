@@ -29,25 +29,28 @@ function editPopup(html, vacation, updateCallback) {
 }
 
 function openPopup(popup) {
+    popup.classList.add('open');
     popup.style.display = 'block';
 }
 function closePopup(popup) {
-    popup.style.display = 'none';
+    if (popup.classList.contains('open')) {
+        popup.style.display = 'none';
+        popup.classList.remove('open');
+    }
 }
 
 const popupCloseBtn = document.querySelector('.js-popup-close');
 popupCloseBtn.addEventListener('click', function () {
     closePopup(this.closest('.js-popup-wrapper'));
 });
-// document.addEventListener('mouseup', function(e) {
-//     const popup = document.querySelector('.js-popup');
-//     let target = e.target;
-//     let its_popup = target === popup || popup.contains(target);
-//
-//     if (!its_popup) {
-//         closePopup();
-//     }
-// });
+document.addEventListener('mouseup', function(e) {
+    const target = e.target.closest('.js-popup');
+    const popup = document.querySelector('.js-popup');
+    const popupWrapper = document.querySelector('.js-popup-wrapper');
+    if (target !== popup) {
+        closePopup(popupWrapper);
+    }
+});
 document.addEventListener('keyup', function(e) {
     const popupWrapper = document.querySelector('.js-popup-wrapper');
     if (e.code === 'Escape') {
