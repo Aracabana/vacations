@@ -9,8 +9,10 @@ class Vacation {
     }
     
     static calculateStatus(dateFrom, dateTo) {
-        const fromMs = new Date(dateFrom).valueOf();
-        const toMs = new Date(dateTo).valueOf();
+        dateFrom = new Date(dateFrom);
+        dateTo = new Date(dateTo);
+        const fromMs = new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0, 0).valueOf();
+        const toMs = new Date(dateTo.getFullYear(), dateTo.getMonth(), dateTo.getDate(), 0, 0, 0, 0).valueOf();
         const now = new Date();
         const nowMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).valueOf();
         console.log('nowMs' + nowMs);
