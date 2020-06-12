@@ -13,6 +13,9 @@ class Vacation {
         const toMs = new Date(dateTo).valueOf();
         const now = new Date();
         const nowMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).valueOf();
+        console.log('nowMs' + nowMs);
+        console.log('fromMs' + fromMs);
+        console.log('toMs' + toMs);
         return (nowMs < fromMs) ? 'Ожидание' : (nowMs >= fromMs && nowMs < toMs) ? 'В процессе' : 'Завершен';
     }
     
