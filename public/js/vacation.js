@@ -65,7 +65,6 @@ class VacationPage extends Vacation {
             });
             const data = await response.json();
             if (data.ok) {
-                console.log(data);
                 data.widgets.forEach(item => {
                     let widget;
                     if (item.id === 1) {
@@ -90,7 +89,6 @@ class VacationPage extends Vacation {
                     this.widgets.push(widget);
                 });
             }
-            console.log(this.widgets);
         }
         catch (err) {
             setServerFeedback({ ok: false, caption: err.message });
@@ -99,7 +97,6 @@ class VacationPage extends Vacation {
 
     setListeners() {
         editVacationBtn.addEventListener('click',  () => {
-            console.log(this);
             editPopup('edit-popup', this, () => {
                 dates.innerHTML = `${this.dateFrom} - ${this.dateTo}`;
             });
@@ -154,10 +151,8 @@ class Widget {
     };
     
     showOptions() {
-        console.log(this.id);
     }
     expand() {
-        console.log('expand');
     }
     
     async sendRequest(url, method, additionalData = undefined) {
@@ -633,7 +628,6 @@ class BudgetWidget extends Widget {
     async render() {
         await super.render();
         await super.setData(this.url);
-        console.log(this.data);
         this.adaptData();
         await this.showWidgetContent();
         setTimeout(() => {
@@ -642,7 +636,6 @@ class BudgetWidget extends Widget {
     }
     
     async showWidgetContent() {
-        console.log(this.data);
         const budgetCategoriesWrapper = document.createElement('div');
         budgetCategoriesWrapper.classList.add('budget-categories-wrapper');
         for (let i = 0; i < this.data.length; i++) {

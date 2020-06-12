@@ -32,7 +32,6 @@ class Vacation {
             const data = await response.json();
             this.flag = data.flag;
         } catch (err) {
-            // console.log(err);
         }
     }
     async setCountryData() {
