@@ -1,4 +1,7 @@
-const serverFeedback = document.querySelector('#serverFeedback');
+import setServerFeedback from "./helpers/server-feedback";
+import editPopup from "./helpers/popup";
+import Vacation from "./entities/vacation-entity";
+
 const vacationsTableBody = document.querySelector('#vacations-table tbody');
 const filterButtonsWrapper = document.querySelector('#filter-buttons');
 const filterButtons = Array.from(filterButtonsWrapper.querySelectorAll('button'));
@@ -123,6 +126,7 @@ class VacationsTable extends Vacations {
         span.innerText = data;
         parent.appendChild(span);
     }
+    
     createActionCell(parent) {
         const td = document.createElement('td');
         td.classList.add('action-td');

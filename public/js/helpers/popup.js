@@ -1,5 +1,8 @@
-function editPopup(html, vacation, updateCallback) {
-    console.log(vacation);
+import setServerFeedback from "./server-feedback";
+import { setDatePickersOptions } from "./formatDatepickers";
+import { setValidateListeners, validate } from "./validator";
+
+export default function editPopup(html, vacation, updateCallback) {
     const popup = document.getElementById(html);
     const popupTitle = popup.querySelector('#js-popup-title');
     const form = popup.querySelector('#form-edit');
@@ -11,7 +14,7 @@ function editPopup(html, vacation, updateCallback) {
     dateTo.value = vacation.dateTo.split('.').reverse().join('-');
     submit.addEventListener('click', async function (e) {
         e.preventDefault();
-        const error = validate(this);
+        const error = validate(form);
         if (error) return;
         const result =  await vacation.edit({
             dateFrom: dateFrom.value,

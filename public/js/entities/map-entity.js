@@ -1,5 +1,7 @@
 // 'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=bedcbe351dba38c968e2b2e42d5d3040'
-class Map {
+import L from '../helpers/leaflet';
+
+export default class Map {
     constructor(latlng, countryCode) {
         this.countryCode = countryCode;
         this.latlng = latlng;

@@ -1,4 +1,19 @@
-function setValidateListeners(form) {
+export function validate(form) {
+    const formControls = Array.from(form.querySelectorAll('.form-control'));
+    let hasError = false;
+    for (let i = 0; i < formControls.length; i++) {
+        const feedback = formControls[i].closest('.form-group').querySelector('.invalid-feedback');
+        removeFeedback(formControls[i], feedback);
+        const error = validateInput(formControls[i], form);
+        if (error) {
+            setFeedback(formControls[i], feedback, error);
+            hasError = true;
+        }
+    }
+    if(hasError) return true;
+}
+
+export function setValidateListeners(form) {
     const formControls = Array.from(form.querySelectorAll('.form-control'));
     const btn = form.querySelector('button');
     formControls.forEach(input => {
@@ -54,20 +69,6 @@ function validateInput(input) {
         if (error) return error;
     }
     return false;
-}
-function validate(form) {
-    const formControls = Array.from(form.querySelectorAll('.form-control'));
-    let hasError = false;
-    for (let i = 0; i < formControls.length; i++) {
-        const feedback = formControls[i].closest('.form-group').querySelector('.invalid-feedback');
-        removeFeedback(formControls[i], feedback);
-        const error = validateInput(formControls[i], form);
-        if (error) {
-            setFeedback(formControls[i], feedback, error);
-            hasError = true;
-        }
-    }
-    if(hasError) return true;
 }
 
 function setFeedback(input, feedback, feedbackText) {

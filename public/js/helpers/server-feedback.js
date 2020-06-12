@@ -1,4 +1,4 @@
-function setServerFeedback(data, time = 4000) {
+export default function setServerFeedback(data, time = 4000) {
     const serverFeedback = document.querySelector('#serverFeedback');
     serverFeedback.classList.remove('alert-success', 'alert-danger');
     serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');

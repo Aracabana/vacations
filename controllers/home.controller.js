@@ -9,7 +9,7 @@ function homePage(request, response) {
             icon: 'fa-plus',
             class: 'btn-success'
         },
-        scripts: ['server-feedback', 'formatDatepickers', 'validator', 'popup', 'vacation-entity', 'home']
+        scripts: 'home.bundle'
     });
 }
 
