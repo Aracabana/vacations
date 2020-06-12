@@ -44,7 +44,7 @@ async function submitVacation(e) {
             if (data.ok) {
                 window.location.href = '/vacation/' + data.vacationId;
             }
-        }, 2000);
+        }, 200);
     } catch (err) {
         setServerFeedback({ok: false, caption: err});
     } finally {
