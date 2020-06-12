@@ -25,6 +25,4 @@ function getGeoJSON (request, response) {
 }
 
 
-
-
 module.exports = { getGeoJSON, getCountry }
