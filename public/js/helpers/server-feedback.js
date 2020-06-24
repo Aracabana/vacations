@@ -1,10 +1,10 @@
-export default function setServerFeedback(data, time = 4000) {
-    const serverFeedback = document.querySelector('#serverFeedback');
-    serverFeedback.classList.remove('alert-success', 'alert-danger');
-    serverFeedback.classList.add(data.ok ? 'alert-success' : 'alert-danger');
-    serverFeedback.hidden = false;
-    serverFeedback.innerText = data.caption;
+export default function setServerFeedback(elem, data, time = 4000) {
+    // const serverFeedback = document.querySelector('#serverFeedback');
+    elem.classList.remove('alert-success', 'alert-danger');
+    elem.classList.add(data.ok ? 'alert-success' : 'alert-danger');
+    elem.hidden = false;
+    elem.innerText = data.caption;
     setTimeout(() => {
-        serverFeedback.hidden = true;
-    }, time)
+        elem.hidden = true;
+    }, time);
 }

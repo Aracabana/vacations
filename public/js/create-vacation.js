@@ -3,6 +3,7 @@ import { setDatePickersOptions} from "./helpers/formatDatepickers";
 import { setValidateListeners, validate } from "./helpers/validator";
 import Country from "./entities/country-entity";
 import Map from "./entities/map-entity";
+import request from "./helpers/request";
 
 const vacationForm = document.querySelector('#vacation-form');
 const dataList = document.querySelector('#countries-list');
@@ -16,6 +17,7 @@ const countryPopulation = document.querySelector('#population');
 const countryLanguagesWrapper = document.querySelector('#languages-wrapper');
 const countryLanguages = document.querySelector('#languages');
 const mapWrapper = document.querySelector('#map-wrapper');
+const feedbackElem = document.querySelector('#serverFeedback');
 
 window.onload = function () {
     countryInput.addEventListener('input', selectCountry);
@@ -26,33 +28,25 @@ window.onload = function () {
 
 async function submitVacation(e) {
     e.preventDefault();
+
     const error = validate(this);
     if (error) return;
+
+    spinner.hidden = false;
     const country = document.getElementById('country').value;
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
     const formData = {country, dateFrom, dateTo};
-    spinner.hidden = false;
     try {
-        const response = await fetch('/vacation', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(formData)
-        });
-        if (response.redirected) {
-            window.location.href = response.url;
-            return;
+        const response = await request('/vacation', 'POST', formData);
+        setServerFeedback(feedbackElem, response);
+        if (response.ok) {
+            setTimeout(() => {
+                window.location.href = '/vacation/' + response.vacationId;
+            }, 200);
         }
-        const data = await response.json();
-        setServerFeedback(data);
-        setTimeout(() => {
-            if (data.ok) {
-                window.location.href = '/vacation/' + data.vacationId;
-            }
-        }, 200);
     } catch (err) {
-        setServerFeedback({ok: false, caption: err});
+        setServerFeedback(feedbackElem,{ok: false, caption: err});
     } finally {
         spinner.hidden = true;
     }
@@ -65,9 +59,8 @@ async function selectCountry() {
             await countryInfo.loadData(['latlng', 'languages']);
             await countryInfo.show();
         } catch (err) {
-            setServerFeedback({ok: false, caption: err.message});
+            setServerFeedback(feedbackElem,{ok: false, caption: err.message});
         }
-        
     }
 }
 function checkExists(inputValue) {

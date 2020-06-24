@@ -3,6 +3,7 @@ import Vacation from "./entities/vacation-entity";
 import { setValidateListeners, validate } from "./helpers/validator";
 import editPopup from "./helpers/popup";
 import Map from "./entities/map-entity";
+import request from "./helpers/request";
 
 const title = document.querySelector('#vacation-country');
 const dates = document.querySelector('#vacation-dates');
@@ -10,6 +11,7 @@ const editVacationBtn = document.querySelector('#edit-vacation-btn');
 const removeVacationBtn = document.querySelector('#remove-vacation-btn');
 const widgetsWrapper = document.querySelector('#widgets-wrapper');
 const widgetsSidebar = document.querySelector('#widgets-sidebar');
+const feedbackElem = document.querySelector('#serverFeedback');
 
 window.onload = async function() {
     const id = window.location.pathname.split('/')[2];
@@ -25,20 +27,15 @@ window.onload = async function() {
 async function loadVacationByID(id) {
     try {
         const url = `/api/getVacation?id=${id}`;
-        const response = await fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: {'Content-Type': 'application/json'}
-        });
-        const data = await response.json();
-        if(!data.ok) {
+        const response = await request(url);
+        if(!response.ok) {
             window.location.href = '/404';
             return;
         }
-        return data.vacation;
+        return response.vacation;
     }
     catch (err) {
-        setServerFeedback({ ok: false, caption: err });
+        setServerFeedback(feedbackElem,{ ok: false, caption: err });
     }
 }
 
@@ -64,14 +61,9 @@ class VacationPage extends Vacation {
     async loadWidgets() {
         try {
             const url = `/api/widgets?vacationId=${this.id}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {'Content-Type': 'application/json'}
-            });
-            const data = await response.json();
-            if (data.ok) {
-                data.widgets.forEach(item => {
+            const response = await request(url);
+            if (response.ok) {
+                response.widgets.forEach(item => {
                     let widget;
                     if (item.id === 1) {
                         item.additional = this.countryInfo.additional;
@@ -97,7 +89,7 @@ class VacationPage extends Vacation {
             }
         }
         catch (err) {
-            setServerFeedback({ ok: false, caption: err.message });
+            setServerFeedback(feedbackElem,{ ok: false, caption: err.message });
         }
     }
 
@@ -115,7 +107,7 @@ class VacationPage extends Vacation {
         if (bool) {
             // spinner.hidden = false;
             const data = await super.remove();
-            setServerFeedback(data);
+            setServerFeedback(feedbackElem, data);
             if (data.ok) {
                 window.location.href = '/';
             }
@@ -166,22 +158,13 @@ class Widget {
                     vacationId: this.vacationId,
                     data: additionalData
                 };
-                const response = await fetch(url, {
-                    method: method,
-                    credentials: 'same-origin',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(requestData)
-                });
-                if (response.redirected) {
-                    window.location.href = response.url;
-                }
-                const data = await response.json();
-                if (!data.ok) {
-                    throw new Error(data.caption);
+                const response = await request(url, method, requestData)
+                if (!response.ok) {
+                    throw new Error(response.caption);
                 }
                 return true;
             } catch (err) {
-                setServerFeedback({ok: false, caption: err.message});
+                setServerFeedback(feedbackElem,{ok: false, caption: err.message});
             } finally {
                 this.requestLoader = false;
             }
@@ -695,7 +678,7 @@ class BudgetWidget extends Widget {
                     const updatedSum = Number(budgetSumHtml.innerText) + Number(price);
                     budgetSumHtml.innerHTML = updatedSum;
                     budgetTableBody.innerHTML += categoryTbodyRow;
-                    setServerFeedback({ok: true, caption: 'Запись успешно добавлена'});
+                    setServerFeedback(feedbackElem,{ok: true, caption: 'Запись успешно добавлена'});
                 }
             });
     
