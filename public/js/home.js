@@ -83,11 +83,9 @@ class Vacations {
     }
     removeFromStorage(vacation) {
         if(this.tmpStorage.length) {
-            const index = this.tmpStorage.indexOf(vacation);
-            this.tmpStorage.splice(index, 1);
+            this.tmpStorage = this.tmpStorage.filter(item => item.id !== vacation.id);
         }
-        const index = this.storage.indexOf(vacation);
-        this.storage.splice(index, 1);
+        this.storage = this.storage.filter(item => item.id !== vacation.id);
     }
 }
 
