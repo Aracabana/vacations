@@ -1,6 +1,7 @@
 import setServerFeedback from "./helpers/server-feedback";
 import editPopup from "./helpers/popup";
 import Vacation from "./entities/vacation-entity";
+import request from "./helpers/request";
 
 const vacationsTableBody = document.querySelector('#vacations-table tbody');
 const filterButtonsWrapper = document.querySelector('#filter-buttons');
@@ -10,6 +11,7 @@ const byDateTo = document.getElementById('byDateTo');
 const byStatus = document.getElementById('byStatus');
 const search = document.getElementById('search');
 const spinner = document.querySelector('#spinner');
+const feedbackElem = document.querySelector('#serverFeedback');
 
 window.onload = async function() {
     
@@ -19,7 +21,7 @@ window.onload = async function() {
         await table.loadData();
         table.fill();
     } catch (err) {
-        setServerFeedback({ok: false, caption: err});
+        setServerFeedback(feedbackElem,{ok: false, caption: err});
     } finally {
         spinner.hidden = true;
     }
@@ -47,14 +49,9 @@ class Vacations {
 
     async loadData() {
         try {
-            const response = await fetch('/api/getVacations', {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {'Content-Type': 'application/json'}
-            });
-            const result = await response.json();
-            for (let i = 0; i < result.vacations.length; i++) {
-                const vacation = new Vacation(result.vacations[i]);
+            const { vacations } = await request('/api/getVacations');
+            for (let i = 0; i < vacations.length; i++) {
+                const vacation = new Vacation(vacations[i]);
                 await vacation.setFlag();
                 this.storage.push(vacation);
             }
@@ -149,7 +146,7 @@ class VacationsTable extends Vacations {
             if (bool) {
                 spinner.hidden = false;
                 const data = await vacation.remove();
-                setServerFeedback(data);
+                setServerFeedback(feedbackElem, data);
                 if (data.ok) {
                     this.removeFromStorage(vacation);
                     this.fill();

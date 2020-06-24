@@ -2,6 +2,7 @@ import { setValidateListeners, validate } from './helpers/validator';
 import setServerFeedback from './helpers/server-feedback';
 
 const spinner = document.querySelector('#spinner');
+const feedbackElem = document.querySelector('#serverFeedback');
 
 window.onload = function() {
     const loginForm = document.querySelector('#login-form');
@@ -50,14 +51,14 @@ async function sendResponse(url, redirectUrl, formData) {
             body: JSON.stringify(formData)
         });
         const data = await response.json();
-        setServerFeedback(data);
+        setServerFeedback(feedbackElem, data);
         if (data.ok) {
             setTimeout(() => {
                 window.location.href = redirectUrl;
             }, 500);
         }
     } catch (err) {
-        setServerFeedback({ ok: false, caption: err });
+        setServerFeedback(feedbackElem,{ ok: false, caption: err });
     } finally {
         setTimeout(() => {
             spinner.hidden = true;
