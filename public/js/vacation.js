@@ -161,7 +161,7 @@ class Widget {
         if (!this.requestLoader) {
             this.requestLoader = true;
             try {
-                const responseData = {
+                const requestData = {
                     widgetId: this.id,
                     vacationId: this.vacationId,
                     data: additionalData
@@ -170,7 +170,7 @@ class Widget {
                     method: method,
                     credentials: 'same-origin',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(responseData)
+                    body: JSON.stringify(requestData)
                 });
                 if (response.redirected) {
                     window.location.href = response.url;
