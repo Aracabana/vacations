@@ -26,6 +26,11 @@ window.onload = function () {
     setValidateListeners(vacationForm);
 }
 
+// function url (url, mode) {
+//     if (mode === 'dev') return 'http://localhost:3000' + url;
+//     return url;
+// }
+
 async function submitVacation(e) {
     e.preventDefault();
 

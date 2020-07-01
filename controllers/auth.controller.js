@@ -38,20 +38,20 @@ function logout (request, response) {
     });
 }
 
-function registrationPage(request, response) {
-    response.render('registration', {
-        layout: 'auth',
-        pageTitle: 'Регистрация',
-        scripts: 'auth.bundle'
-    });
-}
-function loginPage(request, response) {
-    response.render('login', {
-        layout: 'auth',
-        pageTitle: 'Авторизация',
-        scripts: 'auth.bundle'
-    });
-}
+// function registrationPage(request, response) {
+//     response.render('registration', {
+//         layout: 'auth',
+//         pageTitle: 'Регистрация',
+//         scripts: 'auth.bundle'
+//     });
+// }
+// function loginPage(request, response) {
+//     response.render('login', {
+//         layout: 'auth',
+//         pageTitle: 'Авторизация',
+//         scripts: 'auth.bundle'
+//     });
+// }
 
 
-module.exports = { register, login, logout, registrationPage, loginPage };
+module.exports = { register, login, logout };

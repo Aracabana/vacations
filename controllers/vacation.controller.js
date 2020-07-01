@@ -2,46 +2,46 @@ const { Vacation }          = require('../models');
 const { countries }         = require('../helpers/geonames');
 const { vacationValidator } = require('../helpers/validators');
 
-async function createVacationPage(request, response) {
-    try {
-        const countriesWithCode = await countries.getForSelect();
-        response.render('create-vacation', {
-            pageTitle: 'Создать отпуск',
-            title: 'Создать отпуск',
-            login: request.session.login,
-            btn: {
-                link: '/',
-                title: 'Вернуться к списку отпусков',
-                icon: 'fa-angle-left',
-                class: 'btn-light'
-            },
-            countriesWithCode,
-            scripts: 'createVacation.bundle',
-            styles: ['leaflet']
-        });
-    } catch (err) {
-        response.json({
-            ok: false,
-            caption: err.message
-        })
-    }
-}
-async function vacationPage(request, response) {
-    const id = request.params.id;
-    response.render('vacation', {
-        pageTitle: 'Отпуск',
-        title: '',
-        login: request.session.login,
-        btn: {
-            link: '/',
-            title: 'Вернуться к списку отпусков',
-            icon: 'fa-angle-left',
-            class: 'btn-light'
-        },
-        scripts: 'vacation.bundle',
-        styles: ['leaflet']
-    });
-}
+// async function createVacationPage(request, response) {
+//     try {
+//         const countriesWithCode = await countries.getForSelect();
+//         response.render('create-vacation', {
+//             pageTitle: 'Создать отпуск',
+//             title: 'Создать отпуск',
+//             login: request.session.login,
+//             btn: {
+//                 link: '/',
+//                 title: 'Вернуться к списку отпусков',
+//                 icon: 'fa-angle-left',
+//                 class: 'btn-light'
+//             },
+//             countriesWithCode,
+//             scripts: 'createVacation.bundle',
+//             styles: ['leaflet']
+//         });
+//     } catch (err) {
+//         response.json({
+//             ok: false,
+//             caption: err.message
+//         })
+//     }
+// }
+// async function vacationPage(request, response) {
+//     const id = request.params.id;
+//     response.render('vacation', {
+//         pageTitle: 'Отпуск',
+//         title: '',
+//         login: request.session.login,
+//         btn: {
+//             link: '/',
+//             title: 'Вернуться к списку отпусков',
+//             icon: 'fa-angle-left',
+//             class: 'btn-light'
+//         },
+//         scripts: 'vacation.bundle',
+//         styles: ['leaflet']
+//     });
+// }
 
 async function add(request, response) {
     const {country, dateFrom, dateTo} = request.body;
@@ -127,4 +127,4 @@ async function getOne(request, response) {
     }
 }
 
-module.exports = { add, edit, remove, getAll, getOne, createVacationPage, vacationPage };
+module.exports = { add, edit, remove, getAll, getOne };

@@ -10,7 +10,6 @@ router.use('/widgets', widgetsRouter);
 
 router.get('/getVacations', vacationController.getAll);
 router.get('/getVacation', vacationController.getOne);
-
 router.get('/getGeoJSON', apiController.getGeoJSON);
 
 router.post('/getCountry', apiController.getCountry);
