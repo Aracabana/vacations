@@ -4,12 +4,12 @@
         <div class="container">
             <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
             <form id="registration-form" class="auth-form" @submit.prevent="submit">
-                <div id="serverFeedback" class="alert" hidden></div>
-                <div id="spinner" class="spinner-wrapper" hidden>
-                    <div class="spinner-border text-success" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
+                <ServerFeedback
+                        v-if="showServerFeedback"
+                        :ok="serverFeedback.ok"
+                        :text="serverFeedback.text"
+                ></ServerFeedback>
+                <Spinner v-if="showSpinner"></Spinner>
                 <div class="form-group">
                     <label for="regLogin">Логин</label>
                     <input
@@ -115,6 +115,8 @@
 
 <script>
     import {required, minLength, email, sameAs} from 'vuelidate/lib/validators';
+    import Spinner from '../components/Spinner.vue';
+    import ServerFeedback from '../components/ServerFeedback';
     
     export default {
         name: "Registration",
@@ -123,8 +125,17 @@
                 login: '',
                 email: '',
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
+                showSpinner: false,
+                showServerFeedback: false,
+                serverFeedback: {
+                    ok: false,
+                    text: ''
+                }
             }
+        },
+        components: {
+            ServerFeedback, Spinner
         },
         validations: {
             login: {minLength: minLength(4), required},

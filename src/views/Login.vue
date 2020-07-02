@@ -4,12 +4,12 @@
         <div class="container">
             <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
             <form id="login-form" class="auth-form" @submit.prevent="submit">
-                <div id="serverFeedback" class="alert" hidden></div>
-                <div id="spinner" class="spinner-wrapper" hidden>
-                    <div class="spinner-border text-success" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
+                <ServerFeedback
+                        v-if="showServerFeedback"
+                        :ok="serverFeedback.ok"
+                        :text="serverFeedback.text"
+                ></ServerFeedback>
+                <Spinner v-if="showSpinner"></Spinner>
                 <div class="form-group">
                     <label for="authLogin">Логин</label>
                     <input
@@ -84,7 +84,8 @@
 
 <script>
     import {required, minLength} from 'vuelidate/lib/validators';
-    // import setServerFeedback from '../../public/js/helpers/server-feedback';
+    import ServerFeedback from '../components/ServerFeedback';
+    import Spinner from '../components/Spinner';
     
     export default {
         name: "Login",
@@ -92,8 +93,17 @@
             return {
                 login: '',
                 password: '',
-                setSession: false
+                setSession: false,
+                showSpinner: false,
+                showServerFeedback: false,
+                serverFeedback: {
+                    ok: false,
+                    text: ''
+                }
             }
+        },
+        components: {
+            ServerFeedback, Spinner
         },
         validations: {
             login: {minLength: minLength(4), required},
@@ -111,10 +121,10 @@
                     setSession: this.setSession
                 };
                 try {
-                    // spinner.hidden = false;
-                    const response = await fetch('http://localhost:3000/auth/login', {
+                    // this.showSpinner = true;
+                    const response = await fetch('http://localhost:8080/auth/login', {
                         method: 'POST',
-                        credentials: 'include',
+                        // credentials: true,
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -122,21 +132,32 @@
                     });
                     const data = await response.json();
                     // setServerFeedback(feedbackElem, data);
-                    console.log(data);
+                    this.setServerFeedback(data);
                     if (data.ok) {
                         setTimeout(() => {
-                            this.$router.push('/')
+                            // this.$router.push('/')
                         }, 500);
                     }
                 } catch (err) {
                     // setServerFeedback(feedbackElem,{ ok: false, caption: err });
-                    console.log(err);
-                } finally {
-                    setTimeout(() => {
-                        // spinner.hidden = true;
-                    }, 500)
+                    this.showServerFeedback = true;
+                    this.serverFeedback.ok = false;
+                    this.serverFeedback.text = err;
                 }
+                // finally {
+                //     setTimeout(() => {
+                //         this.showSpinner = false;
+                //     }, 500)
+                // }
             },
+            setServerFeedback(data) {
+                this.showServerFeedback = true;
+                this.serverFeedback.ok = data.ok;
+                this.serverFeedback.text = data.caption;
+                setTimeout(() => {
+                    this.showServerFeedback = false
+                }, 3000);
+            }
         }
     }
 </script>
