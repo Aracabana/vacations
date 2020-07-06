@@ -23,10 +23,11 @@
     }
 </script>
 
-<style>
+<style lang="less">
     @import 'assets/css/bootstrap.min.css';
     @import 'assets/css/all.min.css';
     @import 'assets/css/leaflet.css';
+    @import 'assets/less/variables';
     html {
         min-height: 100%;
     }
@@ -42,5 +43,17 @@
     .btn .fas {
         position: relative;
         bottom: -1px;
+    }
+    .spinner-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 99;
+        .flex();
+        .flex-center();
+        .align-items-center();
+        background-color: #f6f6f669;
     }
 </style>

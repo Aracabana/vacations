@@ -26,6 +26,13 @@ export default new Router({
                 layout: 'auth'
             },
             component: () => import('@/views/Registration.vue')
-        }
+        },
+        {
+            path: '/create-vacation',
+            meta: {
+                layout: 'main'
+            },
+            component: () => import('@/views/CreateVacation.vue')
+        },
     ]
 })

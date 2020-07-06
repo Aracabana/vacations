@@ -144,7 +144,7 @@
             confirmPassword: {sameAsPassword: sameAs('password'), required},
         },
         methods: {
-            submit() {
+            async submit() {
                 if (this.$v.$invalid) {
                     this.$v.$touch();
                     return
@@ -155,9 +155,45 @@
                     password: this.password,
                     confirmPassword: this.confirmPassword
                 };
-                console.log(formData);
-                this.$router.push('/login')
+                try {
+                    // this.showSpinner = true;
+                    const response = await fetch('http://localhost:8080/auth/registration', {
+                        method: 'POST',
+                        // credentials: true,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    const data = await response.json();
+                    // setServerFeedback(feedbackElem, data);
+                    this.setServerFeedback(data);
+                    if (data.ok) {
+                        setTimeout(() => {
+                            this.$router.push('/login');
+                        }, 500);
+                    }
+                } catch (err) {
+                    // setServerFeedback(feedbackElem,{ ok: false, caption: err });
+                    this.setServerFeedback({ ok: false, caption: err });
+                    this.showServerFeedback = true;
+                    this.serverFeedback.ok = false;
+                    this.serverFeedback.text = err;
+                }
+                // finally {
+                //     setTimeout(() => {
+                //         this.showSpinner = false;
+                //     }, 500)
+                // }
             },
+            setServerFeedback(data) {
+                this.showServerFeedback = true;
+                this.serverFeedback.ok = data.ok;
+                this.serverFeedback.text = data.caption;
+                setTimeout(() => {
+                    this.showServerFeedback = false
+                }, 3000);
+            }
         }
     }
 </script>

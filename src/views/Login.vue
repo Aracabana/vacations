@@ -135,11 +135,12 @@
                     this.setServerFeedback(data);
                     if (data.ok) {
                         setTimeout(() => {
-                            // this.$router.push('/')
+                            this.$router.push('/');
                         }, 500);
                     }
                 } catch (err) {
                     // setServerFeedback(feedbackElem,{ ok: false, caption: err });
+                    this.setServerFeedback({ ok: false, caption: err });
                     this.showServerFeedback = true;
                     this.serverFeedback.ok = false;
                     this.serverFeedback.text = err;
