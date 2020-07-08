@@ -20,6 +20,7 @@
                                         <label for="country">Выберите страну</label>
                                         <input
                                                 v-model.trim="country"
+                                                @input="getCountryCode"
                                                 id="country"
                                                 type="text"
                                                 placeholder="Начните вводить"
@@ -28,9 +29,11 @@
                                                 :class="{'is-invalid': $v.country.$dirty && !$v.country.required}"
                                         >
                                         <datalist id="countries-list">
-                                            <!--                                            {{#each countriesWithCode}}-->
-                                            <!--                                            <option class="comment" data-code="{{this.code}}">{{this.name}}</option>-->
-                                            <!--                                            {{/each}}-->
+                                            <option v-for="country in countriesList"
+                                                    :key="country.code"
+                                                    class="comment">
+                                                {{country.name}}
+                                            </option>
                                         </datalist>
                                         <div
                                                 v-if="$v.country.$dirty && !$v.country.required"
@@ -85,39 +88,13 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
-                        <div id="country-info" hidden class="card country-info">
-                            <div class="card-body">
-                                <h5 id="name" class="card-title"></h5>
-                                <div class="row">
-                                    <div class="col-lg-8 col-md-7 col-sm-12">
-                                        <p>
-                                            <strong>Столица: </strong>
-                                            <span id="capital"></span>
-                                        </p>
-                                        <p>
-                                            <strong>Площадь: </strong>
-                                            <span id="area"></span>
-                                        </p>
-                                        <p>
-                                            <strong>Население: </strong>
-                                            <span id="population"></span>
-                                        </p>
-                                    </div>
-                                    <div class="col-lg-4 col-md-5 col-sm-12">
-                                        <p id="languages-wrapper" hidden>
-                                            <strong>Языки: </strong>
-                                            <span id="languages"></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div v-if="countryCode" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
+                            <CountryInfo :countryCode="countryCode"></CountryInfo>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div id="map-wrapper" class="map-wrapper card-img-bottom" hidden>
-                            <div id="map"></div>
+                        <div class="col-12">
+                            <div id="map-wrapper" class="map-wrapper card-img-bottom" hidden>
+                                <div id="map"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,6 +109,7 @@
     import Header from '../components/Header';
     import ServerFeedback from '../components/ServerFeedback';
     import Spinner from '../components/Spinner';
+    import CountryInfo from '../components/CountryInfo';
     
     export default {
         name: "CreateVacation",
@@ -149,7 +127,9 @@
                     ok: false,
                     text: ''
                 },
+                countriesList: [],
                 country: '',
+                countryCode: false,
                 dateFrom: '',
                 dateTo: '',
             }
@@ -160,9 +140,18 @@
             dateTo: {required},
         },
         components: {
-            Header, ServerFeedback, Spinner
+            Header, ServerFeedback, Spinner, CountryInfo
         },
         methods: {
+            async getCountriesForSelect() {
+                const response = await fetch('http://localhost:8080/api/getCountriesForSelect', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                this.countriesList = await response.json();
+            },
             setDateFromMinValue() {
                 const now = new Date();
                 return formatDate(now);
@@ -172,7 +161,22 @@
                 minForDateTo.setDate(minForDateTo.getDate() + 1);
                 return formatDate(minForDateTo);
             },
-            submit() {
+            getCountryCode() {
+                for (let i = 0; i < this.countriesList.length; i++) {
+                    if (this.country === this.countriesList[i].name) {
+                        this.countryCode = this.countriesList[i].code;
+                        i = this.countriesList.length;
+                    }
+                }
+                // console.log(this.countryCode);
+            },
+            // selectCountry() {
+            //     this.getCountryCode();
+            //     if (this.countryCode) {
+            //         console.log(this.countryCode);
+            //     }
+            // },
+            async submit() {
                 if (this.$v.$invalid) {
                     this.$v.$touch();
                     return
@@ -183,28 +187,46 @@
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo
                 };
-                console.log(formData);
+                try {
+                    const response = await fetch('http://localhost:8080/vacation', {
+                        method: 'POST',
+                        // credentials: true,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    const data = await response.json();
+                    this.setServerFeedback(data);
+                    // if (response.ok) {
+                    //     setTimeout(() => {
+                    //         window.location.href = '/vacation/' + response.vacationId;
+                    //         this.$router.push('/vacation/');
+                    //     }, 200);
+                    // }
+                } catch (err) {
+                    this.setServerFeedback({ok: false, caption: err});
+                } finally {
+                    //this.showSpinner = false;
+                }
             },
+            setServerFeedback(data) {
+                this.showServerFeedback = true;
+                this.serverFeedback.ok = data.ok;
+                this.serverFeedback.text = data.caption;
+                setTimeout(() => {
+                    this.showServerFeedback = false
+                }, 3000);
+            }
+        },
+        created() {
+            this.getCountriesForSelect();
         }
     }
 </script>
 
 <style lang="less" scoped>
     @import '../assets/less/variables';
-    
-    .country-info {
-        height: 100%;
-        p {
-            .flex();
-            .flex-start();
-            > strong {
-                margin-right: 8px;
-            }
-        }
-        span span {
-            display: block;
-        }
-    }
     .map-wrapper {
         margin-top: 32px;
     }

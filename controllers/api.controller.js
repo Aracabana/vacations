@@ -24,5 +24,17 @@ function getGeoJSON (request, response) {
     response.send(parsedObj);
 }
 
+async function getCountriesForSelect (request, response) {
+    try {
+        const countriesWithCode = await countries.getForSelect();
+        response.send(countriesWithCode);
+    } catch (err) {
+        response.json({
+            ok: false,
+            caption: err.message
+        })
+    }
+}
 
-module.exports = { getGeoJSON, getCountry }
+
+module.exports = { getGeoJSON, getCountry, getCountriesForSelect }

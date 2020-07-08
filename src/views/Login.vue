@@ -131,7 +131,6 @@
                         body: JSON.stringify(formData)
                     });
                     const data = await response.json();
-                    // setServerFeedback(feedbackElem, data);
                     this.setServerFeedback(data);
                     if (data.ok) {
                         setTimeout(() => {
@@ -139,7 +138,6 @@
                         }, 500);
                     }
                 } catch (err) {
-                    // setServerFeedback(feedbackElem,{ ok: false, caption: err });
                     this.setServerFeedback({ ok: false, caption: err });
                     this.showServerFeedback = true;
                     this.serverFeedback.ok = false;
