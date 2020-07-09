@@ -16,8 +16,15 @@
                 <th scope="col" style="width: 100px;"></th>
             </tr>
             </thead>
-            <tbody>
-            
+            <tbody v-if="vacations.length">
+            <VacationsTableRow
+                    v-for="(vacation, index) in vacations"
+                    :key="index"
+                    :vacation="vacation"
+            ></VacationsTableRow>
+            </tbody>
+            <tbody  v-else>
+            <VacationsTableEmptyRow></VacationsTableEmptyRow>
             </tbody>
         </table>
     </div>
@@ -26,6 +33,8 @@
 <script>
     import ServerFeedback from '../components/ServerFeedback';
     import Spinner from '../components/Spinner';
+    import VacationsTableEmptyRow from './VacationsTableEmptyRow';
+    import VacationsTableRow from './VacationsTableEmptyRow';
     export default {
         name: "VacationsTable",
         data() {
@@ -35,11 +44,12 @@
                 serverFeedback: {
                     ok: false,
                     text: ''
-                }
+                },
+                vacations: []
             }
         },
         components: {
-            ServerFeedback, Spinner
+            ServerFeedback, Spinner, VacationsTableEmptyRow, VacationsTableRow
         }
     }
 </script>
@@ -52,12 +62,6 @@
     }
     .vacations-table {
         overflow: hidden;
-    }
-    .vacations-table tr td {
-        cursor: pointer;
-    }
-    .table-responsive {
-        position: relative;
     }
     .table-row:hover .action-block {
         opacity: 1;

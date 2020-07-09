@@ -170,12 +170,6 @@
                 }
                 // console.log(this.countryCode);
             },
-            // selectCountry() {
-            //     this.getCountryCode();
-            //     if (this.countryCode) {
-            //         console.log(this.countryCode);
-            //     }
-            // },
             async submit() {
                 if (this.$v.$invalid) {
                     this.$v.$touch();

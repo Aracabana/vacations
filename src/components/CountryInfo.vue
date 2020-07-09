@@ -3,7 +3,7 @@
         <div class="card-body">
             <h5 class="card-title">{{data.countryName}}</h5>
             <div class="row">
-                <div class="col-lg-8 col-md-7 col-sm-12">
+                <div class="col-md-7 col-sm-12">
                     <p>
                         <strong>Столица: </strong>
                         <span>{{data.capital}}</span>
@@ -14,17 +14,17 @@
                     </p>
                     <p>
                         <strong>Население: </strong>
-                        <span>{{data.population}}</span>
+                        <span>{{data.population}} чел.</span>
                     </p>
                 </div>
-                <div v-if="data.additional" class="col-lg-4 col-md-5 col-sm-12">
-                    <p>
-                        <strong>Языки: </strong>
-                        <span>
-                    <span v-for="(language, index) in data.additional.languages" :key="index">{{language.name}}</span>
-                </span>
-                    </p>
-                </div>
+<!--                <div class="col-md-5 col-sm-12">-->
+<!--                    <p>-->
+<!--                        <strong>Языки: </strong>-->
+<!--                        <span>-->
+<!--                            <span v-for="(language, index) in data.additional.languages" :key="index">{{language.name}}</span>-->
+<!--                        </span>-->
+<!--                    </p>-->
+<!--                </div>-->
             </div>
         </div>
     </div>
@@ -45,15 +45,13 @@
         },
         mixins: [Country],
         watch: {
-            countryCode: function(newVal, oldVal) {
-                console.log(this.code);
-                console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+            async countryCode(newVal) {
                 this.code = newVal;
-                console.log(this.code);
+                await this.loadData(['latlng', 'languages']);
             }
         },
-        mounted() {
-            this.loadData(['latlng', 'languages']);
+        async mounted() {
+            await this.loadData(['latlng', 'languages']);
         }
     }
 </script>
