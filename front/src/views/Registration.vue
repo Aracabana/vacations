@@ -127,7 +127,7 @@ export default {
       password: '',
       confirmPassword: '',
       showSpinner: false,
-      serverFeedback: undefined
+      serverFeedback: null
     }
   },
   components: {

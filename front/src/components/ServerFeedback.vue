@@ -8,15 +8,10 @@
   export default {
     name: 'ServerFeedback',
     props: ['serverFeedback'],
-    methods: {
-      hide() {
-        setTimeout(() => {
-          this.$emit('hide', undefined);
-        }, 1000);
-      },
-    },
     mounted() {
-      this.hide();
+      setTimeout(() => {
+        this.$emit('hide', null);
+      }, 1000);
     }
   }
 </script>

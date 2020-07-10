@@ -95,7 +95,7 @@ export default {
       password: '',
       setSession: false,
       showSpinner: false,
-      serverFeedback: undefined
+      serverFeedback: null
     }
   },
   components: {
