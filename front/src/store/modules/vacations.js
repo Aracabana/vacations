@@ -7,9 +7,22 @@ export default {
       const tmp = [];
       const { vacations } = await request('/api/getVacations');
       for (let i = 0; i < vacations.length; i++) {
-        tmp.push(new Vacation(vacations[i]));
+        const vacation = new Vacation(vacations[i]);
+        await vacation.setFlag();
+        tmp.push(vacation);
       }
       commit('updateVacations', tmp);
+    },
+    async removeVacation({commit, state}, vacationId) {
+      try {
+        const result = await request('/vacation', 'DELETE', {id: vacationId});
+        if (result.ok) {
+          commit('updateVacations', state.vacations.filter(item => item.id !== vacationId));
+          commit('updateNotification', {ok: true, caption: 'Отпуск успешно удален'});
+        }
+      } catch (err) {
+        commit('updateNotification', {ok: false, caption: 'Вутрення ошибка сервера'});
+      }
     }
   },
   state: {
@@ -32,8 +45,8 @@ class Vacation {
     this.id = vacation.id;
     this.countryName = vacation.countryName;
     this.countryCode = vacation.countryCode;
-    this.dateFrom = new Date(vacation.dateFrom).toLocaleDateString();
-    this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
+    this.dateFrom = new Date(vacation.dateFrom);
+    this.dateTo = new Date(vacation.dateTo);
   }
 
   async setFlag() {
@@ -45,6 +58,7 @@ class Vacation {
       const data = await response.json();
       this.flag = data.flag;
     } catch (err) {
+      console.log('Флаг не загружен');
     }
   }
   async setCountryData() {

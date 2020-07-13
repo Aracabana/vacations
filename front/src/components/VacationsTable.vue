@@ -48,18 +48,5 @@ export default {
     .vacations-table {
         overflow: hidden;
     }
-    .table-row:hover .action-block {
-        opacity: 1;
-    }
-    .action-block {
-        .flex();
-        .space-around();
-        .align-items-center();
-        height: 100%;
-        width: 100px;
-        background-color: transparent;
-        opacity: 0;
-        .transition();
-    }
 
 </style>

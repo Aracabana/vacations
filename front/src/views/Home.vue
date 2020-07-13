@@ -6,11 +6,7 @@
         <h1>Мои отпуска</h1>
         <div class="content">
           <div class="table-responsive vacation-table-wrapper">
-            <ServerFeedback
-              v-if="serverFeedback"
-              :serverFeedback="serverFeedback"
-              @hide="serverFeedback = null"
-            ></ServerFeedback>
+            <ServerFeedback v-if="getNotification"></ServerFeedback>
             <Spinner v-if="showSpinner"></Spinner>
 
             <VacationsFilter></VacationsFilter>
@@ -23,7 +19,8 @@
 </template>
 
 <script>
-  import ServerFeedback from '../components/ServerFeedback'
+  import { mapGetters } from 'vuex'
+  import ServerFeedback from '../components/Notification'
   import Spinner from '../components/Spinner'
   import Header from '../components/Header'
   import VacationsFilter from '../components/VacationsFilter'
@@ -39,10 +36,10 @@
           class: 'btn-success',
           icon: 'fa-plus'
         },
-        showSpinner: false,
-        serverFeedback: null
+        showSpinner: false
       }
     },
+    computed: mapGetters(['getNotification']),
     components: {
       ServerFeedback, Spinner, Header, VacationsFilter, VacationsTable
     }

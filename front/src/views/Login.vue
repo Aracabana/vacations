@@ -4,11 +4,7 @@
     <div class="container">
       <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
       <form id="login-form" class="auth-form" @submit.prevent="submit">
-        <ServerFeedback
-          v-if="serverFeedback"
-          :serverFeedback="serverFeedback"
-          @hide="serverFeedback = null"
-        ></ServerFeedback>
+        <Notification v-if="getNotification"></Notification>
         <Spinner v-if="showSpinner"></Spinner>
         <div class="form-group">
           <label for="authLogin">Логин</label>
@@ -83,65 +79,59 @@
 </template>
 
 <script>
-import { required, minLength } from 'vuelidate/lib/validators'
-import ServerFeedback from '../components/ServerFeedback'
-import Spinner from '../components/Spinner'
+  import {mapGetters, mapMutations} from 'vuex'
+  import {required, minLength} from 'vuelidate/lib/validators'
+  import Notification from '../components/Notification'
+  import Spinner from '../components/Spinner'
+  import request from '../utils/request';
 
-export default {
-  name: 'Login',
-  data () {
-    return {
-      login: '',
-      password: '',
-      setSession: false,
-      showSpinner: false,
-      serverFeedback: null
-    }
-  },
-  components: {
-    ServerFeedback, Spinner
-  },
-  validations: {
-    login: { minLength: minLength(4), required },
-    password: { minLength: minLength(4), required }
-  },
-  methods: {
-    async submit () {
-      if (this.$v.$invalid) {
-        this.$v.$touch()
-        return
+  export default {
+    name: 'Login',
+    data() {
+      return {
+        login: '',
+        password: '',
+        setSession: false,
+        showSpinner: false
       }
-      const formData = {
-        login: this.login,
-        password: this.password,
-        setSession: this.setSession
-      }
-      try {
-        this.showSpinner = true;
-        const response = await fetch(process.env.VUE_APP_SERVER_URL + '/auth/login', {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        })
-        const data = await response.json()
-        this.serverFeedback = data
-        if (data.ok) {
-          setTimeout(() => {
-            this.$router.push('/')
-          }, 500)
+    },
+    computed: mapGetters(['getNotification']),
+    components: {
+      Notification, Spinner
+    },
+    validations: {
+      login: {minLength: minLength(4), required},
+      password: {minLength: minLength(4), required}
+    },
+    methods: {
+      ...mapMutations(['updateNotification']),
+      async submit() {
+        if (this.$v.$invalid) {
+          this.$v.$touch()
+          return
         }
-      } catch (err) {
-        this.serverFeedback = { ok: false, caption: err }
-      }
-      finally {
-        this.showSpinner = false;
+        const formData = {
+          login: this.login,
+          password: this.password,
+          setSession: this.setSession
+        }
+        try {
+          this.showSpinner = true;
+          const data = await request('/auth/login', 'POST', formData);
+          this.updateNotification(data)
+          if (data.ok) {
+            setTimeout(() => {
+              this.$router.push('/')
+            }, 1050)
+          }
+        } catch (err) {
+          this.updateNotification({ok: false, caption: err})
+        } finally {
+          this.showSpinner = false;
+        }
       }
     }
   }
-}
 </script>
 
 <style scoped>

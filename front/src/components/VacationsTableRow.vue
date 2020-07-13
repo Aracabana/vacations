@@ -1,43 +1,65 @@
 <template>
-    <tr class="table-row" @click="goToVacationPage">
-        <td>
-            <img v-if="vacation.flag" :src="vacation.flag" alt="" class="flag">
-            <span>{{vacation.countryName}}</span>
-        </td>
-        <td class="text-center">{{vacation.dateFrom}}</td>
-        <td class="text-center">{{vacation.dateTo}}</td>
-        <td>
-          <VacationStatus
-          :dateFrom="vacation.dateFrom"
-          :dateTo="vacation.dateTo"
-          ></VacationStatus>
-        </td>
-        <td></td>
-    </tr>
+  <tr class="table-row" @click="goToVacationPage">
+    <td>
+      <img v-if="vacation.flag" :src="vacation.flag" alt="" class="flag">
+      <span>{{vacation.countryName}}</span>
+    </td>
+    <td class="text-center">{{vacation.dateFrom | toLocaleDateString}}</td>
+    <td class="text-center">{{vacation.dateTo | toLocaleDateString}}</td>
+    <td>
+      <VacationStatus
+        :dateFrom="vacation.dateFrom"
+        :dateTo="vacation.dateTo"
+      ></VacationStatus>
+    </td>
+    <td class="action-td">
+      <div class="action-block">
+        <VacationEditBtn :vacationId="vacation.id"></VacationEditBtn>
+        <VacationRemoveBtn :vacationId="vacation.id"></VacationRemoveBtn>
+      </div>
+    </td>
+  </tr>
 </template>
 
 <script>
   import VacationStatus from './VacationStatus';
-export default {
-  name: 'VacationTableRow',
-  components: {VacationStatus},
-  props: {
-    vacation: {}
-  },
-  data () {
-    return {
-    }
-  },
-  methods: {
-    goToVacationPage () {
-      // this.$router.push('/');
+  import VacationEditBtn from './VacationEditBtn';
+  import VacationRemoveBtn from './VacationRemoveBtn';
+
+  export default {
+    name: 'VacationTableRow',
+    components: {VacationStatus, VacationEditBtn, VacationRemoveBtn},
+    props: ['vacation'],
+    methods: {
+      goToVacationPage() {
+        // this.$router.push('/');
+      }
+    },
+    filters: {
+      toLocaleDateString: function (value) {
+        return value.toLocaleDateString();
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
-    .vacations-table tr td {
-        cursor: pointer;
-    }
+  @import '../assets/less/variables';
+  .vacations-table tr td {
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .action-block {
+    .flex();
+    .space-around();
+    .align-items-center();
+    height: 100%;
+    width: 100px;
+    background-color: transparent;
+    opacity: 0;
+    .transition();
+  }
+  .table-row:hover .action-block {
+    opacity: 1;
+  }
 </style>

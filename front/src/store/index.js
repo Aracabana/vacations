@@ -5,13 +5,19 @@ import vacations from './modules/vacations';
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  actions: {
-  },
+  actions: {},
   state: {
+    notification: null
   },
   mutations: {
+    updateNotification(state, notification) {
+      state.notification = notification;
+    }
   },
   getters: {
+    getNotification(state) {
+      return state.notification;
+    }
   },
   modules: {
     vacations
