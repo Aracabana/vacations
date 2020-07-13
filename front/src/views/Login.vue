@@ -7,7 +7,7 @@
         <ServerFeedback
           v-if="serverFeedback"
           :serverFeedback="serverFeedback"
-          @hide="serverFeedback = $event"
+          @hide="serverFeedback = null"
         ></ServerFeedback>
         <Spinner v-if="showSpinner"></Spinner>
         <div class="form-group">
@@ -120,7 +120,7 @@ export default {
         this.showSpinner = true;
         const response = await fetch(process.env.VUE_APP_SERVER_URL + '/auth/login', {
           method: 'POST',
-          // credentials: true,
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },

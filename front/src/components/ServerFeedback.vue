@@ -10,7 +10,7 @@
     props: ['serverFeedback'],
     mounted() {
       setTimeout(() => {
-        this.$emit('hide', null);
+        // this.$emit('hide');
       }, 1000);
     }
   }

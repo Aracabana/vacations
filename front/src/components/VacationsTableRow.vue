@@ -6,14 +6,21 @@
         </td>
         <td class="text-center">{{vacation.dateFrom}}</td>
         <td class="text-center">{{vacation.dateTo}}</td>
-        <td><span class="badge"></span></td>
+        <td>
+          <VacationStatus
+          :dateFrom="vacation.dateFrom"
+          :dateTo="vacation.dateTo"
+          ></VacationStatus>
+        </td>
         <td></td>
     </tr>
 </template>
 
 <script>
+  import VacationStatus from './VacationStatus';
 export default {
   name: 'VacationTableRow',
+  components: {VacationStatus},
   props: {
     vacation: {}
   },

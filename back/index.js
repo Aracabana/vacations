@@ -41,12 +41,7 @@ app.use(session({
         httpOnly: true
     }
 }));
-
-app.use(cors({
-    origin: '*',
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
-    // optionsSuccessStatus: 200
-}));
+app.use(cors({credentials: true, origin: 'http://localhost:8080'}));
 
 /*
     Уставливает обработчики для всех путей в приложении

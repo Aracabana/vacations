@@ -1,11 +1,4 @@
 <template>
-    <div class="table-responsive vacation-table-wrapper">
-        <ServerFeedback
-                v-if="showServerFeedback"
-                :ok="serverFeedback.ok"
-                :text="serverFeedback.text"
-        ></ServerFeedback>
-        <Spinner v-if="showSpinner"></Spinner>
         <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
             <thead class="thead-dark">
             <tr>
@@ -16,40 +9,32 @@
                 <th scope="col" style="width: 100px;"></th>
             </tr>
             </thead>
-            <tbody v-if="vacations.length">
+            <tbody v-if="getVacations.length">
             <VacationsTableRow
-                    v-for="(vacation, index) in vacations"
+                    v-for="(vacation, index) in getVacations"
                     :key="index"
                     :vacation="vacation"
             ></VacationsTableRow>
             </tbody>
-            <tbody  v-else>
+            <tbody v-else>
             <VacationsTableEmptyRow></VacationsTableEmptyRow>
             </tbody>
         </table>
-    </div>
 </template>
 
 <script>
-import ServerFeedback from './ServerFeedback'
-import Spinner from './Spinner'
 import VacationsTableEmptyRow from './VacationsTableEmptyRow'
 import VacationsTableRow from './VacationsTableRow'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'VacationsTable',
-  data () {
-    return {
-      showSpinner: false,
-      showServerFeedback: false,
-      serverFeedback: {
-        ok: false,
-        text: ''
-      },
-      vacations: []
-    }
-  },
   components: {
-    ServerFeedback, Spinner, VacationsTableEmptyRow, VacationsTableRow
+    VacationsTableEmptyRow, VacationsTableRow
+  },
+  methods: mapActions(['loadVacations']),
+  computed: mapGetters(['getVacations']),
+  async mounted() {
+    await this.loadVacations()
   }
 }
 </script>

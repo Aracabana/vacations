@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'Filter'
+  name: 'VacationsFilter'
 }
 </script>
 
