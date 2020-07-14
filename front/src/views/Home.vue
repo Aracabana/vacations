@@ -7,7 +7,7 @@
         <div class="content">
           <div class="table-responsive vacation-table-wrapper">
             <ServerFeedback v-if="getNotification"></ServerFeedback>
-            <Spinner v-if="showSpinner"></Spinner>
+            <Spinner v-if="getSpinner"></Spinner>
 
             <VacationsFilter></VacationsFilter>
             <VacationsTable></VacationsTable>
@@ -15,6 +15,7 @@
         </div>
       </div>
     </div>
+
   </section>
 </template>
 
@@ -35,11 +36,10 @@
           title: 'Создать отпуск',
           class: 'btn-success',
           icon: 'fa-plus'
-        },
-        showSpinner: false
+        }
       }
     },
-    computed: mapGetters(['getNotification']),
+    computed: mapGetters(['getNotification', 'getSpinner']),
     components: {
       ServerFeedback, Spinner, Header, VacationsFilter, VacationsTable
     }
@@ -48,5 +48,7 @@
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
-
+  .vacation-table-wrapper {
+    position: relative;
+  }
 </style>

@@ -103,21 +103,4 @@ class Vacation {
       return {ok: false, caption: err.message};
     }
   }
-  async remove() {
-    try {
-      const response = await fetch('/vacation', {
-        method: 'DELETE',
-        credentials: 'same-origin',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: this.id})
-      });
-      if (response.redirected) {
-        window.location.href = response.url;
-      }
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      return {ok: false, caption: 'Вутрення ошибка сервера'};
-    }
-  }
 }

@@ -5,7 +5,7 @@
       <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
       <form id="login-form" class="auth-form" @submit.prevent="submit">
         <Notification v-if="getNotification"></Notification>
-        <Spinner v-if="showSpinner"></Spinner>
+        <Spinner v-if="getSpinner"></Spinner>
         <div class="form-group">
           <label for="authLogin">Логин</label>
           <input
@@ -91,11 +91,10 @@
       return {
         login: '',
         password: '',
-        setSession: false,
-        showSpinner: false
+        setSession: false
       }
     },
-    computed: mapGetters(['getNotification']),
+    computed: mapGetters(['getNotification', 'getSpinner']),
     components: {
       Notification, Spinner
     },
@@ -104,7 +103,7 @@
       password: {minLength: minLength(4), required}
     },
     methods: {
-      ...mapMutations(['updateNotification']),
+      ...mapMutations(['updateNotification', 'updateSpinner']),
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
@@ -116,7 +115,7 @@
           setSession: this.setSession
         }
         try {
-          this.showSpinner = true;
+          this.updateSpinner(true);
           const data = await request('/auth/login', 'POST', formData);
           this.updateNotification(data)
           if (data.ok) {
@@ -127,7 +126,7 @@
         } catch (err) {
           this.updateNotification({ok: false, caption: err})
         } finally {
-          this.showSpinner = false;
+          this.updateSpinner(false);
         }
       }
     }

@@ -5,7 +5,7 @@
       <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
       <form id="registration-form" class="auth-form" @submit.prevent="submit">
         <Notification v-if="getNotification"></Notification>
-        <Spinner v-if="showSpinner"></Spinner>
+        <Spinner v-if="getSpinner"></Spinner>
         <div class="form-group">
           <label for="regLogin">Логин</label>
           <input
@@ -123,11 +123,10 @@
         login: '',
         email: '',
         password: '',
-        confirmPassword: '',
-        showSpinner: false
+        confirmPassword: ''
       }
     },
-    computed: mapGetters(['getNotification']),
+    computed: mapGetters(['getNotification', 'getSpinner']),
     components: {
       Notification, Spinner
     },
@@ -138,7 +137,7 @@
       confirmPassword: {sameAsPassword: sameAs('password'), required}
     },
     methods: {
-      ...mapMutations(['updateNotification']),
+      ...mapMutations(['updateNotification', 'updateSpinner']),
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
@@ -151,7 +150,7 @@
           confirmPassword: this.confirmPassword
         }
         try {
-          this.showSpinner = true;
+          this.updateSpinner(true);
           const data = await request('/auth/registration', 'POST', formData);
           this.updateNotification(data)
           if (data.ok) {
@@ -162,7 +161,7 @@
         } catch (err) {
           this.updateNotification({ok: false, caption: err})
         } finally {
-          this.showSpinner = false;
+          this.updateSpinner(false);
         }
       }
     }
