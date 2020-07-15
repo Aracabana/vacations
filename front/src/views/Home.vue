@@ -15,17 +15,18 @@
         </div>
       </div>
     </div>
-
+    <VacationEditPopup v-if="getPopup"></VacationEditPopup>
   </section>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import ServerFeedback from '../components/Notification'
   import Spinner from '../components/Spinner'
   import Header from '../components/Header'
   import VacationsFilter from '../components/VacationsFilter'
   import VacationsTable from '../components/VacationsTable'
+  import VacationEditPopup from '../components/VacationEditPopup';
 
   export default {
     name: 'Home',
@@ -39,9 +40,9 @@
         }
       }
     },
-    computed: mapGetters(['getNotification', 'getSpinner']),
+    computed: mapGetters(['getNotification', 'getSpinner', 'getPopup']),
     components: {
-      ServerFeedback, Spinner, Header, VacationsFilter, VacationsTable
+      ServerFeedback, Spinner, Header, VacationsFilter, VacationsTable, VacationEditPopup
     }
   }
 </script>

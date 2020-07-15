@@ -14,7 +14,7 @@
     </td>
     <td class="action-td">
       <div class="action-block">
-        <VacationEditBtn :vacationId="vacation.id"></VacationEditBtn>
+        <VacationEditBtn :vacation="vacation"></VacationEditBtn>
         <VacationRemoveBtn :vacationId="vacation.id"></VacationRemoveBtn>
       </div>
     </td>

@@ -23,6 +23,41 @@ export default {
       } catch (err) {
         commit('updateNotification', {ok: false, caption: 'Вутрення ошибка сервера'});
       }
+    },
+    async editVacation({commit, state}, vacation) {
+      try {
+        const requestData = {
+          id: vacation.id,
+          dateFrom: vacation.dateFrom,
+          dateTo: vacation.dateTo
+        }
+        const result = await request('/vacation', 'PUT', requestData);
+
+        // if (!result.ok) {
+        //   throw new Error(data.caption);
+        // }
+        // const vacation = data.vacation;
+        // this.dateFrom = new Date(result.dateFrom).toLocaleDateString();
+        // this.dateTo = new Date(result.dateTo).toLocaleDateString();
+        // this.status = Vacation.calculateStatus(result.dateFrom, result.dateTo);
+
+        commit('updateVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[vacation]]);
+        // commit('updateVacations', state.vacations.map(item => {
+        //   if (item.id === vacationId) {
+        //     return {
+        //       id: item.id,
+        //       countryCode: item.countryCode,
+        //       dateFrom,
+        //       dateTo
+        //     }
+        //   }
+        //   return item;
+        // }))
+
+        commit('updateNotification', {ok: result.ok, caption: result.caption});
+      } catch (err) {
+        commit('updateNotification', {ok: false, caption: err.message});
+      }
     }
   },
   state: {
@@ -71,36 +106,6 @@ class Vacation {
     }
     finally {
       this.countryInfo = country.data;
-    }
-  }
-
-  async edit(dates) {
-    try {
-      const requestData = {
-        id: this.id,
-        dateFrom: dates.dateFrom,
-        dateTo: dates.dateTo
-      }
-      const response = await fetch('/vacation', {
-        method: 'PUT',
-        credentials: 'same-origin',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(requestData)
-      });
-      if (response.redirected) {
-        window.location.href = response.url;
-      }
-      const data = await response.json();
-      if (!data.ok) {
-        throw new Error(data.caption);
-      }
-      const vacation = data.vacation;
-      this.dateFrom = new Date(vacation.dateFrom).toLocaleDateString();
-      this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
-      this.status = Vacation.calculateStatus(vacation.dateFrom, vacation.dateTo);
-      return {ok: data.ok, caption: data.caption};
-    } catch (err) {
-      return {ok: false, caption: err.message};
     }
   }
 }
