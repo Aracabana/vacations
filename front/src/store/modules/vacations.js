@@ -13,7 +13,7 @@ export default {
         tmp.push(vacation);
       }
       commit('setVacations', tmp);
-      commit('setFilteredVacations');
+      commit('filterVacations');
     },
     async removeVacation({commit, state}, vacationId) {
       try {
@@ -50,15 +50,15 @@ export default {
       }
     },
 
-    sort({commit}, sortField) {
+    async sort({commit}, sortField) {
       commit('setSortField', sortField);
       commit('sortVacations');
     },
-    search({commit, dispatch}, input) {
+    async search({commit, dispatch}, input) {
       commit('setSearchValue', input);
       dispatch('filter');
     },
-    filter({commit}) {
+    async filter({commit}) {
       commit('filterVacations');
     }
   },
@@ -73,7 +73,6 @@ export default {
   },
   mutations: {
     setVacations: (state, vacations) => state.vacations = vacations,
-    setFilteredVacations: (state) => state.filteredVacations = state.vacations,
     setSortField: (state, field) => state.filterOptions.sortField = field,
     setSearchValue: (state, input) => state.filterOptions.searchValue = input,
 
