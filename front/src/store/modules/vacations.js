@@ -50,15 +50,12 @@ export default {
       }
     },
 
-    async sort({commit}, sortField) {
+    async sortVacation({commit}, sortField) {
       commit('setSortField', sortField);
       commit('sortVacations');
     },
-    async search({commit, dispatch}, input) {
+    async searchVacations({commit}, input) {
       commit('setSearchValue', input);
-      dispatch('filter');
-    },
-    async filter({commit}) {
       commit('filterVacations');
     }
   },

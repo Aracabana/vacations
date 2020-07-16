@@ -2,9 +2,9 @@
   <div class="filter">
     <div id="filter-buttons">
       <span class="filter-label">Сортировать по:</span>
-      <button type="button" class="btn btn-sm btn-info" @click="sort('countryName')">Страна</button>
-      <button type="button" class="btn btn-sm btn-info" @click="sort('dateFrom')">Дата прибытия</button>
-      <button type="button" class="btn btn-sm btn-info" @click="sort('dateTo')">Статус</button>
+      <button type="button" class="btn btn-sm btn-info" @click="sortVacation('countryName')">Страна</button>
+      <button type="button" class="btn btn-sm btn-info" @click="sortVacation('dateFrom')">Дата прибытия</button>
+      <button type="button" class="btn btn-sm btn-info" @click="sortVacation('dateTo')">Статус</button>
     </div>
     <div class="filter-search">
       <span class="filter-label">Найти</span>
@@ -18,9 +18,9 @@
   export default {
     name: 'VacationsFilter',
     methods: {
-      ...mapActions(['search', 'sort']),
-      handleSearch(e) {
-        this.search(e.target.value);
+      ...mapActions(['searchVacations', 'sortVacation']),
+      handleSearch: function (e) {
+        this.searchVacations(e.target.value);
       }
     }
   }
