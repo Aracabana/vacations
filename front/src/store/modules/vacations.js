@@ -1,5 +1,6 @@
 import Country from '../../../../public/js/entities/country-entity';
 import request from '../../utils/request';
+import filter from './filter';
 
 export default {
   actions: {
@@ -12,6 +13,7 @@ export default {
         tmp.push(vacation);
       }
       commit('updateVacations', tmp);
+      // commit('updateFilteredVacations', tmp);
     },
     async removeVacation({commit, state}, vacationId) {
       try {
@@ -46,29 +48,38 @@ export default {
         commit('updateNotification', {ok: false, caption: err.message});
       }
     },
+
+    // filterBy({commit, state}, {field, value}) {
+    //   let filteredVacations = state.vacations.filter(item => item[field].toLowerCase().includes(value.toLowerCase()));
+    //   commit('updateFilteredVacations', filteredVacations);
+    // },
+
+    // sortBy({commit, state}, field) {
+    //   function compare(a,b) {
+    //     return (a[field] < b[field]) ? -1 : (a[field] > b[field]) ?  1 : 0;
+    //   }
+    //   const sorted = state.filteredVacations.sort(compare);
+    //   commit('updateFilteredVacations', sorted);
+    // }
   },
   state: {
-    vacations: [],
-    filterField: 'all'
+    vacations: []
   },
   mutations: {
-    updateVacations(state, vacations) {
-      state.vacations = vacations;
+    updateVacations(state, payload) {
+      state.vacations = payload;
     },
-    updateSortBy(state, vacations) {
+    // updateFilteredVacations(state, payload) {
+    //   state.filteredVacations = payload;
+    // }
 
-    }
   },
   getters: {
-    getVacations({getters, state}) {
-      return state.filterBy === 'all' ? state.vacations :
-             getters.filterBy()
-    },
-
-    filterBy(state, field) {
-
+    getVacations(state) {
+      return state.filteredVacations;
     }
-  }
+  },
+   modules: {filter}
 }
 
 class Vacation {
