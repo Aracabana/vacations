@@ -9,8 +9,9 @@ export default class Vacation {
         this.dateTo = new Date(vacation.dateTo).toLocaleDateString();
         this.status = Vacation.calculateStatus(vacation.dateFrom, vacation.dateTo);
     }
-    
+
     static calculateStatus(dateFrom, dateTo) {
+        console.log(dateFrom);
         dateFrom = new Date(dateFrom);
         dateTo = new Date(dateTo);
         const fromMs = new Date(dateFrom.getFullYear(), dateFrom.getMonth(), dateFrom.getDate(), 0, 0, 0, 0).valueOf();
@@ -19,14 +20,14 @@ export default class Vacation {
         const nowMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).valueOf();
         return (nowMs < fromMs) ? 'Ожидание' : (nowMs >= fromMs && nowMs < toMs) ? 'В процессе' : 'Завершен';
     }
-    
+
     getStatusClass() {
         return (this.status === 'Ожидание') ? 'success' : (this.status === 'В процессе') ? 'warning' : 'danger';
     }
     getFieldsArray() {
         return [this.countryName, this.dateFrom, this.dateTo, this.status];
     }
-    
+
     async setFlag() {
         try {
             const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.countryCode}?fields=flag`);
@@ -50,7 +51,7 @@ export default class Vacation {
             this.countryInfo = country.data;
         }
     }
-    
+
     async edit(dates) {
         try {
             const requestData = {

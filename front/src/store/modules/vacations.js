@@ -1,6 +1,6 @@
 import Country from '../../../../public/js/entities/country-entity';
 import request from '../../utils/request';
-import filter from './filter';
+import { FilterBuilder } from "../../utils/filterHelper";
 
 export default {
   actions: {
@@ -12,14 +12,15 @@ export default {
         await vacation.setFlag();
         tmp.push(vacation);
       }
-      commit('updateVacations', tmp);
-      // commit('updateFilteredVacations', tmp);
+      commit('setVacations', tmp);
+      commit('setFilteredVacations');
     },
     async removeVacation({commit, state}, vacationId) {
       try {
         const result = await request('/vacation', 'DELETE', {id: vacationId});
         if (result.ok) {
-          commit('updateVacations', state.vacations.filter(item => item.id !== vacationId));
+          commit('setVacations', state.vacations.filter(item => item.id !== vacationId));
+          commit('filterVacations');
           commit('updateNotification', {ok: true, caption: 'Отпуск успешно удален'});
         }
       } catch (err) {
@@ -28,12 +29,11 @@ export default {
     },
     async editVacation({commit, state}, vacation) {
       try {
-        const requestData = {
+        const result = await request('/vacation', 'PUT', {
           id: vacation.id,
           dateFrom: vacation.dateFrom,
           dateTo: vacation.dateTo
-        }
-        const result = await request('/vacation', 'PUT', requestData);
+        });
 
         if (!result.ok) {
           throw new Error(result.caption);
@@ -41,7 +41,8 @@ export default {
 
         const updatedVacation = new Vacation(vacation);
         await updatedVacation.setFlag();
-        commit('updateVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
+        commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
+        commit('filterVacations');
         commit('updateNotification', {ok: result.ok, caption: result.caption});
 
       } catch (err) {
@@ -49,37 +50,47 @@ export default {
       }
     },
 
-    // filterBy({commit, state}, {field, value}) {
-    //   let filteredVacations = state.vacations.filter(item => item[field].toLowerCase().includes(value.toLowerCase()));
-    //   commit('updateFilteredVacations', filteredVacations);
-    // },
-
-    // sortBy({commit, state}, field) {
-    //   function compare(a,b) {
-    //     return (a[field] < b[field]) ? -1 : (a[field] > b[field]) ?  1 : 0;
-    //   }
-    //   const sorted = state.filteredVacations.sort(compare);
-    //   commit('updateFilteredVacations', sorted);
-    // }
+    sort({commit}, sortField) {
+      commit('setSortField', sortField);
+      commit('sortVacations');
+    },
+    search({commit, dispatch}, input) {
+      commit('setSearchValue', input);
+      dispatch('filter');
+    },
+    filter({commit}) {
+      commit('filterVacations');
+    }
   },
   state: {
-    vacations: []
+    vacations: [],
+    filteredVacations: [],
+    filterOptions: {
+      searchValue: '',
+      searchField: 'countryName',
+      sortField: 'countryName'
+    }
   },
   mutations: {
-    updateVacations(state, payload) {
-      state.vacations = payload;
-    },
-    // updateFilteredVacations(state, payload) {
-    //   state.filteredVacations = payload;
-    // }
+    setVacations: (state, vacations) => state.vacations = vacations,
+    setFilteredVacations: (state) => state.filteredVacations = state.vacations,
+    setSortField: (state, field) => state.filterOptions.sortField = field,
+    setSearchValue: (state, input) => state.filterOptions.searchValue = input,
 
+    filterVacations(state) {
+      const vacations = new FilterBuilder(state.filterOptions, [...state.vacations]);
+      state.filteredVacations = vacations.search().sort().get();
+    },
+    sortVacations(state) {
+      const vacations = new FilterBuilder(state.filterOptions, [...state.filteredVacations]);
+      state.filteredVacations = vacations.sort().get();
+    }
   },
   getters: {
     getVacations(state) {
       return state.filteredVacations;
     }
-  },
-   modules: {filter}
+  }
 }
 
 class Vacation {
