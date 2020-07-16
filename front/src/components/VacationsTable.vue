@@ -11,7 +11,7 @@
             </thead>
             <tbody v-if="getVacations.length">
             <VacationsTableRow
-                    v-for="(vacation, index) in getVacations"
+                    v-for="(vacation, index) in vacations"
                     :key="index"
                     :vacation="vacation"
             ></VacationsTableRow>
@@ -31,8 +31,16 @@ export default {
   components: {
     VacationsTableEmptyRow, VacationsTableRow
   },
+  data() {
+    return {
+      vacations: this.getVacations
+    }
+  },
   methods: mapActions(['loadVacations']),
   computed: mapGetters(['getVacations']),
+  filters: {
+
+  },
   async mounted() {
     await this.loadVacations()
   }

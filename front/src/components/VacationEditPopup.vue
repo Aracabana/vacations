@@ -10,10 +10,10 @@
           <div class="form-group">
             <label for="dateFrom">Дата начала</label>
             <input
+              v-model="dateFrom"
               id="dateFrom"
               type="date"
-              :min="setDateFromMinValue()"
-              :value="formatDate(getPopup.dateFrom)"
+              :min="setDateMinValue()"
               class="form-control"
               :class="{'is-invalid': $v.dateFrom.$dirty && !$v.dateFrom.required}"
             >
@@ -27,10 +27,10 @@
           <div class="form-group">
             <label for="dateTo">Дата завершения</label>
             <input
+              v-model="dateTo"
               id="dateTo"
               type="date"
-              :min="setDateToMinValue()"
-              :value="formatDate(getPopup.dateTo)"
+              :min="setDateMinValue(1)"
               class="form-control"
               :class="{'is-invalid': $v.dateTo.$dirty && !$v.dateTo.required}"
             >
@@ -61,6 +61,12 @@
       dateFrom: {required},
       dateTo: {required}
     },
+    data() {
+      return {
+        dateFrom: '',
+        dateTo: ''
+      }
+    },
     computed: mapGetters(['getPopup']),
     methods: {
       ...mapActions(['editVacation']),
@@ -69,32 +75,32 @@
         this.updatePopup(null);
       },
       formatDate: function (value) {
-        return new Date(value).toLocaleDateString().split('.').reverse().join('-');
+        return value.toLocaleDateString().split('.').reverse().join('-');
       },
       async submit() {
-        if (this.$v.$invalid) {
-          this.$v.$touch()
-          return
-        }
-        // const updatedVacation = {
-        //   id: this.getPopup.id,
-        //   countryName: this.getPopup.countryName,
-        //   countryCode: this.getPopup.countryCode,
-        //   dateFrom: '',
-        //   dateTo: '',
-        //   flag: this.getPopup.flag
+        // if (this.$v.$invalid) {
+        //   this.$v.$touch()
+        //   return
         // }
-        // await this.editVacation(updatedVacation);
+        const updatedVacation = {
+          id: this.getPopup.id,
+          countryName: this.getPopup.countryName,
+          countryCode: this.getPopup.countryCode,
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo
+        }
+        await this.editVacation(updatedVacation);
+        this.updatePopup(null);
       },
-      setDateFromMinValue() {
+      setDateMinValue(increase = 0) {
         const now = new Date()
+        now.setDate(now.getDate() + increase)
         return formatDate(now)
-      },
-      setDateToMinValue() {
-        const minForDateTo = new Date()
-        minForDateTo.setDate(minForDateTo.getDate() + 1)
-        return formatDate(minForDateTo)
-      },
+      }
+    },
+    mounted() {
+      this.dateFrom = this.formatDate(this.getPopup.dateFrom)
+      this.dateTo = this.formatDate(this.getPopup.dateTo)
     }
   }
 </script>

@@ -33,44 +33,40 @@ export default {
         }
         const result = await request('/vacation', 'PUT', requestData);
 
-        // if (!result.ok) {
-        //   throw new Error(data.caption);
-        // }
-        // const vacation = data.vacation;
-        // this.dateFrom = new Date(result.dateFrom).toLocaleDateString();
-        // this.dateTo = new Date(result.dateTo).toLocaleDateString();
-        // this.status = Vacation.calculateStatus(result.dateFrom, result.dateTo);
+        if (!result.ok) {
+          throw new Error(result.caption);
+        }
 
-        commit('updateVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[vacation]]);
-        // commit('updateVacations', state.vacations.map(item => {
-        //   if (item.id === vacationId) {
-        //     return {
-        //       id: item.id,
-        //       countryCode: item.countryCode,
-        //       dateFrom,
-        //       dateTo
-        //     }
-        //   }
-        //   return item;
-        // }))
-
+        const updatedVacation = new Vacation(vacation);
+        await updatedVacation.setFlag();
+        commit('updateVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
         commit('updateNotification', {ok: result.ok, caption: result.caption});
+
       } catch (err) {
         commit('updateNotification', {ok: false, caption: err.message});
       }
-    }
+    },
   },
   state: {
-    vacations: []
+    vacations: [],
+    filterField: 'all'
   },
   mutations: {
     updateVacations(state, vacations) {
       state.vacations = vacations;
+    },
+    updateSortBy(state, vacations) {
+
     }
   },
   getters: {
-    getVacations(state) {
-      return state.vacations;
+    getVacations({getters, state}) {
+      return state.filterBy === 'all' ? state.vacations :
+             getters.filterBy()
+    },
+
+    filterBy(state, field) {
+
     }
   }
 }
