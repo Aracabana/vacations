@@ -89,8 +89,8 @@
     name: 'Login',
     data() {
       return {
-        login: '',
-        password: '',
+        login: 'yuliya',
+        password: '1111',
         setSession: false
       }
     },
@@ -103,7 +103,7 @@
       password: {minLength: minLength(4), required}
     },
     methods: {
-      ...mapMutations(['updateNotification', 'updateSpinner']),
+      ...mapMutations(['updateNotification', 'updateSpinner', 'updateUser']),
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
@@ -114,19 +114,11 @@
           password: this.password,
           setSession: this.setSession
         }
-        try {
-          this.updateSpinner(true);
-          const data = await request('/auth/login', 'POST', formData);
-          this.updateNotification(data)
-          if (data.ok) {
-            setTimeout(() => {
-              this.$router.push('/')
-            }, 1050)
-          }
-        } catch (err) {
-          this.updateNotification({ok: false, caption: err})
-        } finally {
-          this.updateSpinner(false);
+        const data = await request('/auth/login', 'POST', formData, true);
+        if (data && data.ok) {
+          this.updateUser(data.user);
+          this.updateNotification(data);
+          setTimeout(() => this.$router.push('/'), 1050);
         }
       }
     }

@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.use(function(request, response, next) {
     if (!request.session.login) {
-        response.redirect('/auth/login')
+        response.status(401).json({ok: false, caption: 'Вы не авторизованы'});
         return;
     }
     next();

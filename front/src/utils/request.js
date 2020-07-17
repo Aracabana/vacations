@@ -1,4 +1,12 @@
-export default async function request(url, method = 'GET', data = null) {
+import router from '../router/index';
+import store from '../store';
+
+export default async function request(url, method = 'GET', data = null, spinner = false) {
+
+  if (spinner) {
+    store.commit('updateSpinner', true);
+  }
+
   const headers = {};
   const credentials = 'include';
   let body;
@@ -8,12 +16,26 @@ export default async function request(url, method = 'GET', data = null) {
     body = JSON.stringify(data);
   }
 
-  const response = await fetch(process.env.VUE_APP_SERVER_URL + url, {method, headers, credentials, body});
+  try {
+    const response = await fetch(process.env.VUE_APP_SERVER_URL + url, {method, headers, credentials, body});
+    const result = await response.json();
 
-  // if (response.redirected) {
-  //   window.location.href = response.url;
-  //   return;
-  // }
+    if (response.status === 401) {
+      await router.push('/login');
+      throw new Error(result.caption);
+    }
+    if (result.hasOwnProperty('ok') && !result.ok) {
+      throw new Error(result.caption);
+    }
 
-  return await response.json();
+    return result;
+
+  } catch (err) {
+    store.commit('updateNotification', {ok: false, caption: err});
+    return false;
+  } finally {
+    if (spinner) {
+      store.commit('updateSpinner', false);
+    }
+  }
 }

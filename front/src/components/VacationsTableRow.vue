@@ -8,12 +8,11 @@
     <td class="text-center">{{vacation.dateTo | toLocaleDateString}}</td>
     <td>
       <VacationStatus
-        :dateFrom="vacation.dateFrom"
-        :dateTo="vacation.dateTo"
+        :status="vacation.status"
       ></VacationStatus>
     </td>
     <td class="action-td">
-      <div class="action-block">
+      <div v-if="vacation.status.text !== 'Завершен'" class="action-block">
         <VacationEditBtn :vacation="vacation"></VacationEditBtn>
         <VacationRemoveBtn :vacationId="vacation.id"></VacationRemoveBtn>
       </div>

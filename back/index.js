@@ -51,8 +51,8 @@ app.use(cors({
     Уставливает обработчики для всех путей в приложении
  */
 app.use('/auth', routes.auth);
-app.use('/vacation', routes.vacation);
-app.use('/api', routes.api);
+app.use('/vacation', routes.access, routes.vacation);
+app.use('/api', routes.access, routes.api);
 app.get('/404', function (request, response) {
     response.render('404');
 });

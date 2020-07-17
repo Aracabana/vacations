@@ -149,19 +149,10 @@
           password: this.password,
           confirmPassword: this.confirmPassword
         }
-        try {
-          this.updateSpinner(true);
-          const data = await request('/auth/registration', 'POST', formData);
-          this.updateNotification(data)
-          if (data.ok) {
-            setTimeout(() => {
-              this.$router.push('/login')
-            }, 1050)
-          }
-        } catch (err) {
-          this.updateNotification({ok: false, caption: err})
-        } finally {
-          this.updateSpinner(false);
+        const data = await request('/auth/registration', 'POST', formData, true);
+        if (data && data.ok) {
+          this.updateNotification(data);
+          setTimeout(() => this.$router.push('/login'), 1050);
         }
       }
     }

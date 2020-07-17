@@ -1,87 +1,98 @@
 <template>
-  <div class="popup-bg">
-    <div class="popup">
-      <div class="popup-content">
-        <button class="btn popup-close" type="button" @click="hidePopup">
-          <i class="fas fa-times"></i>
-        </button>
-        <h3 id="js-popup-title" class="popup-title">{{getPopup.countryName}}</h3>
-        <form id="form-edit" @submit.prevent="submit">
-          <div class="form-group">
-            <label for="dateFrom">Дата начала</label>
-            <input
-              v-model="dateFrom"
-              id="dateFrom"
-              type="date"
-              :min="setDateMinValue()"
-              class="form-control"
-              :class="{'is-invalid': $v.dateFrom.$dirty && !$v.dateFrom.required}"
-            >
-            <div
-              v-if="$v.dateFrom.$dirty && !$v.dateFrom.required"
-              class="invalid-feedback"
-            >
-              Поле обязательно для заполнения
+  <transition name="modal-fade">
+    <div class="popup-bg" @click.self="hidePopup">
+      <div class="popup">
+        <div class="popup-content">
+          <Spinner v-if="getSpinner"></Spinner>
+          <button class="btn popup-close" type="button" @click="hidePopup">
+            <i class="fas fa-times"></i>
+          </button>
+          <h3 id="js-popup-title" class="popup-title">{{getPopup.countryName}}</h3>
+          <form id="form-edit" @submit.prevent="submit">
+            <div class="form-group">
+              <label for="dateFrom">Дата начала</label>
+              <input
+                v-model="dateFrom"
+                id="dateFrom"
+                type="date"
+                :min="setDateMinValue()"
+                class="form-control"
+                :class="{'is-invalid': ($v.dateFrom.$dirty && !$v.dateFrom.required) || ($v.dateFrom.$dirty && !$v.dateFrom.isValid)}"
+              >
+              <div
+                v-if="$v.dateFrom.$dirty && !$v.dateFrom.required"
+                class="invalid-feedback"
+              >
+                Поле обязательно для заполнения
+              </div>
+              <div
+                v-if="$v.dateFrom.$dirty && !$v.dateFrom.isValid"
+                class="invalid-feedback"
+              >
+                Не корректная дата
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="dateTo">Дата завершения</label>
-            <input
-              v-model="dateTo"
-              id="dateTo"
-              type="date"
-              :min="setDateMinValue(1)"
-              class="form-control"
-              :class="{'is-invalid': $v.dateTo.$dirty && !$v.dateTo.required}"
-            >
-            <div
-              v-if="$v.dateTo.$dirty && !$v.dateTo.required"
-              class="invalid-feedback"
-            >
-              Поле обязательно для заполнения
+            <div class="form-group">
+              <label for="dateTo">Дата завершения</label>
+              <input
+                v-model="dateTo"
+                id="dateTo"
+                type="date"
+                :min="setDateMinValue(1)"
+                class="form-control"
+                :class="{'is-invalid':  ($v.dateTo.$dirty && !$v.dateTo.required) || ($v.dateTo.$dirty && !$v.dateTo.isValid)}"
+              >
+              <div
+                v-if="$v.dateTo.$dirty && !$v.dateTo.required"
+                class="invalid-feedback"
+              >
+                Поле обязательно для заполнения
+              </div>
+              <div
+                v-if="$v.dateTo.$dirty && !$v.dateTo.isValid"
+                class="invalid-feedback"
+              >
+                Не корректная дата
+              </div>
             </div>
-          </div>
-          <div class="btns text-right">
-            <button id="popup-submit" type="submit" class="btn btn-success">Сохранить</button>
-          </div>
-        </form>
+            <div class="btns text-right">
+              <button id="popup-submit" type="submit" class="btn btn-success">Сохранить</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {required} from 'vuelidate/lib/validators'
-  import {formatDate} from '../assets/js/formatDate'
+  import {formatDate, validateDates} from '../assets/js/formatDate'
+  import Spinner from './Spinner';
 
   export default {
     name: "VacationEditPopup",
     validations: {
-      dateFrom: {required},
-      dateTo: {required}
+      dateFrom: {required, isValid: validateDates()},
+      dateTo: {required, isValid: validateDates()}
     },
+    components: {Spinner},
     data() {
       return {
         dateFrom: '',
         dateTo: ''
       }
     },
-    computed: mapGetters(['getPopup']),
+    computed: mapGetters(['getPopup', 'getSpinner']),
     methods: {
       ...mapActions(['editVacation']),
       ...mapMutations(['updatePopup']),
-      hidePopup() {
-        this.updatePopup(null);
-      },
-      formatDate: function (value) {
-        return value.toLocaleDateString().split('.').reverse().join('-');
-      },
       async submit() {
-        // if (this.$v.$invalid) {
-        //   this.$v.$touch()
-        //   return
-        // }
+        if (this.$v.$invalid) {
+          this.$v.$touch()
+          return
+        }
         const updatedVacation = {
           id: this.getPopup.id,
           countryName: this.getPopup.countryName,
@@ -91,6 +102,12 @@
         }
         await this.editVacation(updatedVacation);
         this.updatePopup(null);
+      },
+      hidePopup() {
+        this.updatePopup(null);
+      },
+      formatDate: function (value) {
+        return value.toLocaleDateString().split('.').reverse().join('-');
       },
       setDateMinValue(increase = 0) {
         const now = new Date()
@@ -107,6 +124,15 @@
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
+  .modal-fade-enter,
+  .modal-fade-leave-active {
+    opacity: 0;
+  }
+
+  .modal-fade-enter-active,
+  .modal-fade-leave-active {
+    transition: opacity .5s ease
+  }
   .popup-bg {
     overflow-x: hidden;
     overflow-y: auto;

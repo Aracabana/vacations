@@ -94,7 +94,6 @@ async function remove(request, response) {
 }
 async function getAll(request, response) {
     const userId = request.session.userId;
-    if (userId) {
         try {
             const vacations = await Vacation.getAllByUserId(userId);
             response.json({
@@ -107,7 +106,6 @@ async function getAll(request, response) {
                 caption: err.message
             });
         }
-    }
 }
 async function getOne(request, response) {
     const id = request.query.id;

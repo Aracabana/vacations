@@ -13,7 +13,7 @@
     mounted() {
       setTimeout(() => {
         this.updateNotification(null)
-      }, 10000);
+      }, 1000);
     }
   }
 </script>

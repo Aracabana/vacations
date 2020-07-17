@@ -13,10 +13,19 @@ export class FilterBuilder {
     return this;
   }
 
+  filter() {
+    let { status } = this.options;
+    if (status.trim() !== '') {
+      this.data = this.data.filter(item => item.status.text === status);
+    }
+    return this;
+  }
+
   sort() {
-    const { sortField } = this.options;
+    const { sortField, sortOrder } = this.options;
+    let sign = (sortOrder === 'ASC') ? 1 : -1;
     this.data.sort((a,b) => {
-      return (a[sortField] < b[sortField]) ? -1 : (a[sortField] > b[sortField]) ?  1 : 0;
+      return (a[sortField] < b[sortField]) ? -1 * sign : (a[sortField] > b[sortField]) ? sign : 0;
     });
     return this;
   }

@@ -26,7 +26,7 @@ async function login(request, response) {
         }
         request.session.userId = user.id;
         request.session.login = user.login;
-        response.json({ok: true, caption: 'Вы успешно авторизовались', login: user.login});
+        response.json({ok: true, caption: 'Вы успешно авторизовались', user: {login: user.login}});
     }
     catch (err) {
         response.json({ ok: false, caption: err.message});
@@ -34,24 +34,15 @@ async function login(request, response) {
 }
 function logout (request, response) {
     request.session.destroy(() => {
-        response.redirect('/auth/login');
+        response.json({ok:true});
     });
 }
+function checkAuth(request, response) {
+    if (!request.session.login) {
+        response.json({status: false});
+        return;
+    }
+    response.json({status: true});
+}
 
-// function registrationPage(request, response) {
-//     response.render('registration', {
-//         layout: 'auth',
-//         pageTitle: 'Регистрация',
-//         scripts: 'auth.bundle'
-//     });
-// }
-// function loginPage(request, response) {
-//     response.render('login', {
-//         layout: 'auth',
-//         pageTitle: 'Авторизация',
-//         scripts: 'auth.bundle'
-//     });
-// }
-
-
-module.exports = { register, login, logout };
+module.exports = { register, login, logout, checkAuth };

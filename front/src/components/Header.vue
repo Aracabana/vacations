@@ -4,10 +4,10 @@
       <div class="avatar">
         <i class="fas fa-user"></i>
       </div>
-      <p class="avatar-name text-white text-center">Login</p> <!--request.session.login-->
+      <p class="avatar-name text-white text-center">{{getUserLogin}}</p>
       <p class="logout">
         <span>|</span>
-        <a href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <button type="button" class="logout-btn" @click="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </p>
     </div>
     <router-link
@@ -22,11 +22,24 @@
 </template>
 
 <script>
+  import request from '../utils/request';
+  import {mapMutations, mapGetters} from 'vuex';
+
   export default {
     name: 'Header',
     props: ['btn'],
+    computed: mapGetters(['getUserLogin']),
     methods: {
-      logout() {
+      ...mapMutations(['updateNotification']),
+      async logout() {
+        try {
+          await request('/auth/logout', 'GET');
+        } catch (err) {
+          this.updateNotification({ok: false, caption: err});
+        }
+        finally {
+          await this.$router.push('/login');
+        }
       }
     }
   }
@@ -65,8 +78,10 @@
     margin-bottom: 0;
     font-size: 14px;
     color: #ffffff;
-    a {
+    &-btn {
       margin-left: 8px;
+      border: none;
+      background: none;
       color: #ffffff;
     }
   }
