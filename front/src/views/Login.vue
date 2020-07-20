@@ -4,8 +4,8 @@
     <div class="container">
       <h1 class="text-center text-uppercase mb-5">Мой отпуск</h1>
       <form id="login-form" class="auth-form" @submit.prevent="submit">
-        <Notification v-if="getNotification"></Notification>
-        <Spinner v-if="getSpinner"></Spinner>
+        <Notification v-if="getNotification && getNotification.page === 'Login'"></Notification>
+        <Spinner v-if="loading"></Spinner>
         <div class="form-group">
           <label for="authLogin">Логин</label>
           <input
@@ -89,12 +89,13 @@
     name: 'Login',
     data() {
       return {
+        loading: false,
         login: 'yuliya',
         password: '1111',
         setSession: false
       }
     },
-    computed: mapGetters(['getNotification', 'getSpinner']),
+    computed: mapGetters(['getNotification']),
     components: {
       Notification, Spinner
     },
@@ -103,23 +104,26 @@
       password: {minLength: minLength(4), required}
     },
     methods: {
-      ...mapMutations(['updateNotification', 'updateSpinner', 'updateUser']),
+      ...mapMutations(['updateNotification', 'updateUser']),
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
           return
         }
+        this.loading = true;
         const formData = {
           login: this.login,
           password: this.password,
           setSession: this.setSession
         }
-        const data = await request('/auth/login', 'POST', formData, true);
+        const data = await request('/auth/login', 'POST', formData, 'Login');
         if (data && data.ok) {
           this.updateUser(data.user);
+          data.page = 'Login';
           this.updateNotification(data);
           setTimeout(() => this.$router.push('/'), 1050);
         }
+        this.loading = false;
       }
     }
   }

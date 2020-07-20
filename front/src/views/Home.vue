@@ -5,13 +5,9 @@
       <div class="container-fluid">
         <h1>Мои отпуска</h1>
         <div class="content">
-          <div class="table-responsive vacation-table-wrapper">
-            <ServerFeedback v-if="getNotification"></ServerFeedback>
-            <Spinner v-if="getSpinner"></Spinner>
-
-            <VacationsFilter></VacationsFilter>
-            <VacationsTable></VacationsTable>
-          </div>
+          <Notification v-if="getNotification && getNotification.page === 'Home'"></Notification>
+          <VacationsFilter></VacationsFilter>
+          <VacationsTable></VacationsTable>
         </div>
       </div>
     </div>
@@ -20,9 +16,8 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex'
-  import ServerFeedback from '../components/Notification'
-  import Spinner from '../components/Spinner'
+  import {mapActions, mapGetters, mapState} from 'vuex'
+  import Notification from '../components/Notification'
   import Header from '../components/Header'
   import VacationsFilter from '../components/VacationsFilter'
   import VacationsTable from '../components/VacationsTable'
@@ -42,14 +37,11 @@
     },
     computed: mapGetters(['getNotification', 'getSpinner', 'getPopup']),
     components: {
-      ServerFeedback, Spinner, Header, VacationsFilter, VacationsTable, VacationEditPopup
+      Notification, Header, VacationsFilter, VacationsTable, VacationEditPopup
     }
   }
 </script>
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
-  .vacation-table-wrapper {
-    position: relative;
-  }
 </style>

@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     layout () {
-      return (this.$route.meta.layout || 'main') + '-layout'
+      return (this.$route.meta.layout || 'auth') + '-layout'
     }
   }
 }
@@ -55,5 +55,10 @@ export default {
     .flex-center();
     .align-items-center();
     background-color: #f6f6f669;
+  }
+  .form-control {
+    &:focus {
+      .box-shadow-none();
+    }
   }
 </style>

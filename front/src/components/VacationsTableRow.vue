@@ -12,8 +12,8 @@
       ></VacationStatus>
     </td>
     <td class="action-td">
-      <div v-if="vacation.status.text !== 'Завершен'" class="action-block">
-        <VacationEditBtn :vacation="vacation"></VacationEditBtn>
+      <div class="action-block">
+        <VacationEditBtn :vacation="vacation" v-if="vacation.status.text !== 'Завершен'"></VacationEditBtn>
         <VacationRemoveBtn :vacationId="vacation.id"></VacationRemoveBtn>
       </div>
     </td>

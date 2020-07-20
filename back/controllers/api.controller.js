@@ -27,12 +27,9 @@ function getGeoJSON (request, response) {
 async function getCountriesForSelect (request, response) {
     try {
         const countriesWithCode = await countries.getForSelect();
-        response.send(countriesWithCode);
+        response.json({ok: true, countriesWithCode});
     } catch (err) {
-        response.json({
-            ok: false,
-            caption: err.message
-        })
+        response.json({ok: false, caption: err.message});
     }
 }
 

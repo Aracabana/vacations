@@ -5,6 +5,7 @@ import notification from './modules/notification';
 import spinner from './modules/spinner';
 import user from './modules/user';
 import vacationEditPopup from './modules/vacationEditPopup';
+import countries from './modules/countries';
 
 Vue.use(Vuex)
 
@@ -14,6 +15,6 @@ export default new Vuex.Store({
   mutations: {},
   getters: {},
   modules: {
-    notification, spinner, vacations, vacationEditPopup, user
+    notification, spinner, vacations, vacationEditPopup, user, countries
   }
 })

@@ -23,41 +23,41 @@ export default {
       if (result) {
         commit('setVacations', state.vacations.filter(item => item.id !== vacationId));
         commit('filterVacations');
-        commit('updateNotification', {ok: true, caption: 'Отпуск успешно удален'});
+        commit('updateNotification', {page: 'Home', ok: true, caption: 'Отпуск успешно удален'});
       }
     },
     async editVacation({commit, state}, vacation) {
-      const result = await request('/vacation', 'PUT', {
+      const requestData = {
         id: vacation.id,
         dateFrom: vacation.dateFrom,
         dateTo: vacation.dateTo
-      }, true);
+      };
+      const result = await request('/vacation', 'PUT', requestData, 'Popup');
       if (result) {
         const updatedVacation = new Vacation(vacation);
         await updatedVacation.setFlag();
         commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
         commit('filterVacations');
-        commit('updateNotification', {ok: result.ok, caption: result.caption});
+        commit('updatePopup', null);
+        commit('updateNotification', {page: 'Home', ok: result.ok, caption: result.caption});
       }
     },
 
-    async sort({commit}, {sortField, sortOrder}) {
-      console.log(sortField);
-      console.log(sortOrder)
-      commit('setSortField', sortField);
-      commit('setSortOrder', sortOrder);
+    async sortVacation({commit}, {sortField, sortOrder}) {
+      commit('setVacationSortField', sortField);
+      commit('setVacationSortOrder', sortOrder);
       commit('sortVacations');
     },
-    async search({commit, dispatch}, input) {
-      commit('setSearchValue', input);
-      dispatch('applyFilters');
+    async searchVacation({commit, dispatch}, input) {
+      commit('setVacationSearchValue', input);
+      dispatch('applyVacationFilters');
     },
-    async filter({commit, dispatch}, status) {
-      commit('setStatusValue', status);
-      dispatch('applyFilters');
+    async filterVacation({commit, dispatch}, status) {
+      commit('setVacationStatusValue', status);
+      dispatch('applyVacationFilters');
     },
 
-    async applyFilters({commit}) {
+    async applyVacationFilters({commit}) {
       commit('filterVacations');
     }
 
@@ -65,7 +65,7 @@ export default {
   state: {
     vacations: [],
     filteredVacations: [],
-    filterOptions: {
+    vacationFilterOptions: {
       status: '',
       searchValue: '',
       searchField: 'countryName',
@@ -75,17 +75,17 @@ export default {
   },
   mutations: {
     setVacations: (state, vacations) => state.vacations = vacations,
-    setSortField: (state, field) => state.filterOptions.sortField = field,
-    setSortOrder: (state, order) => state.filterOptions.sortOrder = order,
-    setSearchValue: (state, input) => state.filterOptions.searchValue = input,
-    setStatusValue: (state, status) => state.filterOptions.status = status,
+    setVacationSortField: (state, field) => state.vacationFilterOptions.sortField = field,
+    setVacationSortOrder: (state, order) => state.vacationFilterOptions.sortOrder = order,
+    setVacationSearchValue: (state, input) => state.vacationFilterOptions.searchValue = input,
+    setVacationStatusValue: (state, status) => state.vacationFilterOptions.status = status,
 
     filterVacations(state) {
-      const vacations = new FilterBuilder(state.filterOptions, [...state.vacations]);
+      const vacations = new FilterBuilder(state.vacationFilterOptions, [...state.vacations]);
       state.filteredVacations = vacations.search().filter().sort().get();
     },
     sortVacations(state) {
-      const vacations = new FilterBuilder(state.filterOptions, [...state.filteredVacations]);
+      const vacations = new FilterBuilder(state.vacationFilterOptions, [...state.filteredVacations]);
       state.filteredVacations = vacations.sort().get();
     }
   },
@@ -93,11 +93,8 @@ export default {
     getVacations(state) {
       return state.filteredVacations;
     },
-    getOptions(state) {
-      return state.filterOptions;
-    },
-    getSortField(state) {
-      return state.filterOptions.sortField;
+    getVacationSortField(state) {
+      return state.vacationFilterOptions.sortField;
     }
   }
 }

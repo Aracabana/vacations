@@ -2,10 +2,10 @@
   <div class="filter">
     <div id="filter-buttons">
       <span class="filter-label">Фильтровать по статусу:</span>
-      <button type="button" class="btn btn-sm btn-light" @click="filter('')">Все</button>
-      <button type="button" class="btn btn-sm btn-success" @click="filter('Ожидание')">Ожидание</button>
-      <button type="button" class="btn btn-sm btn-warning" @click="filter('В процессе')">В процессе</button>
-      <button type="button" class="btn btn-sm btn-danger" @click="filter('Завершен')">Завершен</button>
+      <button type="button" class="btn btn-sm btn-light" @click="filterVacation('')">Все</button>
+      <button type="button" class="btn btn-sm btn-success" @click="filterVacation('Ожидание')">Ожидание</button>
+      <button type="button" class="btn btn-sm btn-warning" @click="filterVacation('В процессе')">В процессе</button>
+      <button type="button" class="btn btn-sm btn-danger" @click="filterVacation('Завершен')">Завершен</button>
     </div>
     <div class="filter-search">
       <span class="filter-label">Найти</span>
@@ -19,9 +19,9 @@
   export default {
     name: 'VacationsFilter',
     methods: {
-      ...mapActions(['search', 'filter']),
+      ...mapActions(['searchVacation', 'filterVacation']),
       handleSearch(e) {
-        this.search(e.target.value);
+        this.searchVacation(e.target.value);
       }
 
     }

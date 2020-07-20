@@ -1,74 +1,84 @@
 <template>
-  <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
-    <thead class="thead-dark">
-    <tr>
-      <th scope="col">
-        <div>
-          <span>Страна</span>
-          <VacationsSortBtn :sortField="'countryName'"></VacationsSortBtn>
-        </div>
-      </th>
-      <th scope="col">
-        <div>
-          <span>Дата начала</span>
-          <VacationsSortBtn :sortField="'dateFrom'"></VacationsSortBtn>
-        </div>
-      </th>
-      <th scope="col">
-        <div>
-          <span>Дата окончания</span>
-          <VacationsSortBtn :sortField="'dateTo'"></VacationsSortBtn>
-        </div>
-      </th>
-      <th scope="col">
-        <div>
-          <span>Статус</span>
-        </div>
-      </th>
-      <th scope="col" style="width: 100px;">
-      </th>
-    </tr>
-    </thead>
-    <tbody v-if="getVacations.length">
-    <VacationsTableRow
-      v-for="(vacation, index) in getVacations"
-      :key="index"
-      :vacation="vacation"
-    ></VacationsTableRow>
-    </tbody>
-    <tbody v-else>
-    <VacationsTableEmptyRow></VacationsTableEmptyRow>
-    </tbody>
-  </table>
+  <div class="table-responsive vacation-table-wrapper">
+    <Spinner v-if="loading"></Spinner>
+    <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">
+          <div>
+            <span>Страна</span>
+            <VacationsSortBtn :sortField="'countryName'"></VacationsSortBtn>
+          </div>
+        </th>
+        <th scope="col">
+          <div>
+            <span>Дата начала</span>
+            <VacationsSortBtn :sortField="'dateFrom'"></VacationsSortBtn>
+          </div>
+        </th>
+        <th scope="col">
+          <div>
+            <span>Дата окончания</span>
+            <VacationsSortBtn :sortField="'dateTo'"></VacationsSortBtn>
+          </div>
+        </th>
+        <th scope="col">
+          <div>
+            <span>Статус</span>
+          </div>
+        </th>
+        <th scope="col" style="width: 100px;">
+        </th>
+      </tr>
+      </thead>
+      <tbody v-if="getVacations.length">
+      <VacationsTableRow
+        v-for="(vacation, index) in getVacations"
+        :key="index"
+        :vacation="vacation"
+      ></VacationsTableRow>
+      </tbody>
+      <tbody v-else>
+      <VacationsTableEmptyRow></VacationsTableEmptyRow>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
   import VacationsTableEmptyRow from './VacationsTableEmptyRow'
   import VacationsTableRow from './VacationsTableRow'
   import VacationsSortBtn from './VacationsSortBtn'
+  import Spinner from '../components/Spinner'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
     name: 'VacationsTable',
     components: {
-      VacationsTableEmptyRow, VacationsTableRow, VacationsSortBtn
+      VacationsTableEmptyRow, VacationsTableRow, VacationsSortBtn, Spinner
+    },
+    data() {
+      return {
+        loading: false
+      }
     },
     methods: {
-      ...mapState(['filterOptions']),
       ...mapActions(['loadVacations']),
     },
-    computed: mapGetters(['getVacations', 'getOptions']),
+    computed: mapGetters(['getVacations']),
     filters: {},
     async mounted() {
+      this.loading = true;
       await this.loadVacations();
+      this.loading = false;
     }
   }
 </script>
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
-
   .vacation-table-wrapper {
+    position: relative;
     max-height: 600px;
   }
   .vacations-table {

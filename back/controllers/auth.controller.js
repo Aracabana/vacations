@@ -37,12 +37,19 @@ function logout (request, response) {
         response.json({ok:true});
     });
 }
-function checkAuth(request, response) {
+async function checkAuth(request, response) {
     if (!request.session.login) {
         response.json({status: false});
         return;
+   
     }
-    response.json({status: true});
+    const user = await User.getOne('login', request.session.login);
+    response.json({
+        status: true,
+        user: {
+            login: user.login
+        }
+    });
 }
 
 module.exports = { register, login, logout, checkAuth };

@@ -3,7 +3,8 @@
     <div class="popup-bg" @click.self="hidePopup">
       <div class="popup">
         <div class="popup-content">
-          <Spinner v-if="getSpinner"></Spinner>
+          <Notification v-if="getNotification && getNotification.page === 'Popup'"></Notification>
+          <Spinner v-if="loading"></Spinner>
           <button class="btn popup-close" type="button" @click="hidePopup">
             <i class="fas fa-times"></i>
           </button>
@@ -15,7 +16,7 @@
                 v-model="dateFrom"
                 id="dateFrom"
                 type="date"
-                :min="setDateMinValue()"
+                :min="formatDatePicker()"
                 class="form-control"
                 :class="{'is-invalid': ($v.dateFrom.$dirty && !$v.dateFrom.required) || ($v.dateFrom.$dirty && !$v.dateFrom.isValid)}"
               >
@@ -38,7 +39,7 @@
                 v-model="dateTo"
                 id="dateTo"
                 type="date"
-                :min="setDateMinValue(1)"
+                :min="formatDatePicker(1)"
                 class="form-control"
                 :class="{'is-invalid':  ($v.dateTo.$dirty && !$v.dateTo.required) || ($v.dateTo.$dirty && !$v.dateTo.isValid)}"
               >
@@ -68,26 +69,31 @@
 <script>
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {required} from 'vuelidate/lib/validators'
-  import {formatDate, validateDates} from '../assets/js/formatDate'
-  import Spinner from './Spinner';
+  import {formatDateForPicker} from '../utils/formatDate';
+  import Spinner from './Spinner'
+  import Notification from '../components/Notification'
 
   export default {
     name: "VacationEditPopup",
     validations: {
-      dateFrom: {required, isValid: validateDates()},
-      dateTo: {required, isValid: validateDates()}
+      dateFrom: {required},
+      dateTo: {required}
     },
-    components: {Spinner},
+    components: {Spinner, Notification},
     data() {
       return {
         dateFrom: '',
-        dateTo: ''
+        dateTo: '',
+        loading: false
       }
     },
-    computed: mapGetters(['getPopup', 'getSpinner']),
+    computed: mapGetters(['getNotification', 'getPopup', 'getSpinner']),
     methods: {
       ...mapActions(['editVacation']),
       ...mapMutations(['updatePopup']),
+      formatDatePicker(increase) {
+        return formatDateForPicker(increase)
+      },
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
@@ -100,19 +106,15 @@
           dateFrom: this.dateFrom,
           dateTo: this.dateTo
         }
+        this.loading = true;
         await this.editVacation(updatedVacation);
-        this.updatePopup(null);
+        this.loading = false;
       },
       hidePopup() {
         this.updatePopup(null);
       },
       formatDate: function (value) {
         return value.toLocaleDateString().split('.').reverse().join('-');
-      },
-      setDateMinValue(increase = 0) {
-        const now = new Date()
-        now.setDate(now.getDate() + increase)
-        return formatDate(now)
       }
     },
     mounted() {

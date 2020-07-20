@@ -1,11 +1,11 @@
 import router from '../router/index';
 import store from '../store';
 
-export default async function request(url, method = 'GET', data = null, spinner = false) {
+export default async function request(url, method = 'GET', data = null, notificationPage = 'Home') {
 
-  if (spinner) {
-    store.commit('updateSpinner', true);
-  }
+  // if (spinner) {
+  //   store.commit('updateSpinner', true);
+  // }
 
   const headers = {};
   const credentials = 'include';
@@ -31,11 +31,11 @@ export default async function request(url, method = 'GET', data = null, spinner 
     return result;
 
   } catch (err) {
-    store.commit('updateNotification', {ok: false, caption: err});
+    store.commit('updateNotification', {ok: false, caption: err.message, page: notificationPage});
     return false;
   } finally {
-    if (spinner) {
-      store.commit('updateSpinner', false);
-    }
+    // if (spinner) {
+    //   store.commit('updateSpinner', false);
+    // }
   }
 }

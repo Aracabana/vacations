@@ -26,16 +26,16 @@
       }
     },
     computed: {
-      ...mapGetters(['getSortField']),
+      ...mapGetters(['getVacationSortField']),
       isActive() {
-        return this.getSortField === this.sortField
+        return this.getVacationSortField === this.sortField
       }
     },
     methods: {
-      ...mapActions(['sort']),
+      ...mapActions(['sortVacation']),
       sortBy(sortField) {
         this.order = (this.order === 'ASC') ? 'DECK' : 'ASC';
-        this.sort({
+        this.sortVacation({
           sortField,
           sortOrder: this.order
         })
