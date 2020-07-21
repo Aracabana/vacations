@@ -35,7 +35,7 @@
         }
       }
     },
-    computed: mapGetters(['getNotification', 'getSpinner', 'getPopup']),
+    computed: mapGetters(['getNotification', 'getPopup']),
     components: {
       Notification, Header, VacationsFilter, VacationsTable, VacationEditPopup
     }

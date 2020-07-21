@@ -87,7 +87,7 @@
         loading: false
       }
     },
-    computed: mapGetters(['getNotification', 'getPopup', 'getSpinner']),
+    computed: mapGetters(['getNotification', 'getPopup']),
     methods: {
       ...mapActions(['editVacation']),
       ...mapMutations(['updatePopup']),

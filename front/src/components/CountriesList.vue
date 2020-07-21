@@ -1,25 +1,23 @@
 <template>
-  <ul class="countries-list list-unstyled">
-    <li v-for="(country, index) in getCountriesForSelect" :key="index" @click="">
-<!--      <img :src="country.flag" alt="" class="flag">-->
-      <span>{{country.name}}</span>
-      {{loadCountryAdditionalData({countryCode: country.code, fields: ['flag']})}}
-    </li>
-  </ul>
+  <div class="countries-list-wrapper">
+    <Spinner v-if="!countriesIsExist"></Spinner>
+    <ul class="countries-list list-unstyled">
+      <li v-for="(country, index) in getCountriesForSelect" :key="index" @click="">
+        <img :src="country.flag" alt="" class="flag">
+        <span>{{country.name}}</span>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
-  import {mapActions, mapGetters} from 'vuex';
+  import {mapGetters} from 'vuex';
+  import Spinner from "./Spinner";
 
   export default {
     name: "CountriesList",
-    data() {
-      return {
-        countries: []
-      }
-    },
-    computed: mapGetters(['getCountriesForSelect']),
-    methods: mapActions(['loadCountryAdditionalData']),
+    components: {Spinner},
+    computed: mapGetters(['getCountriesForSelect', 'countriesIsExist'])
   }
 </script>
 

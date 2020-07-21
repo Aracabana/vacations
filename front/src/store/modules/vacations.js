@@ -1,6 +1,6 @@
 import Country from '../../../../public/js/entities/country-entity';
 import request from '../../utils/request';
-import { FilterBuilder } from "../../utils/filterHelper";
+import { FilterBuilder } from "../../utils/FilterBuilder";
 
 export default {
   actions: {

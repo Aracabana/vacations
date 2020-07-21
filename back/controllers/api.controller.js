@@ -1,6 +1,7 @@
 const { countries }     = require('../helpers/geonames');
 const fs                = require('fs');
 const path              = require("path");
+const connection        = require('../db');
 
 async function getCountry (request, response) {
     const { searchField, value } = request.body;
@@ -33,5 +34,43 @@ async function getCountriesForSelect (request, response) {
     }
 }
 
+async function loadAll (request, response) {
+    const data = request.body;
+    const sql = 'INSERT INTO countries (capital, continent, continentName, ' +
+        'countryName, isoAlpha3, population, areaInSqKm, borders, callingCodes, currencies, ' +
+        'flag, languages, latlng) VALUES ?';
+    const values = [[
+        data.capital,
+        data.continent,
+        data.continentName,
+        data.countryName,
+        data.isoAlpha3,
+        data.population,
+        data.areaInSqKm,
+        data.borders,
+        data.callingCodes,
+        data.currencies,
+        data.flag,
+        data.languages,
+        data.latlng
+    ]];
+    try {
+        const result = await connection.query(sql, [values]);
+        response.json({ok: true, caption: result[0].affectedRows})
+    } catch (err) {
+        response.json({ok: false, caption: err.message});
+    }
+}
 
-module.exports = { getGeoJSON, getCountry, getCountriesForSelect }
+async function getAllCountries(request, response) {
+    try {
+        const sql = 'SELECT * FROM countries';
+        const result = await connection.query(sql);
+        response.json({ok: true, countries: result[0]});
+    } catch (err) {
+        response.json({ok: false, caption: err.message});
+    }
+}
+
+
+module.exports = { getGeoJSON, getCountry, getCountriesForSelect, loadAll, getAllCountries }

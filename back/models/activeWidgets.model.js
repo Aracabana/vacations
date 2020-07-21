@@ -19,7 +19,6 @@ async function remove(widgetId, vacationId) {
     } catch (err) {
         throw err;
     }
-    
 }
 
 async function getAllByVacationId(vacationId) {

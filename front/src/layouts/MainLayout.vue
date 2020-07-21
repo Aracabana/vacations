@@ -6,11 +6,10 @@
   import {mapActions, mapGetters} from 'vuex';
 
   export default {
-    computed: mapGetters(['checkIfCountriesExist']),
+    computed: mapGetters(['countriesIsExist']),
     methods: mapActions(['loadCountries']),
     async mounted() {
-      if (!this.checkIfCountriesExist) {
-        console.log('123')
+      if (!this.countriesIsExist) {
         await this.loadCountries();
       }
     }

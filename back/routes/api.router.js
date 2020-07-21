@@ -14,6 +14,8 @@ router.get('/getGeoJSON', apiController.getGeoJSON);
 router.get('/getCountriesForSelect', apiController.getCountriesForSelect);
 
 router.post('/getCountry', apiController.getCountry);
+router.post('/loadAll', apiController.loadAll);
+router.get('/getAllCountries', apiController.getAllCountries);
 
 
 module.exports = router;
