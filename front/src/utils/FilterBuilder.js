@@ -30,6 +30,17 @@ export class FilterBuilder {
     return this;
   }
 
+  sortByTwoFields() {
+    const { sortField1, sortField2 } = this.options;
+    this.data.sort((a, b) => {
+      if (a[sortField1] === b[sortField1]) {
+        return (a[sortField2] < b[sortField2]) ? -1 : (a[sortField2] > b[sortField2]) ? 1 : 0;
+      }
+        return (a[sortField1] < b[sortField1]) ? -1 : (a[sortField1] > b[sortField1]) ? 1 : 0;
+    });
+    return this;
+  }
+
   get() {
     return this.data;
   }

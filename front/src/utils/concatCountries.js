@@ -1,6 +1,7 @@
 import request from "./request";
 
 export default async function (geonames) {
+  console.log(geonames)
   for (let i = 0; i < geonames.length; i++) {
 
     const restCountriesResponse = await fetch(

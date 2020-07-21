@@ -1,10 +1,16 @@
 <template>
   <div class="countries-list-wrapper">
     <Spinner v-if="!countriesIsExist"></Spinner>
-    <ul class="countries-list list-unstyled">
-      <li v-for="(country, index) in getCountriesForSelect" :key="index" @click="">
-        <img :src="country.flag" alt="" class="flag">
-        <span>{{country.name}}</span>
+    <p v-if="!getCountriesForSelect.length"><i class="far fa-sad-tear"></i> Страна не найдена</p>
+    <ul v-else class="countries-list list-unstyled">
+      <li v-for="(continent, index) in getCountriesForSelect" :key="index">
+        <p><strong>{{continent.continentName}}</strong></p>
+        <ul class="list-unstyled">
+          <li v-for="(country, index) in continent.countries" :key="index"  @click="$emit('chooseCountry', country.countryName)">
+            <img :src="country.flag" alt="" class="flag">
+            <span>{{country.countryName}}</span>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>
@@ -17,35 +23,51 @@
   export default {
     name: "CountriesList",
     components: {Spinner},
-    computed: mapGetters(['getCountriesForSelect', 'countriesIsExist'])
+    computed: mapGetters(['getCountriesForSelect', 'countriesIsExist']),
   }
 </script>
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
-  .countries-list {
+  .countries-list-wrapper {
     position: absolute;
     left: 0;
     right: 0;
     top: 100%;
     z-index: 100;
-    overflow-y: auto;
-    overflow-x: hidden;
     .border-bottom-radius(.25rem);
     border: 1px solid #80bdff;
     border-top: none;
-    padding: .375rem 0;
-    max-height: 200px;
+    min-height: 50px;
     background-color: #ffffff;
-    /*box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);*/
-    li {
-      .flex();
-      .flex-start();
-      .align-items-center();
-      padding: 3px .75rem;
-      cursor: pointer;
-      &:hover {
-        background-color: rgba(0,123,255,.25);
+    > p {
+      margin-bottom: 0;
+      padding: 13px .75rem;
+      text-align: center;
+      background-color: #eaeaea;
+    }
+  }
+  .countries-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 0;
+    max-height: 200px;
+    > li {
+      p {
+        margin-bottom: 0;
+        padding: 3px .75rem;
+        font-size: 12px;
+        background-color: #eaeaea;
+      }
+      li {
+        .flex();
+        .flex-start();
+        .align-items-center();
+        padding: 3px .75rem;
+        cursor: pointer;
+        &:hover {
+          background-color: rgba(0,123,255,.25);
+        }
       }
     }
     .flag {

@@ -11,22 +11,22 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <div class="card">
                 <form id="vacation-form" class="card-body" @submit.prevent="submit">
-                  <Spinner v-if="showSpinner"></Spinner>
+                  <Spinner v-if="loading"></Spinner>
                   <div class="form-group vacation-list-form-group">
                     <label for="country">Выберите страну</label>
                     <input
                       v-model.trim="country"
                       @input="handleSearch"
-                      @focus="onfocus"
+                      @focus="isOpen = true"
                       @blur="onblur"
                       id="country"
                       type="text"
                       autocomplete="off"
                       placeholder="Начните вводить"
                       class="form-control"
-                      :class="{'open': isOpen, 'is-invalid': $v.country.$dirty && !$v.country.required}"
+                      :class="{'open': isOpen, 'is-invalid': !isOpen && $v.country.$dirty && !$v.country.required}"
                     >
-                    <CountriesList v-show="isOpen"></CountriesList>
+                    <CountriesList @chooseCountry="handleCountry" v-show="isOpen"></CountriesList>
                     <div
                       v-if="$v.country.$dirty && !$v.country.required"
                       class="invalid-feedback"
@@ -80,9 +80,9 @@
                 </form>
               </div>
             </div>
-<!--            <div v-if="countryCode" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">-->
-<!--              <CountryInfo :countryCode="countryCode"></CountryInfo>-->
-<!--            </div>-->
+            <!--            <div v-if="countryCode" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">-->
+            <!--              <CountryInfo :countryCode="countryCode"></CountryInfo>-->
+            <!--            </div>-->
             <div class="col-12">
               <div id="map-wrapper" class="map-wrapper card-img-bottom" hidden>
                 <div id="map"></div>
@@ -122,7 +122,8 @@
         country: '',
         countryCode: false,
         dateFrom: '',
-        dateTo: ''
+        dateTo: '',
+        loading: false
       }
     },
     computed: mapGetters(['getNotification']),
@@ -137,11 +138,11 @@
     methods: {
       ...mapActions(['searchCountry']),
       ...mapMutations(['updateNotification']),
-      onfocus() {
-        this.isOpen = true;
-      },
       onblur() {
-        this.isOpen = false;
+        setTimeout(() => this.isOpen = false, 150);
+      },
+      handleCountry(data) {
+        this.country = data;
       },
       formatDatePicker(increase) {
         return formatDateForPicker(increase)
@@ -151,34 +152,20 @@
           this.$v.$touch()
           return
         }
-        // this.showSpinner = true;
+        this.loading = true;
         const formData = {
           country: this.country,
           dateFrom: this.dateFrom,
           dateTo: this.dateTo
         }
-        try {
-          const response = await fetch('http://localhost:8080/vacation', {
-            method: 'POST',
-            // credentials: true,
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-          })
-          const data = await response.json()
-          this.updateNotification(data)
-          // if (response.ok) {
-          //     setTimeout(() => {
-          //         window.location.href = '/vacation/' + response.vacationId;
-          //         this.$router.push('/vacation/');
-          //     }, 200);
-          // }
-        } catch (err) {
-          this.updateNotification({ok: false, caption: err})
-        } finally {
-          // this.showSpinner = false;
-        }
+        const response = await request('/vacation', 'POST', formData, 'CreateVacation');
+        this.loading = false;
+        // if (response.ok) {
+        //     setTimeout(() => {
+        //         window.location.href = '/vacation/' + response.vacationId;
+        //         this.$router.push('/vacation/');
+        //     }, 200);
+        // }
       },
       handleSearch(e) {
         this.searchCountry(e.target.value);

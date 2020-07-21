@@ -1,17 +1,15 @@
 import {FilterBuilder} from '../../utils/FilterBuilder';
 import request from "../../utils/request";
 import countryParser from "../../utils/countryParser";
+import concatCountries from '../../utils/concatCountries';
 
 export default {
   actions: {
     async loadCountries({commit, dispatch}) {
       try {
-        setTimeout(async () => {
-          const { countries } = await request('/api/getAllCountries');
-          commit('setCountries', countryParser(countries));
-          commit('filterCountries');
-        }, 2000);
-
+        const { countries } = await request('/api/getAllCountries');
+        commit('setCountries', countryParser(countries));
+        commit('filterCountries');
       } catch (err) {
         commit('updateNotification', {page: 'Home', ok: false, caption: err.message});
       }
@@ -32,7 +30,9 @@ export default {
     filteredCountries: [],
     countriesFilterOptions: {
       searchValue: '',
-      searchField: 'countryName'
+      searchField: 'countryName',
+      sortField1: 'continentName',
+      sortField2: 'countryName'
     }
   },
   mutations: {
@@ -42,16 +42,25 @@ export default {
 
     filterCountries(state) {
       const countries = new FilterBuilder(state.countriesFilterOptions, [...state.countries]);
-      state.filteredCountries = countries.search().get();
+      state.filteredCountries = countries.search().sortByTwoFields().get();
     }
   },
   getters: {
     getCountriesForSelect(state) {
-      return state.filteredCountries.map(country => ({
-        name: country.countryName,
-        code: country.isoAlpha3,
-        flag: country.flag
-      }));
+      const result = [];
+      state.filteredCountries.forEach(country => {
+        const foundItem = result.find(item => item.continentName === country.continentName);
+
+        if (foundItem) {
+          foundItem.countries.push(country);
+        } else {
+          result.push({
+            continentName: country.continentName,
+            countries: [country],
+          })
+        }
+      });
+      return result;
     },
     countriesIsExist(state) {
       return state.countries.length;
