@@ -6,7 +6,7 @@
 
 <script>
   import { mapActions } from 'vuex';
-  import {eventBus} from "../main";
+  import { eventBus } from "../main";
 
   export default {
     name: "VacationRemoveBtn",

@@ -4,17 +4,17 @@ import { FilterBuilder } from "../../utils/FilterBuilder";
 
 export default {
   actions: {
-    async loadVacations({commit}) {
-      const tmp = [];
+    async loadVacations({commit, getters, dispatch}) {
+      const temp = [];
       const result = await request('/vacation');
       if (result) {
         const { vacations } = result;
         for (let i = 0; i < vacations.length; i++) {
           const vacation = new Vacation(vacations[i]);
-          await vacation.setFlag();
-          tmp.push(vacation);
+          vacation.country = getters.getCountryById(vacation.countryId);
+          temp.push(vacation);
         }
-        commit('setVacations', tmp);
+        commit('setVacations', temp);
         commit('filterVacations');
       }
     },
@@ -102,36 +102,10 @@ export default {
 class Vacation {
   constructor(vacation) {
     this.id = vacation.id;
-    this.countryName = vacation.countryName;
-    this.countryCode = vacation.countryCode;
     this.dateFrom = new Date(vacation.dateFrom);
     this.dateTo = new Date(vacation.dateTo);
+    this.countryId = vacation.country_Id;
     this.status = this.calculateStatus();
-  }
-
-  async setFlag() {
-    try {
-      const response = await fetch(`https://restcountries.eu/rest/v2/alpha/${this.countryCode}?fields=flag`);
-      if (response.status === 404) {
-        throw new Error('Флаг для данной страны не найден');
-      }
-      const data = await response.json();
-      this.flag = data.flag;
-    } catch (err) {
-      console.log('Флаг не загружен');
-    }
-  }
-  async setCountryData() {
-    let country;
-    try {
-      country = new Country(this.countryCode);
-      await country.loadData(['latlng', 'languages', 'flag', 'callingCodes', 'borders', 'currencies']);
-    } catch (err) {
-      console.log('Доп. данные не загружены');
-    }
-    finally {
-      this.countryInfo = country.data;
-    }
   }
   calculateStatus() {
     const dateFrom = new Date(this.dateFrom);

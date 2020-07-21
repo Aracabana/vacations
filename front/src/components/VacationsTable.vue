@@ -50,7 +50,7 @@
   import VacationsTableRow from './VacationsTableRow'
   import VacationsSortBtn from './VacationsSortBtn'
   import Spinner from '../components/Spinner'
-  import {mapActions, mapGetters, mapState} from 'vuex'
+  import { mapActions, mapGetters } from 'vuex'
   import { eventBus } from "../main";
 
   export default {
@@ -66,7 +66,7 @@
     methods: {
       ...mapActions(['loadVacations']),
     },
-    computed: mapGetters(['getVacations']),
+    computed: mapGetters(['getVacations', 'countriesIsExist']),
     filters: {},
     async mounted() {
       this.loading = true;
@@ -76,7 +76,7 @@
     created() {
       eventBus.$on('loading', (data) => {
         this.loading = data;
-      })
+      });
     }
   }
 </script>

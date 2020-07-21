@@ -1,6 +1,4 @@
 <template>
-  <section class="main-body">
-    <Header :btn="headerBtn"></Header>
     <div class="page-wrapper">
       <div class="container-fluid">
         <h1>Создать отпуск</h1>
@@ -94,14 +92,12 @@
         </div>
       </div>
     </div>
-  </section>
 </template>
 
 <script>
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {required} from 'vuelidate/lib/validators'
   import {formatDateForPicker} from '../utils/formatDate';
-  import Header from '../components/Header'
   import Notification from '../components/Notification'
   import Spinner from '../components/Spinner'
   import CountriesList from '../components/CountriesList';
@@ -112,12 +108,6 @@
     name: 'CreateVacation',
     data() {
       return {
-        headerBtn: {
-          url: '/',
-          title: 'Вернуться к списку отпусков',
-          class: 'btn-light',
-          icon: 'fa-angle-left'
-        },
         countriesListIsOpen: false,
         loading: false,
         countryName: '',
@@ -132,7 +122,7 @@
       dateTo: {required}
     },
     components: {
-      Header, Notification, Spinner, CountriesList
+      Notification, Spinner, CountriesList
     },
     methods: {
       ...mapActions(['searchCountry']),

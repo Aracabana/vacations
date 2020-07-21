@@ -27,7 +27,11 @@
 
   export default {
     name: 'Header',
-    props: ['btn'],
+    data() {
+      return {
+        btn: {}
+      }
+    },
     computed: mapGetters(['getUserLogin']),
     methods: {
       ...mapMutations(['updateNotification']),
@@ -40,6 +44,17 @@
         finally {
           await this.$router.push('/login');
         }
+      },
+      changeBtn() {
+        this.btn = this.$route.meta.headerBtn;
+      }
+    },
+    mounted() {
+      this.changeBtn();
+    },
+    watch: {
+      $route () {
+        this.changeBtn();
       }
     }
   }

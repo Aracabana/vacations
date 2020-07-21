@@ -1,12 +1,21 @@
 <template>
-  <router-view></router-view>
+  <section class="main-body">
+    <Header></Header>
+    <Spinner v-if="!countriesIsExist"></Spinner>
+    <router-view v-else></router-view>
+    <VacationEditPopup v-if="getPopup"></VacationEditPopup>
+  </section>
 </template>
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
+  import Spinner from '../components/Spinner';
+  import Header from '../components/Header';
+  import VacationEditPopup from '../components/VacationEditPopup';
 
   export default {
-    computed: mapGetters(['countriesIsExist']),
+    components: {Spinner, Header, VacationEditPopup},
+    computed: mapGetters(['countriesIsExist', 'getPopup']),
     methods: mapActions(['loadCountries']),
     async mounted() {
       if (!this.countriesIsExist) {

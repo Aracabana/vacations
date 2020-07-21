@@ -11,7 +11,7 @@
             :key="index"
             @click="$emit('chooseCountry', country.countryName)"
           >
-            <img :src="country.flag" alt="" class="flag">
+            <img v-if="country.flag !== 'not'" :src="country.flag" alt="" class="flag">
             <span>{{country.countryName}}</span>
           </li>
         </ul>

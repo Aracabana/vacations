@@ -12,7 +12,13 @@ const router = new Router({
       path: '/',
       name: 'Home',
       meta: {
-        layout: 'main'
+        layout: 'main',
+        headerBtn: {
+          url: '/create-vacation',
+          title: 'Создать отпуск',
+          class: 'btn-success',
+          icon: 'fa-plus'
+        }
       },
       component: () => import('@/views/Home')
     },
@@ -36,7 +42,13 @@ const router = new Router({
       path: '/create-vacation',
       name: 'CreateVacation',
       meta: {
-        layout: 'main'
+        layout: 'main',
+        headerBtn: {
+          url: '/',
+          title: 'Вернуться к списку отпусков',
+          class: 'btn-light',
+          icon: 'fa-angle-left'
+        }
       },
       component: () => import('@/views/CreateVacation.vue')
     }

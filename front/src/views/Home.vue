@@ -1,6 +1,4 @@
 <template>
-  <section class="main-body">
-    <Header :btn="headerBtn"></Header>
     <div class="page-wrapper">
       <div class="container-fluid">
         <h1>Мои отпуска</h1>
@@ -11,33 +9,19 @@
         </div>
       </div>
     </div>
-    <VacationEditPopup v-if="getPopup"></VacationEditPopup>
-  </section>
 </template>
 
 <script>
-  import {mapActions, mapGetters, mapState} from 'vuex'
+  import {mapGetters} from 'vuex'
   import Notification from '../components/Notification'
-  import Header from '../components/Header'
   import VacationsFilter from '../components/VacationsFilter'
   import VacationsTable from '../components/VacationsTable'
-  import VacationEditPopup from '../components/VacationEditPopup';
 
   export default {
     name: 'Home',
-    data() {
-      return {
-        headerBtn: {
-          url: '/create-vacation',
-          title: 'Создать отпуск',
-          class: 'btn-success',
-          icon: 'fa-plus'
-        }
-      }
-    },
-    computed: mapGetters(['getNotification', 'getPopup']),
+    computed: mapGetters(['getNotification']),
     components: {
-      Notification, Header, VacationsFilter, VacationsTable, VacationEditPopup
+      Notification, VacationsFilter, VacationsTable
     }
   }
 </script>

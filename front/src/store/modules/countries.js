@@ -46,6 +46,9 @@ export default {
     }
   },
   getters: {
+    getCountryById: (state) => (id) => {
+      return state.filteredCountries.find(item => item.id === id)
+    },
     getCountriesForSelect(state) {
       const result = [];
       state.filteredCountries.forEach(country => {
