@@ -1,22 +1,20 @@
-const { countries }         = require('../geonames');
-const { Vacation }          = require('../../models');
+const { Vacation, Countries }          = require('../../models');
 
-async function validate(country, dateFrom, dateTo) {
+async function validate(dateFrom, dateTo, countryName) {
     
-    if (!country || !dateFrom || !dateTo) {
+    if (!countryName || !dateFrom || !dateTo) {
         throw new Error('Не все поля заполнены');
     }
     
     await validateDates(dateFrom, dateTo);
-    
+
     try {
-        const foundCountry = await countries.searchCountryBy('countryName', country);
+        const foundCountry = await Countries.getOneBy('countryName', countryName);
         if (!foundCountry) {
-            throw new Error('Некорретное название страны');
+            throw new Error('Некорректное название страны');
         }
         return foundCountry;
-    }
-    catch (err) {
+    } catch (err) {
         throw err;
     }
 }

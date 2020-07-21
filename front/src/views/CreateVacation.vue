@@ -6,7 +6,6 @@
         <h1>Создать отпуск</h1>
         <div class="content">
           <Notification v-if="getNotification && getNotification.page === 'CreateVacation'"></Notification>
-
           <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12">
               <div class="card">
@@ -15,20 +14,23 @@
                   <div class="form-group vacation-list-form-group">
                     <label for="country">Выберите страну</label>
                     <input
-                      v-model.trim="country"
+                      v-model.trim="countryName"
                       @input="handleSearch"
-                      @focus="isOpen = true"
+                      @focus="countriesListIsOpen = true"
                       @blur="onblur"
                       id="country"
                       type="text"
                       autocomplete="off"
                       placeholder="Начните вводить"
                       class="form-control"
-                      :class="{'open': isOpen, 'is-invalid': !isOpen && $v.country.$dirty && !$v.country.required}"
+                      :class="{
+                        'open': countriesListIsOpen,
+                        'is-invalid': !countriesListIsOpen && $v.countryName.$dirty && !$v.countryName.required
+                      }"
                     >
-                    <CountriesList @chooseCountry="handleCountry" v-show="isOpen"></CountriesList>
+                    <CountriesList @chooseCountry="handleCountry" v-show="countriesListIsOpen"></CountriesList>
                     <div
-                      v-if="$v.country.$dirty && !$v.country.required"
+                      v-if="$v.countryName.$dirty && !$v.countryName.required"
                       class="invalid-feedback"
                     >
                       Поле обязательно для заполнения
@@ -116,19 +118,16 @@
           class: 'btn-light',
           icon: 'fa-angle-left'
         },
-        showSpinner: false,
-        isOpen: false,
-        countriesList: [],
-        country: '',
-        countryCode: false,
+        countriesListIsOpen: false,
+        loading: false,
+        countryName: '',
         dateFrom: '',
-        dateTo: '',
-        loading: false
+        dateTo: ''
       }
     },
     computed: mapGetters(['getNotification']),
     validations: {
-      country: {required},
+      countryName: {required},
       dateFrom: {required},
       dateTo: {required}
     },
@@ -139,10 +138,10 @@
       ...mapActions(['searchCountry']),
       ...mapMutations(['updateNotification']),
       onblur() {
-        setTimeout(() => this.isOpen = false, 150);
+        setTimeout(() => this.countriesListIsOpen = false, 150);
       },
-      handleCountry(data) {
-        this.country = data;
+      handleCountry(countryName) {
+        this.countryName = countryName;
       },
       formatDatePicker(increase) {
         return formatDateForPicker(increase)
@@ -152,13 +151,16 @@
           this.$v.$touch()
           return
         }
-        this.loading = true;
         const formData = {
-          country: this.country,
+          countryName: this.countryName,
           dateFrom: this.dateFrom,
           dateTo: this.dateTo
         }
+        this.loading = true;
         const response = await request('/vacation', 'POST', formData, 'CreateVacation');
+        if (response.ok) {
+          this.updateNotification({...response, page: 'CreateVacation'});
+        }
         this.loading = false;
         // if (response.ok) {
         //     setTimeout(() => {

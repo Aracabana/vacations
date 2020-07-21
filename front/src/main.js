@@ -3,9 +3,10 @@ import Vuelidate from 'vuelidate'
 import App from './App.vue'
 import Router from './router'
 import Store from './store'
+export const eventBus = new Vue();
 
 Vue.config.productionTip = false
-Vue.use(Vuelidate)
+Vue.use(Vuelidate);
 
 new Vue({
   store: Store,

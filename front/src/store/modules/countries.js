@@ -7,7 +7,7 @@ export default {
   actions: {
     async loadCountries({commit, dispatch}) {
       try {
-        const { countries } = await request('/api/getAllCountries');
+        const { countries } = await request('/countries/all');
         commit('setCountries', countryParser(countries));
         commit('filterCountries');
       } catch (err) {

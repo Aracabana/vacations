@@ -5,19 +5,20 @@
 </template>
 
 <script>
-  import { mapActions, mapMutations } from 'vuex';
+  import { mapActions } from 'vuex';
+  import {eventBus} from "../main";
+
   export default {
     name: "VacationRemoveBtn",
     props: ['vacationId'],
     methods: {
       ...mapActions(['removeVacation']),
-      ...mapMutations(['updateSpinner']),
       async remove() {
         const bool = confirm("Вы действительно хотите удалить отпуск?");
         if (bool) {
-          this.updateSpinner(true);
+          eventBus.$emit('loading', true);
           await this.removeVacation(this.vacationId);
-          this.updateSpinner(false);
+          eventBus.$emit('loading', false);
         }
       }
     }

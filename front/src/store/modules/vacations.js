@@ -6,7 +6,7 @@ export default {
   actions: {
     async loadVacations({commit}) {
       const tmp = [];
-      const result = await request('/api/getVacations');
+      const result = await request('/vacation');
       if (result) {
         const { vacations } = result;
         for (let i = 0; i < vacations.length; i++) {

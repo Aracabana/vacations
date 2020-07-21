@@ -51,6 +51,7 @@
   import VacationsSortBtn from './VacationsSortBtn'
   import Spinner from '../components/Spinner'
   import {mapActions, mapGetters, mapState} from 'vuex'
+  import { eventBus } from "../main";
 
   export default {
     name: 'VacationsTable',
@@ -71,6 +72,11 @@
       this.loading = true;
       await this.loadVacations();
       this.loading = false;
+    },
+    created() {
+      eventBus.$on('loading', (data) => {
+        this.loading = data;
+      })
     }
   }
 </script>

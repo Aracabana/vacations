@@ -1,14 +1,14 @@
 const connection = require('../db');
 
 async function insert(vacation, userId) {
-    const {countryName, countryCode, dateFrom, dateTo, status} = vacation;
-    const sql = 'INSERT INTO vacations (countryName, countryCode, dateFrom, dateTo, user_id) VALUES (?, ?, ?, ?, ?)';
-    const values = [countryName, countryCode, dateFrom, dateTo, userId];
+    const {dateFrom, dateTo, countryId} = vacation;
+    const sql = 'INSERT INTO vacations (dateFrom, dateTo, user_id, country_id) VALUES (?, ?, ?, ?)';
+    const values = [dateFrom, dateTo, userId, countryId];
     try {
         const result = await connection.query(sql, values);
         return result[0].insertId;
     } catch (err) {
-        if (err) throw err;
+        throw err;
     }
 }
 

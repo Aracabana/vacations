@@ -6,7 +6,11 @@
       <li v-for="(continent, index) in getCountriesForSelect" :key="index">
         <p><strong>{{continent.continentName}}</strong></p>
         <ul class="list-unstyled">
-          <li v-for="(country, index) in continent.countries" :key="index"  @click="$emit('chooseCountry', country.countryName)">
+          <li
+            v-for="(country, index) in continent.countries"
+            :key="index"
+            @click="$emit('chooseCountry', country.countryName)"
+          >
             <img :src="country.flag" alt="" class="flag">
             <span>{{country.countryName}}</span>
           </li>

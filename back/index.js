@@ -52,6 +52,7 @@ app.use(cors({
  */
 app.use('/auth', routes.auth);
 app.use('/vacation', routes.access, routes.vacation);
+app.use('/countries', routes.access, routes.countries);
 app.use('/api', routes.access, routes.api);
 app.get('/404', function (request, response) {
     response.render('404');

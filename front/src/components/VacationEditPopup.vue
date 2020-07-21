@@ -91,9 +91,6 @@
     methods: {
       ...mapActions(['editVacation']),
       ...mapMutations(['updatePopup']),
-      formatDatePicker(increase) {
-        return formatDateForPicker(increase)
-      },
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
@@ -109,6 +106,9 @@
         this.loading = true;
         await this.editVacation(updatedVacation);
         this.loading = false;
+      },
+      formatDatePicker(increase) {
+        return formatDateForPicker(increase)
       },
       hidePopup() {
         this.updatePopup(null);
