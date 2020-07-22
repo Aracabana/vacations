@@ -5,7 +5,7 @@
       <li
         v-for="(country, index) in continent.countries"
         :key="index"
-        @click="chooseCountry(country.countryName)"
+        @click="chooseCountry(country.countryId)"
       >
         <v-lazy-image
           :src="getFlag(country.isoAlpha3)"
@@ -25,7 +25,7 @@
 
     export default {
       name: "LazyContinentItem",
-      props: ['continent', 'continentIndex'],
+      props: ['continent'],
       components: {VLazyImage},
       data() {
         return {
@@ -34,9 +34,9 @@
         }
       },
       methods: {
-        ...mapActions(['increaseContinentsToShow']),
-        chooseCountry(value) {
-          eventBus.$emit('chooseCountry', value)
+        ...mapActions(['increaseContinentsToShow', 'selectCountry']),
+        chooseCountry(id) {
+          this.selectCountry(id);
         },
         getFlag(countryCode) {
           return require(`@/assets/img/${countryCode.toLowerCase()}.svg`);
@@ -61,12 +61,44 @@
     }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+  @import '../assets/less/variables';
   .v-lazy-image {
     filter: blur(2px);
     transition: filter 0.3s;
   }
   .v-lazy-image-loaded {
     filter: blur(0);
+  }
+
+  .continent-item {
+    > p {
+      margin-bottom: 0;
+      padding: 5px .75rem;
+      font-size: 12px;
+      background-color: #eaeaea;
+    }
+  }
+  li {
+    p {
+      margin-bottom: 0;
+      padding: 3px .75rem;
+      font-size: 12px;
+      background-color: #eaeaea;
+    }
+    li {
+      .flex();
+      .flex-start();
+      .align-items-center();
+      padding: 3px .75rem;
+      cursor: pointer;
+      &:hover {
+        background-color: rgba(0, 123, 255, .25);
+      }
+    }
+  }
+  .flag {
+    position: static;
+    max-width: 35px;
   }
 </style>

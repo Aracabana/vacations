@@ -1,75 +1,68 @@
 <template>
-    <div class="card country-info">
-        <div class="card-body">
-            <h5 class="card-title">{{data.countryName}}</h5>
-            <div class="row">
-                <div class="col-md-7 col-sm-12">
-                    <p>
-                        <strong>Столица: </strong>
-                        <span>{{data.capital}}</span>
-                    </p>
-                    <p>
-                        <strong>Площадь: </strong>
-                        <span>{{data.areaInSqKm}} км<sup>2</sup></span>
-                    </p>
-                    <p>
-                        <strong>Население: </strong>
-                        <span>{{data.population}} чел.</span>
-                    </p>
-                </div>
-<!--                <div class="col-md-5 col-sm-12">-->
-<!--                    <p>-->
-<!--                        <strong>Языки: </strong>-->
-<!--                        <span>-->
-<!--                            <span v-for="(language, index) in data.additional.languages" :key="index">{{language.name}}</span>-->
-<!--                        </span>-->
-<!--                    </p>-->
-<!--                </div>-->
-            </div>
+  <div class="card country-info">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <strong>Столица: </strong>
+            <span>{{country.capital}}</span>
+          </p>
+          <p>
+            <strong>Площадь: </strong>
+            <span>{{country.areaInSqKm}} км<sup>2</sup></span>
+          </p>
+          <p>
+            <strong>Население: </strong>
+            <span>{{country.population}} чел.</span>
+          </p>
         </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <strong>Языки: </strong>
+            <span>
+              <span v-for="(language, index) in country.languages" :key="index">{{language}}</span>
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-import { Country } from '../mixins/Country'
 
-export default {
-  name: 'CountryInfo',
-  props: ['countryCode'],
-  data () {
-    return {
-      code: this.countryCode,
-      data: {}
-      // countryName: ''
+  import {mapGetters} from 'vuex'
+
+  export default {
+    name: 'CountryInfo',
+    data() {
+      return {
+        country: {}
+      }
+    },
+    computed: mapGetters(['getSelectedCountry']),
+    watch: {
+      getSelectedCountry(newVal, oldVal) {
+        this.country = newVal;
+      }
     }
-  },
-  mixins: [Country],
-  watch: {
-    async countryCode (newVal) {
-      this.code = newVal
-      await this.loadData(['latlng', 'languages'])
-    }
-  },
-  async mounted () {
-    await this.loadData(['latlng', 'languages'])
   }
-}
 </script>
 
 <style lang="less" scoped>
-    @import '../assets/less/variables';
+  @import '../assets/less/variables';
 
-    .country-info {
-        height: 100%;
+  .country-info {
+    height: 100%;
+  }
+  p {
+    .flex();
+    .flex-start();
+    > strong {
+      margin-right: 8px;
     }
-    p {
-        .flex();
-        .flex-start();
-        > strong {
-            margin-right: 8px;
-        }
-    }
-    span span {
-        display: block;
-    }
+  }
+  span span {
+    display: block;
+  }
 </style>

@@ -1,34 +1,33 @@
 <template>
-  <div class="table-responsive vacation-table-wrapper">
+  <div class="table-responsive vacation-table-wrapper" @scroll="handleScroll">
     <Spinner v-if="loading"></Spinner>
     <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
       <thead class="thead-dark">
       <tr>
-        <th scope="col">
+        <th scope="col" style="width: 30%;">
           <div>
             <span>Страна</span>
             <VacationsSortBtn :sortField="'countryName'"></VacationsSortBtn>
           </div>
         </th>
-        <th scope="col">
+        <th scope="col" style="width: 23.5%;">
           <div>
             <span>Дата начала</span>
             <VacationsSortBtn :sortField="'dateFrom'"></VacationsSortBtn>
           </div>
         </th>
-        <th scope="col">
+        <th scope="col" style="width: 23.5%;">
           <div>
             <span>Дата окончания</span>
             <VacationsSortBtn :sortField="'dateTo'"></VacationsSortBtn>
           </div>
         </th>
-        <th scope="col">
+        <th scope="col" style="width: 15%;">
           <div>
             <span>Статус</span>
           </div>
         </th>
-        <th scope="col" style="width: 100px;">
-        </th>
+        <th scope="col" style="width: 100px;"></th>
       </tr>
       </thead>
       <tbody v-if="getVacations.length">
@@ -61,6 +60,9 @@
     },
     methods: {
       ...mapActions(['loadVacations']),
+      handleScroll(e) {
+
+      }
     },
     computed: mapGetters(['getVacations', 'countriesIsExist']),
     async mounted() {
@@ -80,8 +82,11 @@
   @import '../assets/less/variables';
   .vacation-table-wrapper {
     position: relative;
-    /*max-height: 600px;*/
-    max-height: 300px;
+    max-height: 350px;
+    border: 1px solid #dee2e6;
+    table {
+      margin-bottom: 0;
+    }
   }
   .vacations-table {
     overflow: hidden;

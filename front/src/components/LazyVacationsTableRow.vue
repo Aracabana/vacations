@@ -1,17 +1,17 @@
 <template>
   <tr class="table-row" @click="goToVacationPage">
-    <td>
+    <td style="width: 30%;">
       <img :src="vacation.country.flag" alt="" class="flag">
       <span>{{vacation.countryName}}</span>
     </td>
-    <td class="text-center">{{vacation.dateFrom | toLocaleDateString}}</td>
-    <td class="text-center">{{vacation.dateTo | toLocaleDateString}}</td>
-    <td>
+    <td class="text-center" style="width: 23.5%;">{{vacation.dateFrom | toLocaleDateString}}</td>
+    <td class="text-center" style="width: 23.5%;">{{vacation.dateTo | toLocaleDateString}}</td>
+    <td style="width: 15%;">
       <VacationStatus
         :status="vacation.status"
       ></VacationStatus>
     </td>
-    <td class="action-td">
+    <td class="action-td" style="width: 100px;">
       <div class="action-block">
         <VacationEditBtn :vacation="vacation" v-if="vacation.status.text !== 'Завершен'"></VacationEditBtn>
         <VacationRemoveBtn :vacationId="vacation.id"></VacationRemoveBtn>
@@ -30,6 +30,11 @@
     name: 'LazyVacationTableRow',
     components: {VacationStatus, VacationEditBtn, VacationRemoveBtn},
     props: ['vacation'],
+    data() {
+      return {
+        observer: null
+      }
+    },
     methods: {
       ...mapActions(['increaseVacationsCount']),
       goToVacationPage() {
@@ -63,9 +68,22 @@
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
-  .vacations-table tr td {
-    vertical-align: middle;
-    cursor: pointer;
+  .vacations-table tr {
+    td {
+      vertical-align: middle;
+      cursor: pointer;
+      &:first-child {
+        border-left: none;
+      }
+      &:last-child {
+        border-right: none;
+      }
+    }
+    &:last-child {
+      td {
+        border-bottom: 0;
+      }
+    }
   }
   .action-block {
     .flex();

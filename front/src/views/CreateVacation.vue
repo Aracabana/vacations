@@ -80,9 +80,9 @@
                 </form>
               </div>
             </div>
-            <!--            <div v-if="countryCode" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">-->
-            <!--              <CountryInfo :countryCode="countryCode"></CountryInfo>-->
-            <!--            </div>-->
+            <div class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
+              <CountryInfo></CountryInfo>
+            </div>
             <div class="col-12">
               <div id="map-wrapper" class="map-wrapper card-img-bottom" hidden>
                 <div id="map"></div>
@@ -101,9 +101,8 @@
   import Notification from '../components/Notification'
   import Spinner from '../components/Spinner'
   import CountriesList from '../components/CountriesList';
-  // import CountryInfo from '../components/CountryInfo'
+  import CountryInfo from '../components/CountryInfo'
   import request from '../utils/request';
-  import {eventBus} from "../main";
 
   export default {
     name: 'CreateVacation',
@@ -116,14 +115,14 @@
         dateTo: ''
       }
     },
-    computed: mapGetters(['getNotification']),
+    computed: mapGetters(['getNotification', 'getSelectedCountry']),
     validations: {
       countryName: {required},
       dateFrom: {required},
       dateTo: {required}
     },
     components: {
-      Notification, Spinner, CountriesList
+      Notification, Spinner, CountriesList, CountryInfo
     },
     methods: {
       ...mapActions(['searchCountry']),
@@ -161,10 +160,10 @@
         this.searchCountry(e.target.value);
       },
     },
-    mounted() {
-      eventBus.$on('chooseCountry', (data) => {
-        this.countryName = data;
-      })
+    watch: {
+      getSelectedCountry(newVal, oldVal) {
+        this.countryName = newVal.countryName
+      }
     }
   }
 </script>

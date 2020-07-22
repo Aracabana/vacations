@@ -1,10 +1,10 @@
 <template>
   <div class="countries-list-wrapper">
     <Spinner v-if="!countriesIsExist"></Spinner>
-    <p v-if="!getContinentsForSelect.length"><i class="far fa-sad-tear"></i> Страна не найдена</p>
+    <p v-if="!getContinentsForSelect.length" class="countries-empty"><i class="far fa-sad-tear"></i> Страна не найдена</p>
     <ul v-else class="countries-list list-unstyled">
       <li v-for="(continent, index) in getContinentsForSelect" :key="index">
-        <LazyContinentItem :continentIndex="index+1" :continent="continent"></LazyContinentItem>
+        <LazyContinentItem :continent="continent"></LazyContinentItem>
       </li>
     </ul>
   </div>
@@ -35,39 +35,17 @@
     border-top: none;
     min-height: 50px;
     background-color: #ffffff;
-    > p {
-      margin-bottom: 0;
-      padding: 13px .75rem;
-      text-align: center;
-      background-color: #eaeaea;
-    }
   }
   .countries-list {
     overflow-y: auto;
     overflow-x: hidden;
     margin-bottom: 0;
     max-height: 200px;
-    > li {
-      p {
-        margin-bottom: 0;
-        padding: 3px .75rem;
-        font-size: 12px;
-        background-color: #eaeaea;
-      }
-      li {
-        .flex();
-        .flex-start();
-        .align-items-center();
-        padding: 3px .75rem;
-        cursor: pointer;
-        &:hover {
-          background-color: rgba(0,123,255,.25);
-        }
-      }
-    }
-    .flag {
-      position: static;
-      max-width: 35px;
-    }
+  }
+  .countries-empty {
+    margin-bottom: 0;
+    padding: 13px .75rem;
+    text-align: center;
+    background-color: #eaeaea;
   }
 </style>
