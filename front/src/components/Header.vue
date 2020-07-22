@@ -22,8 +22,7 @@
 </template>
 
 <script>
-  import request from '../utils/request';
-  import {mapMutations, mapGetters} from 'vuex';
+  import {mapMutations, mapGetters, mapActions} from 'vuex';
 
   export default {
     name: 'Header',
@@ -34,27 +33,18 @@
     },
     computed: mapGetters(['getUserLogin']),
     methods: {
-      ...mapMutations(['updateNotification']),
-      async logout() {
-        try {
-          await request('/auth/logout', 'GET');
-        } catch (err) {
-          this.updateNotification({ok: false, caption: err});
-        }
-        finally {
-          await this.$router.push('/login');
-        }
-      },
-      changeBtn() {
+      ...mapMutations(['updateUser']),
+      ...mapActions(['logout']),
+      setBtnOptions() {
         this.btn = this.$route.meta.headerBtn;
       }
     },
-    mounted() {
-      this.changeBtn();
+    created() {
+      this.setBtnOptions();
     },
     watch: {
       $route () {
-        this.changeBtn();
+        this.setBtnOptions();
       }
     }
   }

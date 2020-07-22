@@ -2,7 +2,7 @@
   <tr class="table-row" @click="goToVacationPage">
     <td>
       <img v-if="vacation.country.flag" :src="vacation.country.flag" alt="" class="flag">
-      <span>{{vacation.country.countryName}}</span>
+      <span>{{vacation.countryName}}</span>
     </td>
     <td class="text-center">{{vacation.dateFrom | toLocaleDateString}}</td>
     <td class="text-center">{{vacation.dateTo | toLocaleDateString}}</td>

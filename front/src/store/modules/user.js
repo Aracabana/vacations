@@ -1,5 +1,14 @@
+import request from "../../utils/request";
+import router from '../../router';
+
 export default {
-  actions: {},
+  actions: {
+    async logout({commit}) {
+      await request('/auth/logout', 'GET');
+      commit('updateUser', {});
+      await router.push('/login');
+    }
+  },
   state: {
     user: {},
   },

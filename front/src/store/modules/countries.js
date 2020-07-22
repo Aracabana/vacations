@@ -21,7 +21,12 @@ export default {
     },
 
     async applyCountriesFilters({commit}) {
+      commit('setContinentsToShow', 2);
       commit('filterCountries');
+    },
+
+    async increaseContinentsToShow({commit, state}, value) {
+      commit('setContinentsToShow', value);
     }
   },
   state: {
@@ -33,12 +38,16 @@ export default {
       searchField: 'countryName',
       sortField1: 'continentName',
       sortField2: 'countryName'
+    },
+    lazyLoadingOptions: {
+      continentsToShow: 2
     }
   },
   mutations: {
     setCountries: (state, countries) => state.countries = countries,
     setCurrentCountry: (state, currentCountry) => state.currentCountry = currentCountry,
     setCountriesSearchValue: (state, searchValue) => state.countriesFilterOptions.searchValue = searchValue,
+    setContinentsToShow: (state, value) => state.lazyLoadingOptions.continentsToShow = value,
 
     filterCountries(state) {
       const countries = new FilterBuilder(state.countriesFilterOptions, [...state.countries]);
@@ -49,20 +58,25 @@ export default {
     getCountryById: (state) => (id) => {
       return state.filteredCountries.find(item => item.id === id)
     },
-    getCountriesForSelect(state) {
+    getContinentsForSelect(state) {
       const result = [];
       state.filteredCountries.forEach(country => {
         const foundItem = result.find(item => item.continentName === country.continentName);
-
+        const itemForSelect = {
+          countryName: country.countryName,
+          isoAlpha3: country.isoAlpha3
+        };
         if (foundItem) {
-          foundItem.countries.push(country);
-        } else {
+          foundItem.countries.push(itemForSelect);
+        }
+        else {
           result.push({
             continentName: country.continentName,
-            countries: [country],
+            countries: [itemForSelect],
           })
         }
       });
+      // return result.filter((item, index) => index < state.lazyLoadingOptions.continentsToShow);
       return result;
     },
     countriesIsExist(state) {

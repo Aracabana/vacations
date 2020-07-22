@@ -26,7 +26,7 @@
                         'is-invalid': !countriesListIsOpen && $v.countryName.$dirty && !$v.countryName.required
                       }"
                     >
-                    <CountriesList @chooseCountry="handleCountry" v-show="countriesListIsOpen"></CountriesList>
+                    <CountriesList v-show="countriesListIsOpen"></CountriesList>
                     <div
                       v-if="$v.countryName.$dirty && !$v.countryName.required"
                       class="invalid-feedback"
@@ -103,6 +103,7 @@
   import CountriesList from '../components/CountriesList';
   // import CountryInfo from '../components/CountryInfo'
   import request from '../utils/request';
+  import {eventBus} from "../main";
 
   export default {
     name: 'CreateVacation',
@@ -129,9 +130,6 @@
       ...mapMutations(['updateNotification']),
       onblur() {
         setTimeout(() => this.countriesListIsOpen = false, 150);
-      },
-      handleCountry(countryName) {
-        this.countryName = countryName;
       },
       formatDatePicker(increase) {
         return formatDateForPicker(increase)
@@ -161,7 +159,12 @@
       },
       handleSearch(e) {
         this.searchCountry(e.target.value);
-      }
+      },
+    },
+    mounted() {
+      eventBus.$on('chooseCountry', (data) => {
+        this.countryName = data;
+      })
     }
   }
 </script>

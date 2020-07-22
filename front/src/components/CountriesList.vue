@@ -1,20 +1,10 @@
 <template>
   <div class="countries-list-wrapper">
     <Spinner v-if="!countriesIsExist"></Spinner>
-    <p v-if="!getCountriesForSelect.length"><i class="far fa-sad-tear"></i> Страна не найдена</p>
+    <p v-if="!getContinentsForSelect.length"><i class="far fa-sad-tear"></i> Страна не найдена</p>
     <ul v-else class="countries-list list-unstyled">
-      <li v-for="(continent, index) in getCountriesForSelect" :key="index">
-        <p><strong>{{continent.continentName}}</strong></p>
-        <ul class="list-unstyled">
-          <li
-            v-for="(country, index) in continent.countries"
-            :key="index"
-            @click="$emit('chooseCountry', country.countryName)"
-          >
-            <img v-if="country.flag !== 'not'" :src="country.flag" alt="" class="flag">
-            <span>{{country.countryName}}</span>
-          </li>
-        </ul>
+      <li v-for="(continent, index) in getContinentsForSelect" :key="index">
+        <LazyContinentItem :continentIndex="index+1" :continent="continent"></LazyContinentItem>
       </li>
     </ul>
   </div>
@@ -23,11 +13,12 @@
 <script>
   import {mapGetters} from 'vuex';
   import Spinner from "./Spinner";
+  import LazyContinentItem from "./LazyContinentItem";
 
   export default {
     name: "CountriesList",
-    components: {Spinner},
-    computed: mapGetters(['getCountriesForSelect', 'countriesIsExist']),
+    components: {Spinner, LazyContinentItem},
+    computed: mapGetters(['getContinentsForSelect', 'countriesIsExist'])
   }
 </script>
 
@@ -79,5 +70,4 @@
       max-width: 35px;
     }
   }
-
 </style>

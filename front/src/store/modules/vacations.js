@@ -12,6 +12,7 @@ export default {
         for (let i = 0; i < vacations.length; i++) {
           const vacation = new Vacation(vacations[i]);
           vacation.country = getters.getCountryById(vacation.countryId);
+          vacation.countryName = vacation.country.countryName;
           temp.push(vacation);
         }
         commit('setVacations', temp);
