@@ -1,7 +1,7 @@
 <template>
   <tr class="table-row" @click="goToVacationPage">
     <td>
-      <img v-if="vacation.country.flag" :src="vacation.country.flag" alt="" class="flag">
+      <img :src="vacation.country.flag" alt="" class="flag">
       <span>{{vacation.countryName}}</span>
     </td>
     <td class="text-center">{{vacation.dateFrom | toLocaleDateString}}</td>
@@ -24,12 +24,14 @@
   import VacationStatus from './VacationStatus';
   import VacationEditBtn from './VacationEditBtn';
   import VacationRemoveBtn from './VacationRemoveBtn';
+  import {mapActions, mapMutations} from "vuex";
 
   export default {
-    name: 'VacationTableRow',
+    name: 'LazyVacationTableRow',
     components: {VacationStatus, VacationEditBtn, VacationRemoveBtn},
     props: ['vacation'],
     methods: {
+      ...mapActions(['increaseVacationsCount']),
       goToVacationPage() {
         // this.$router.push('/');
       }
@@ -37,6 +39,23 @@
     filters: {
       toLocaleDateString: function (value) {
         return value.toLocaleDateString();
+      }
+    },
+    mounted() {
+      if ("IntersectionObserver" in window) {
+        this.observer = new IntersectionObserver((entries) => {
+          const row = entries[0];
+          if (row.isIntersecting) {
+            this.increaseVacationsCount();
+            this.observer.disconnect();
+          }
+        }, {});
+        this.observer.observe(this.$el);
+      }
+    },
+    beforeDestroy() {
+      if ("IntersectionObserver" in window) {
+        this.observer.disconnect();
       }
     }
   }

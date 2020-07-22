@@ -1,10 +1,9 @@
-import Country from '../../../../public/js/entities/country-entity';
 import request from '../../utils/request';
 import { FilterBuilder } from "../../utils/FilterBuilder";
 
 export default {
   actions: {
-    async loadVacations({commit, getters, dispatch}) {
+    async loadVacations({commit, getters}) {
       const temp = [];
       const result = await request('/vacation');
       if (result) {
@@ -44,6 +43,11 @@ export default {
       }
     },
 
+    async increaseVacationsCount({commit, state}) {
+      const currVacationsCount = state.vacationFilterOptions.count;
+      commit('setVacationRecordCount', currVacationsCount + 1);
+    },
+
     async sortVacation({commit}, {sortField, sortOrder}) {
       commit('setVacationSortField', sortField);
       commit('setVacationSortOrder', sortOrder);
@@ -59,9 +63,9 @@ export default {
     },
 
     async applyVacationFilters({commit}) {
+      // commit('setVacationRecordCount', 1);
       commit('filterVacations');
     }
-
   },
   state: {
     vacations: [],
@@ -72,6 +76,7 @@ export default {
       searchField: 'countryName',
       sortField: 'countryName',
       sortOrder: 'ASC',
+      count: 1
     }
   },
   mutations: {
@@ -80,6 +85,7 @@ export default {
     setVacationSortOrder: (state, order) => state.vacationFilterOptions.sortOrder = order,
     setVacationSearchValue: (state, input) => state.vacationFilterOptions.searchValue = input,
     setVacationStatusValue: (state, status) => state.vacationFilterOptions.status = status,
+    setVacationRecordCount: (state, value) => state.vacationFilterOptions.count = value,
 
     filterVacations(state) {
       const vacations = new FilterBuilder(state.vacationFilterOptions, [...state.vacations]);
@@ -92,7 +98,7 @@ export default {
   },
   getters: {
     getVacations(state) {
-      return state.filteredVacations;
+      return state.filteredVacations.filter((item, index) => index < state.vacationFilterOptions.count);
     },
     getVacationSortField(state) {
       return state.vacationFilterOptions.sortField;

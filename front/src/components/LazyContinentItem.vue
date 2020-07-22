@@ -64,7 +64,7 @@
 <style scoped>
   .v-lazy-image {
     filter: blur(2px);
-    transition: filter 0.4s;
+    transition: filter 0.3s;
   }
   .v-lazy-image-loaded {
     filter: blur(0);

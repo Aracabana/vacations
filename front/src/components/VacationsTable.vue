@@ -32,11 +32,7 @@
       </tr>
       </thead>
       <tbody v-if="getVacations.length">
-      <VacationsTableRow
-        v-for="(vacation, index) in getVacations"
-        :key="index"
-        :vacation="vacation"
-      ></VacationsTableRow>
+      <LazyVacationTableRow v-for="(vacation, index) in getVacations" :key="index" :vacation="vacation"/>
       </tbody>
       <tbody v-else>
       <VacationsTableEmptyRow></VacationsTableEmptyRow>
@@ -47,7 +43,7 @@
 
 <script>
   import VacationsTableEmptyRow from './VacationsTableEmptyRow'
-  import VacationsTableRow from './VacationsTableRow'
+  import LazyVacationTableRow from './LazyVacationsTableRow'
   import VacationsSortBtn from './VacationsSortBtn'
   import Spinner from '../components/Spinner'
   import { mapActions, mapGetters } from 'vuex'
@@ -56,7 +52,7 @@
   export default {
     name: 'VacationsTable',
     components: {
-      VacationsTableEmptyRow, VacationsTableRow, VacationsSortBtn, Spinner
+      VacationsTableEmptyRow, LazyVacationTableRow, VacationsSortBtn, Spinner
     },
     data() {
       return {
@@ -67,7 +63,6 @@
       ...mapActions(['loadVacations']),
     },
     computed: mapGetters(['getVacations', 'countriesIsExist']),
-    filters: {},
     async mounted() {
       this.loading = true;
       await this.loadVacations();
@@ -85,7 +80,8 @@
   @import '../assets/less/variables';
   .vacation-table-wrapper {
     position: relative;
-    max-height: 600px;
+    /*max-height: 600px;*/
+    max-height: 300px;
   }
   .vacations-table {
     overflow: hidden;
