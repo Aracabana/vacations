@@ -80,13 +80,11 @@
                 </form>
               </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
+            <div v-show="countryName" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
               <CountryInfo></CountryInfo>
             </div>
-            <div class="col-12">
-              <div id="map-wrapper" class="map-wrapper card-img-bottom" hidden>
-                <div id="map"></div>
-              </div>
+            <div v-show="countryName" class="col-12">
+              <Map></Map>
             </div>
           </div>
         </div>
@@ -103,6 +101,7 @@
   import CountriesList from '../components/CountriesList';
   import CountryInfo from '../components/CountryInfo'
   import request from '../utils/request';
+  import Map from '../components/Map'
 
   export default {
     name: 'CreateVacation',
@@ -122,7 +121,7 @@
       dateTo: {required}
     },
     components: {
-      Notification, Spinner, CountriesList, CountryInfo
+      Notification, Spinner, CountriesList, CountryInfo, Map
     },
     methods: {
       ...mapActions(['searchCountry']),
@@ -172,13 +171,6 @@
   @import '../assets/less/variables';
   .vacation-list-form-group {
     position: relative;
-  }
-  .map-wrapper {
-    margin-top: 32px;
-  }
-  #map {
-    z-index: 1;
-    height: 300px;
   }
   .form-control.open {
     .border-bottom-radius(0);

@@ -32,9 +32,12 @@
 <script>
 
   import {mapGetters} from 'vuex'
+  import VacationsTable from '../components/VacationsTable'
 
   export default {
     name: 'CountryInfo',
+    props: ['widgetType'],
+    components: {VacationsTable},
     data() {
       return {
         country: {}
