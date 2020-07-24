@@ -3,7 +3,7 @@
     <l-map
       style="height: 100%; width: 100%"
       :zoom="zoom"
-      :center="getSelectedCountry.latlng"
+      :center="country.latlng"
       @update:zoom="zoomUpdated"
       @update:center="centerUpdated"
       @update:bounds="boundsUpdated"
@@ -28,13 +28,14 @@
     },
     data () {
       return {
+        country: {},
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         zoom: 3,
         bounds: null
       };
     },
-    computed: mapGetters(['getSelectedCountry']),
     methods: {
+      ...mapGetters(['getSelectedCountry']),
       zoomUpdated (zoom) {
         this.zoom = zoom;
       },
@@ -43,15 +44,22 @@
       },
       boundsUpdated (bounds) {
         this.bounds = bounds;
+      },
+      async updateCountry(selectedCountry = undefined) {
+        this.country = selectedCountry || this.getSelectedCountry();
+        const countryPolygon = await request(`/api/getGeoJSON?countryCode=${this.country.isoAlpha3.toUpperCase()}`);
+        if (countryPolygon) {
+          console.log(countryPolygon);
+        }
       }
     },
     async created() {
-      console.log(this.getSelectedCountry.isoAlpha3);
-      const countryPolygon = await request(`/api/getGeoJSON?countryCode=${this.getSelectedCountry.isoAplha3.toUpperCase()}`);
-      console.log(countryPolygon)
+      await this.updateCountry();
     },
     watch: {
-
+      getSelectedCountry(newVal) {
+        this.updateCountry(newVal);
+      }
     }
   }
 </script>

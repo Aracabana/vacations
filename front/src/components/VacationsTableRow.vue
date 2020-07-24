@@ -1,7 +1,11 @@
 <template>
   <tr class="table-row" @click="goToVacationPage">
     <td style="width: 30%;">
-      <img :src="vacation.country.flag" alt="" class="flag">
+      <v-lazy-image
+        :src="vacation.country.flag"
+        :src-placeholder="require('@/assets/img/img-placeholder.png')"
+        class="flag"
+      />
       <span>{{vacation.countryName}}</span>
     </td>
     <td class="text-center" style="width: 23.5%;">{{vacation.dateFrom | toLocaleDateString}}</td>
@@ -24,11 +28,12 @@
   import VacationStatus from './VacationStatus';
   import VacationEditBtn from './VacationEditBtn';
   import VacationRemoveBtn from './VacationRemoveBtn';
-  import {mapActions, mapMutations} from "vuex";
+  import {mapActions} from "vuex";
+  import VLazyImage from "v-lazy-image";
 
   export default {
-    name: 'LazyVacationTableRow',
-    components: {VacationStatus, VacationEditBtn, VacationRemoveBtn},
+    name: 'VacationTableRow',
+    components: {VacationStatus, VacationEditBtn, VacationRemoveBtn, VLazyImage},
     props: ['vacation'],
     data() {
       return {
@@ -47,27 +52,35 @@
       }
     },
     mounted() {
-      if ("IntersectionObserver" in window) {
-        this.observer = new IntersectionObserver((entries) => {
-          const row = entries[0];
-          if (row.isIntersecting) {
-            this.increaseVacationsCount();
-            this.observer.disconnect();
-          }
-        }, {});
-        this.observer.observe(this.$el);
-      }
+      // if ("IntersectionObserver" in window) {
+      //   this.observer = new IntersectionObserver((entries) => {
+      //     const row = entries[0];
+      //     console.log(entries[0].target);
+      //     if (row.isIntersecting) {
+      //       this.increaseVacationsCount();
+      //       this.observer.disconnect();
+      //     }
+      //   }, {});
+      //   this.observer.observe(this.$el);
+      // }
     },
     beforeDestroy() {
-      if ("IntersectionObserver" in window) {
-        this.observer.disconnect();
-      }
+      // if ("IntersectionObserver" in window) {
+      //   this.observer.disconnect();
+      // }
     }
   }
 </script>
 
 <style lang="less" scoped>
   @import '../assets/less/variables';
+  .v-lazy-image {
+    filter: blur(2px);
+    transition: filter 0.3s;
+  }
+  .v-lazy-image-loaded {
+    filter: blur(0);
+  }
   .vacations-table tr {
     td {
       vertical-align: middle;

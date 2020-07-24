@@ -1,25 +1,25 @@
 <template>
   <div class="table-responsive vacation-table-wrapper" @scroll="handleScroll">
-    <Spinner v-if="loading"></Spinner>
+    <Spinner v-if="loading"/>
     <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
       <thead class="thead-dark">
       <tr>
         <th scope="col" style="width: 30%;">
           <div>
             <span>Страна</span>
-            <VacationsSortBtn :sortField="'countryName'"></VacationsSortBtn>
+            <VacationsSortBtn :sortField="'countryName'"/>
           </div>
         </th>
         <th scope="col" style="width: 23.5%;">
           <div>
             <span>Дата начала</span>
-            <VacationsSortBtn :sortField="'dateFrom'"></VacationsSortBtn>
+            <VacationsSortBtn :sortField="'dateFrom'"/>
           </div>
         </th>
         <th scope="col" style="width: 23.5%;">
           <div>
             <span>Дата окончания</span>
-            <VacationsSortBtn :sortField="'dateTo'"></VacationsSortBtn>
+            <VacationsSortBtn :sortField="'dateTo'"/>
           </div>
         </th>
         <th scope="col" style="width: 15%;">
@@ -31,10 +31,10 @@
       </tr>
       </thead>
       <tbody v-if="getVacations.length">
-      <LazyVacationTableRow v-for="(vacation, index) in getVacations" :key="index" :vacation="vacation"/>
+      <VacationTableRow v-for="(vacation, index) in getVacations" :key="index" :vacation="vacation"/>
       </tbody>
       <tbody v-else>
-      <VacationsTableEmptyRow></VacationsTableEmptyRow>
+      <VacationsTableEmptyRow/>
       </tbody>
     </table>
   </div>
@@ -42,7 +42,7 @@
 
 <script>
   import VacationsTableEmptyRow from './VacationsTableEmptyRow'
-  import LazyVacationTableRow from './LazyVacationsTableRow'
+  import VacationTableRow from './VacationsTableRow'
   import VacationsSortBtn from './VacationsSortBtn'
   import Spinner from '../components/Spinner'
   import { mapActions, mapGetters } from 'vuex'
@@ -51,7 +51,7 @@
   export default {
     name: 'VacationsTable',
     components: {
-      VacationsTableEmptyRow, LazyVacationTableRow, VacationsSortBtn, Spinner
+      VacationsTableEmptyRow, VacationTableRow, VacationsSortBtn, Spinner
     },
     data() {
       return {

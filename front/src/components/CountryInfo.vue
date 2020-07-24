@@ -5,22 +5,22 @@
         <div class="col-md-6 col-sm-12">
           <p>
             <strong>Столица: </strong>
-            <span>{{country.capital}}</span>
+            <span>{{getSelectedCountry.capital}}</span>
           </p>
           <p>
             <strong>Площадь: </strong>
-            <span>{{country.areaInSqKm}} км<sup>2</sup></span>
+            <span>{{getSelectedCountry.areaInSqKm}} км<sup>2</sup></span>
           </p>
           <p>
             <strong>Население: </strong>
-            <span>{{country.population}} чел.</span>
+            <span>{{getSelectedCountry.population}} чел.</span>
           </p>
         </div>
         <div class="col-md-6 col-sm-12">
           <p>
             <strong>Языки: </strong>
             <span>
-              <span v-for="(language, index) in country.languages" :key="index">{{language}}</span>
+              <span v-for="(language, index) in getSelectedCountry.languages" :key="index">{{language}}</span>
             </span>
           </p>
         </div>
@@ -43,12 +43,7 @@
         country: {}
       }
     },
-    computed: mapGetters(['getSelectedCountry']),
-    watch: {
-      getSelectedCountry(newVal, oldVal) {
-        this.country = newVal;
-      }
-    }
+    computed: mapGetters(['getSelectedCountry'])
   }
 </script>
 

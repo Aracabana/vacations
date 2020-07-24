@@ -4,7 +4,7 @@
     <p v-if="!getContinentsForSelect.length" class="countries-empty"><i class="far fa-sad-tear"></i> Страна не найдена</p>
     <ul v-else class="countries-list list-unstyled">
       <li v-for="(continent, index) in getContinentsForSelect" :key="index">
-        <LazyContinentItem :continent="continent"></LazyContinentItem>
+        <ContinentItem :continent="continent"></ContinentItem>
       </li>
     </ul>
   </div>
@@ -13,11 +13,11 @@
 <script>
   import {mapGetters} from 'vuex';
   import Spinner from "./Spinner";
-  import LazyContinentItem from "./LazyContinentItem";
+  import ContinentItem from "./ContinentItem";
 
   export default {
     name: "CountriesList",
-    components: {Spinner, LazyContinentItem},
+    components: {Spinner, ContinentItem},
     computed: mapGetters(['getContinentsForSelect', 'countriesIsExist'])
   }
 </script>

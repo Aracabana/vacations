@@ -43,10 +43,10 @@ export default {
       }
     },
 
-    async increaseVacationsCount({commit, state}) {
-      const currVacationsCount = state.vacationFilterOptions.count;
-      commit('setVacationRecordCount', currVacationsCount + 1);
-    },
+    // async increaseVacationsCount({commit, state}) {
+    //   const currVacationsCount = state.vacationFilterOptions.count;
+    //   commit('setVacationRecordCount', currVacationsCount + 1);
+    // },
 
     async sortVacation({commit}, {sortField, sortOrder}) {
       commit('setVacationSortField', sortField);
@@ -76,7 +76,7 @@ export default {
       searchField: 'countryName',
       sortField: 'countryName',
       sortOrder: 'ASC',
-      count: 1
+      // count: 1
     }
   },
   mutations: {
@@ -85,7 +85,7 @@ export default {
     setVacationSortOrder: (state, order) => state.vacationFilterOptions.sortOrder = order,
     setVacationSearchValue: (state, input) => state.vacationFilterOptions.searchValue = input,
     setVacationStatusValue: (state, status) => state.vacationFilterOptions.status = status,
-    setVacationRecordCount: (state, value) => state.vacationFilterOptions.count = value,
+    // setVacationRecordCount: (state, value) => state.vacationFilterOptions.count = value,
 
     filterVacations(state) {
       const vacations = new FilterBuilder(state.vacationFilterOptions, [...state.vacations]);
@@ -98,7 +98,8 @@ export default {
   },
   getters: {
     getVacations(state) {
-      return state.filteredVacations.filter((item, index) => index < state.vacationFilterOptions.count);
+      // return state.filteredVacations.filter((item, index) => index < state.vacationFilterOptions.count);
+      return state.filteredVacations;
     },
     getVacationSortField(state) {
       return state.vacationFilterOptions.sortField;

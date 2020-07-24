@@ -80,10 +80,10 @@
                 </form>
               </div>
             </div>
-            <div v-show="countryName" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
+            <div v-if="!selectedCountryIsEmpty" class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-md-0 mt-4">
               <CountryInfo></CountryInfo>
             </div>
-            <div v-show="countryName" class="col-12">
+            <div v-if="selectedCountryHasLatLng" class="col-12">
               <Map></Map>
             </div>
           </div>
@@ -114,7 +114,7 @@
         dateTo: ''
       }
     },
-    computed: mapGetters(['getNotification', 'getSelectedCountry']),
+    computed: mapGetters(['getNotification', 'getSelectedCountry', 'selectedCountryIsEmpty', 'selectedCountryHasLatLng']),
     validations: {
       countryName: {required},
       dateFrom: {required},
@@ -160,7 +160,7 @@
       },
     },
     watch: {
-      getSelectedCountry(newVal, oldVal) {
+      getSelectedCountry(newVal) {
         this.countryName = newVal.countryName
       }
     }

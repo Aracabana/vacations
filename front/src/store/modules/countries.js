@@ -89,6 +89,18 @@ export default {
     },
     countriesIsExist(state) {
       return state.countries.length;
+    },
+    selectedCountryIsEmpty(state) {
+      const obj = state.selectedCountry;
+      for (let i in obj) {
+        if (obj.hasOwnProperty(i)) {
+          return false;
+        }
+      }
+      return true;
+    },
+    selectedCountryHasLatLng(state) {
+      return state.selectedCountry?.latlng?.length;
     }
   },
 }

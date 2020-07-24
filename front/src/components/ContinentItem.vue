@@ -21,10 +21,9 @@
 <script>
     import VLazyImage from "v-lazy-image";
     import {mapActions} from "vuex";
-    import {eventBus} from "../main";
 
     export default {
-      name: "LazyContinentItem",
+      name: "ContinentItem",
       props: ['continent'],
       components: {VLazyImage},
       data() {
