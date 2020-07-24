@@ -125,7 +125,7 @@
     },
     methods: {
       ...mapActions(['searchCountry']),
-      ...mapMutations(['updateNotification']),
+      ...mapMutations(['updateNotification', 'setSelectedCountry']),
       onblur() {
         setTimeout(() => this.countriesListIsOpen = false, 150);
       },
@@ -143,7 +143,7 @@
           dateTo: this.dateTo
         }
         this.loading = true;
-        const response = await request('/vacation', 'POST', formData, 'CreateVacation');
+        const response = await request('/vacation', 'POST', formData);
         if (response.ok) {
           this.updateNotification({...response, page: 'CreateVacation'});
         }
@@ -157,12 +157,15 @@
       },
       handleSearch(e) {
         this.searchCountry(e.target.value);
-      },
+      }
     },
     watch: {
       getSelectedCountry(newVal) {
         this.countryName = newVal.countryName
       }
+    },
+    beforeDestroy() {
+      this.setSelectedCountry({});
     }
   }
 </script>

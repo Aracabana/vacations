@@ -1,7 +1,9 @@
 import router from '../router/index';
 import store from '../store';
 
-export default async function request(url, method = 'GET', data = null, notificationPage = 'Home') {
+export default async function request(url, method = 'GET', data = null, notificationPage = undefined) {
+
+  const currRouter = router.currentRoute;
 
   // if (spinner) {
   //   store.commit('updateSpinner', true);
@@ -18,12 +20,14 @@ export default async function request(url, method = 'GET', data = null, notifica
 
   try {
     const response = await fetch(process.env.VUE_APP_SERVER_URL + url, {method, headers, credentials, body});
-    const result = await response.json();
-
     if (response.status === 401) {
       await router.push('/login');
       throw new Error(result.caption);
     }
+    if (response.status === 500) {
+      throw new Error('Границы для данной страны не найдены');
+    }
+    const result = await response.json();
     if (result.hasOwnProperty('ok') && !result.ok) {
       throw new Error(result.caption);
     }
@@ -31,7 +35,7 @@ export default async function request(url, method = 'GET', data = null, notifica
     return result;
 
   } catch (err) {
-    store.commit('updateNotification', {ok: false, caption: err.message, page: notificationPage});
+    store.commit('updateNotification', {ok: false, caption: err.message, page: notificationPage || currRouter.name});
     return false;
   } finally {
     // if (spinner) {

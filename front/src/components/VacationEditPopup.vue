@@ -97,11 +97,9 @@
           return
         }
         const updatedVacation = {
-          id: this.getPopup.id,
-          countryName: this.getPopup.countryName,
-          countryCode: this.getPopup.countryCode,
+          ...this.getPopup,
           dateFrom: this.dateFrom,
-          dateTo: this.dateTo
+          dateTo: this.dateTo,
         }
         this.loading = true;
         await this.editVacation(updatedVacation);

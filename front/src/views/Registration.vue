@@ -151,7 +151,7 @@
           password: this.password,
           confirmPassword: this.confirmPassword
         }
-        const data = await request('/auth/registration', 'POST', formData, 'Registration');
+        const data = await request('/auth/registration', 'POST', formData);
         if (data && data.ok) {
           data.page = 'Registration';
           this.updateNotification(data);

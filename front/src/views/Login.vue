@@ -116,7 +116,7 @@
           password: this.password,
           setSession: this.setSession
         }
-        const data = await request('/auth/login', 'POST', formData, 'Login');
+        const data = await request('/auth/login', 'POST', formData);
         if (data && data.ok) {
           this.updateUser(data.user);
           data.page = 'Login';

@@ -9,9 +9,8 @@ export default {
       if (result) {
         const { vacations } = result;
         for (let i = 0; i < vacations.length; i++) {
-          const vacation = new Vacation(vacations[i]);
-          vacation.country = getters.getCountryById(vacation.countryId);
-          vacation.countryName = vacation.country.countryName;
+          const countryOfVacation = getters.getCountryById(vacations[i].country_Id);
+          const vacation = new Vacation(vacations[i], countryOfVacation);
           temp.push(vacation);
         }
         commit('setVacations', temp);
@@ -26,7 +25,7 @@ export default {
         commit('updateNotification', {page: 'Home', ok: true, caption: 'Отпуск успешно удален'});
       }
     },
-    async editVacation({commit, state}, vacation) {
+    async editVacation({commit, state, getters}, vacation) {
       const requestData = {
         id: vacation.id,
         dateFrom: vacation.dateFrom,
@@ -34,8 +33,8 @@ export default {
       };
       const result = await request('/vacation', 'PUT', requestData, 'Popup');
       if (result) {
-        const updatedVacation = new Vacation(vacation);
-        await updatedVacation.setFlag();
+        const countryOfVacation = getters.getCountryById(vacation.country_Id);
+        const updatedVacation = new Vacation(vacation, countryOfVacation);
         commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
         commit('filterVacations');
         commit('updatePopup', null);
@@ -108,11 +107,13 @@ export default {
 }
 
 class Vacation {
-  constructor(vacation) {
+  constructor(vacation, country) {
     this.id = vacation.id;
     this.dateFrom = new Date(vacation.dateFrom);
     this.dateTo = new Date(vacation.dateTo);
-    this.countryId = vacation.country_Id;
+    this.country_Id = vacation.country_Id;
+    this.country = country;
+    this.countryName = country.countryName;
     this.status = this.calculateStatus();
   }
   calculateStatus() {
