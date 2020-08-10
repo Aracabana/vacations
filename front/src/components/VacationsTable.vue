@@ -1,5 +1,5 @@
 <template>
-  <div class="table-responsive vacation-table-wrapper" @scroll="handleScroll">
+  <div class="table-responsive vacation-table-wrapper">
     <Spinner v-if="loading"/>
     <table id="vacations-table" class="table table-striped table-bordered table-hover vacations-table">
       <thead class="thead-dark">
@@ -59,17 +59,9 @@
       }
     },
     methods: {
-      ...mapActions(['loadVacations']),
-      handleScroll(e) {
-
-      }
+      ...mapActions(['loadVacations'])
     },
     computed: mapGetters(['getVacations', 'countriesIsExist']),
-    async mounted() {
-      this.loading = true;
-      await this.loadVacations();
-      this.loading = false;
-    },
     created() {
       eventBus.$on('loading', (data) => {
         this.loading = data;

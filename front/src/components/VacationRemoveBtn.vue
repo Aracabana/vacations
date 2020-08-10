@@ -17,7 +17,8 @@
         const bool = confirm("Вы действительно хотите удалить отпуск?");
         if (bool) {
           eventBus.$emit('loading', true);
-          await this.removeVacation(this.vacationId);
+          const result = await this.removeVacation(this.vacationId);
+          this.$emit('removed', result);
           eventBus.$emit('loading', false);
         }
       }

@@ -100,8 +100,9 @@
   import Spinner from '../components/Spinner'
   import CountriesList from '../components/CountriesList';
   import CountryInfo from '../components/CountryInfo'
-  import request from '../utils/request';
   import Map from '../components/Map'
+  import router from "../router";
+  import popup from "../components/popup";
 
   export default {
     name: 'CreateVacation',
@@ -124,7 +125,7 @@
       Notification, Spinner, CountriesList, CountryInfo, Map
     },
     methods: {
-      ...mapActions(['searchCountry']),
+      ...mapActions(['searchCountry', 'addVacation']),
       ...mapMutations(['updateNotification', 'setSelectedCountry']),
       onblur() {
         setTimeout(() => this.countriesListIsOpen = false, 150);
@@ -133,6 +134,7 @@
         return formatDateForPicker(increase)
       },
       async submit() {
+        this.$modal.show(popup);
         if (this.$v.$invalid) {
           this.$v.$touch()
           return
@@ -143,17 +145,11 @@
           dateTo: this.dateTo
         }
         this.loading = true;
-        const response = await request('/vacation', 'POST', formData);
-        if (response.ok) {
-          this.updateNotification({...response, page: 'CreateVacation'});
+        const vacationId = await this.addVacation(formData);
+        if (typeof vacationId === 'number') {
+          setTimeout(async () => await router.push(`/vacation/${vacationId}`), 200);
         }
         this.loading = false;
-        // if (response.ok) {
-        //     setTimeout(() => {
-        //         window.location.href = '/vacation/' + response.vacationId;
-        //         this.$router.push('/vacation/');
-        //     }, 200);
-        // }
       },
       handleSearch(e) {
         this.searchCountry(e.target.value);

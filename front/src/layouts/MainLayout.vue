@@ -1,9 +1,9 @@
 <template>
   <section class="main-body">
     <Header></Header>
-    <Spinner v-if="!countriesIsExist"></Spinner>
+    <Spinner v-if="appLoading"></Spinner>
     <router-view v-else></router-view>
-    <VacationEditPopup v-if="getPopup"></VacationEditPopup>
+<!--    <VacationEditPopup v-if="getPopup"></VacationEditPopup>-->
   </section>
 </template>
 
@@ -15,12 +15,23 @@
 
   export default {
     components: {Spinner, Header, VacationEditPopup},
-    computed: mapGetters(['countriesIsExist', 'getPopup']),
-    methods: mapActions(['loadCountries']),
-    async mounted() {
-      if (!this.countriesIsExist) {
-        await this.loadCountries();
+    data() {
+      return {
+        appLoading: true
       }
+    },
+    computed: mapGetters(['countriesIsExist', 'getPopup']),
+    methods: {
+      ...mapActions(['loadCountries', 'loadVacations']),
+      async loadAppState() {
+        this.appLoading = true;
+        await this.loadCountries();
+        await this.loadVacations();
+        this.appLoading = false;
+      }
+    },
+    async mounted() {
+      await this.loadAppState();
     }
   }
 </script>

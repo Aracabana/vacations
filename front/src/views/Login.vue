@@ -119,8 +119,7 @@
         const data = await request('/auth/login', 'POST', formData);
         if (data && data.ok) {
           this.updateUser(data.user);
-          data.page = 'Login';
-          this.updateNotification(data);
+          this.updateNotification({...data, page: 'Login'});
           setTimeout(() => this.$router.push('/'), 1050);
         }
         this.loading = false;

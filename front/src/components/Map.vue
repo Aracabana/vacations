@@ -10,13 +10,8 @@
       @update:bounds="boundsUpdated"
       ref="map"
     >
-      <l-tile-layer :url="url"></l-tile-layer>
-      <l-geo-json
-        v-if="geoJson"
-        :geojson="geoJson"
-        ref="geoJson"
-      >
-      </l-geo-json>
+      <l-tile-layer :url="url"/>
+      <l-geo-json v-if="geoJson" :geojson="geoJson" :optionsStyle="boundsStyle" ref="geoJson"/>
     </l-map>
   </div>
 </template>
@@ -35,7 +30,15 @@
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         zoom: 3,
         bounds: null,
-        geoJson: null
+        geoJson: null,
+        boundsStyle: () => ({
+          fillColor: '#FD8D3C',
+          weight: 1,
+          opacity: 1,
+          color: 'black',
+          dashArray: '4',
+          fillOpacity: 0.6
+        })
       };
     },
     computed: mapGetters(['getSelectedCountry']),
@@ -46,8 +49,6 @@
       zoomByBounds () {
         const map = this.$refs.map;
         const geoJsonLayer = this.$refs.geoJson;
-        console.log(map);
-        console.log(geoJsonLayer);
         const bounds = geoJsonLayer.getBounds();
         map.fitBounds(bounds);
       },
@@ -59,10 +60,10 @@
       },
       async updateCountry(selectedCountry) {
         this.country = selectedCountry;
-        const countryPolygon = await request(`/api/getGeoJSON?countryCode=${this.country.isoAlpha3.toUpperCase()}`);
+        const countryPolygon = await request(`/api/getGeoJSON?countryCode=${selectedCountry.isoAlpha3.toUpperCase()}`);
         if (countryPolygon) {
           this.geoJson = countryPolygon;
-          this.zoomByBounds();
+          setTimeout(() => this.zoomByBounds());
         }
       }
     },

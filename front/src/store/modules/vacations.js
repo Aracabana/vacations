@@ -1,7 +1,19 @@
 import request from '../../utils/request';
 import { FilterBuilder } from "../../utils/FilterBuilder";
+import router from '../../router'
 
 export default {
+  state: {
+    vacations: [],
+    filteredVacations: [],
+    vacationFilterOptions: {
+      status: '',
+      searchValue: '',
+      searchField: 'countryName',
+      sortField: 'countryName',
+      sortOrder: 'ASC'
+    }
+  },
   actions: {
     async loadVacations({commit, getters}) {
       const temp = [];
@@ -17,13 +29,26 @@ export default {
         commit('filterVacations');
       }
     },
+    async addVacation({commit, getters, state}, formData) {
+      const response = await request('/vacation', 'POST', formData);
+      if (response.ok) {
+        const countryOfVacation = getters.getCountryById(response.vacation.country_Id);
+        const vacation = new Vacation(response.vacation, countryOfVacation);
+        commit('setVacations', [...state.vacations, vacation]);
+        commit('updateNotification', {...response, page: router.currentRoute.name})
+        return vacation.id;
+      }
+      return false;
+    },
     async removeVacation({commit, state}, vacationId) {
       const result = await request('/vacation', 'DELETE', {id: vacationId});
       if (result) {
         commit('setVacations', state.vacations.filter(item => item.id !== vacationId));
         commit('filterVacations');
-        commit('updateNotification', {page: 'Home', ok: true, caption: 'Отпуск успешно удален'});
+        commit('updateNotification', {page: router.currentRoute.name, ok: true, caption: 'Отпуск успешно удален'});
+        return true;
       }
+      return false;
     },
     async editVacation({commit, state, getters}, vacation) {
       const requestData = {
@@ -38,14 +63,9 @@ export default {
         commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
         commit('filterVacations');
         commit('updatePopup', null);
-        commit('updateNotification', {page: 'Home', ok: result.ok, caption: result.caption});
+        commit('updateNotification', {page: router.currentRoute.name, ok: result.ok, caption: result.caption});
       }
     },
-
-    // async increaseVacationsCount({commit, state}) {
-    //   const currVacationsCount = state.vacationFilterOptions.count;
-    //   commit('setVacationRecordCount', currVacationsCount + 1);
-    // },
 
     async sortVacation({commit}, {sortField, sortOrder}) {
       commit('setVacationSortField', sortField);
@@ -62,20 +82,7 @@ export default {
     },
 
     async applyVacationFilters({commit}) {
-      // commit('setVacationRecordCount', 1);
       commit('filterVacations');
-    }
-  },
-  state: {
-    vacations: [],
-    filteredVacations: [],
-    vacationFilterOptions: {
-      status: '',
-      searchValue: '',
-      searchField: 'countryName',
-      sortField: 'countryName',
-      sortOrder: 'ASC',
-      // count: 1
     }
   },
   mutations: {
@@ -84,7 +91,6 @@ export default {
     setVacationSortOrder: (state, order) => state.vacationFilterOptions.sortOrder = order,
     setVacationSearchValue: (state, input) => state.vacationFilterOptions.searchValue = input,
     setVacationStatusValue: (state, status) => state.vacationFilterOptions.status = status,
-    // setVacationRecordCount: (state, value) => state.vacationFilterOptions.count = value,
 
     filterVacations(state) {
       const vacations = new FilterBuilder(state.vacationFilterOptions, [...state.vacations]);
@@ -97,8 +103,10 @@ export default {
   },
   getters: {
     getVacations(state) {
-      // return state.filteredVacations.filter((item, index) => index < state.vacationFilterOptions.count);
       return state.filteredVacations;
+    },
+    getVacationById: state => id => {
+      return state.vacations.find(vacation => vacation.id === Number(id));
     },
     getVacationSortField(state) {
       return state.vacationFilterOptions.sortField;

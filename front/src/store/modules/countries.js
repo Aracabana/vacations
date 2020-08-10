@@ -1,16 +1,31 @@
 import {FilterBuilder} from '../../utils/FilterBuilder';
 import request from "../../utils/request";
 import countryParser from "../../utils/countryParser";
+import router from '../../router'
 
 export default {
+  state: {
+    selectedCountry: {},
+    countries: [],
+    filteredCountries: [],
+    countriesFilterOptions: {
+      searchValue: '',
+      searchField: 'countryName',
+      sortField1: 'continentName',
+      sortField2: 'countryName'
+    },
+    lazyLoadingOptions: {
+      continentsToShow: 2
+    }
+  },
   actions: {
-    async loadCountries({commit, dispatch}) {
+    async loadCountries({commit}) {
       try {
         const { countries } = await request('/countries/all');
         commit('setCountries', countryParser(countries));
         commit('filterCountries');
       } catch (err) {
-        commit('updateNotification', {page: 'Home', ok: false, caption: err.message});
+        commit('updateNotification', {page: router.currentRoute.name, ok: false, caption: err.message});
       }
     },
 
@@ -31,20 +46,6 @@ export default {
     async selectCountry({commit, getters}, countryId) {
       const selectedCountry = getters.getCountryById(countryId);
       commit('setSelectedCountry', selectedCountry);
-    }
-  },
-  state: {
-    selectedCountry: {},
-    countries: [],
-    filteredCountries: [],
-    countriesFilterOptions: {
-      searchValue: '',
-      searchField: 'countryName',
-      sortField1: 'continentName',
-      sortField2: 'countryName'
-    },
-    lazyLoadingOptions: {
-      continentsToShow: 2
     }
   },
   mutations: {

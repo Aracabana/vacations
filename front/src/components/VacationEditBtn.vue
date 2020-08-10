@@ -12,7 +12,7 @@
     methods: {
       ...mapMutations(['updatePopup']),
       showEditPopup() {
-        this.updatePopup(this.vacation)
+        this.updatePopup(this.vacation);
       }
     }
   }

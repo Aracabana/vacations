@@ -153,8 +153,7 @@
         }
         const data = await request('/auth/registration', 'POST', formData);
         if (data && data.ok) {
-          data.page = 'Registration';
-          this.updateNotification(data);
+          this.updateNotification({...data, page: 'Registration'});
           setTimeout(() => this.$router.push('/login'), 1050);
         }
         this.loading = false;

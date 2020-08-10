@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/views/Home'
 import isAuthenticated from '../utils/isAuthenticated';
 
 Vue.use(Router);
@@ -51,6 +50,20 @@ const router = new Router({
         }
       },
       component: () => import('@/views/CreateVacation.vue')
+    },
+    {
+      path: '/vacation/:id',
+      name: 'Vacation',
+      meta: {
+        layout: 'main',
+        headerBtn: {
+          url: '/',
+          title: 'Вернуться к списку отпусков',
+          class: 'btn-light',
+          icon: 'fa-angle-left'
+        }
+      },
+      component: () => import('@/views/Vacation.vue')
     }
   ]
 });

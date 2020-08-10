@@ -43,7 +43,7 @@
     methods: {
       ...mapActions(['increaseVacationsCount']),
       goToVacationPage() {
-        // this.$router.push('/');
+        this.$router.push(`/vacation/${this.vacation.id}`);
       }
     },
     filters: {

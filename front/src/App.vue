@@ -3,17 +3,19 @@
     <component :is="layout">
       <router-view></router-view>
     </component>
+    <ModalContainer></ModalContainer>
   </div>
 </template>
 
 <script>
 import AuthLayout from './layouts/AuthLayout.vue'
 import MainLayout from './layouts/MainLayout.vue'
+import ModalContainer from "./components/ModalContainer";
 
 export default {
   name: 'App',
   components: {
-    AuthLayout, MainLayout
+    AuthLayout, MainLayout, ModalContainer
   },
   computed: {
     layout () {
