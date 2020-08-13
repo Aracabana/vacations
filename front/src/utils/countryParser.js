@@ -5,6 +5,7 @@ export default function (countries) {
     country.languages = country.languages.split(';');
     country.latlng = (country.currencies !== 'not') ? country.latlng.split(';'): [];
     country.currencies = (country.currencies !== 'not') ? JSON.parse(country.currencies) : [];
+    country.getFlag = () => require(`@/assets/img/${country.isoAlpha3.toLowerCase()}.svg`);
     return country;
   });
 }

@@ -5,10 +5,6 @@ export default async function request(url, method = 'GET', data = null, notifica
 
   const currRouter = router.currentRoute;
 
-  // if (spinner) {
-  //   store.commit('updateSpinner', true);
-  // }
-
   const headers = {};
   const credentials = 'include';
   let body;
@@ -37,9 +33,5 @@ export default async function request(url, method = 'GET', data = null, notifica
   } catch (err) {
     store.commit('updateNotification', {ok: false, caption: err.message, page: notificationPage || currRouter.name});
     return false;
-  } finally {
-    // if (spinner) {
-    //   store.commit('updateSpinner', false);
-    // }
   }
 }

@@ -1,7 +1,10 @@
 <template>
   <div class="countries-list-wrapper">
     <Spinner v-if="!countriesIsExist"></Spinner>
-    <p v-if="!getContinentsForSelect.length" class="countries-empty"><i class="far fa-sad-tear"></i> Страна не найдена</p>
+    <p v-if="!getContinentsForSelect.length" class="countries-empty">
+      <i class="far fa-sad-tear"></i>
+      Страна не найдена
+    </p>
     <ul v-else class="countries-list list-unstyled">
       <li v-for="(continent, index) in getContinentsForSelect" :key="index">
         <ContinentItem :continent="continent"></ContinentItem>
@@ -12,7 +15,7 @@
 
 <script>
   import {mapGetters} from 'vuex';
-  import Spinner from "./Spinner";
+  import Spinner from "./common/Spinner";
   import ContinentItem from "./ContinentItem";
 
   export default {

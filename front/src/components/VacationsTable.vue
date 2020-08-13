@@ -44,7 +44,7 @@
   import VacationsTableEmptyRow from './VacationsTableEmptyRow'
   import VacationTableRow from './VacationsTableRow'
   import VacationsSortBtn from './VacationsSortBtn'
-  import Spinner from '../components/Spinner'
+  import Spinner from './common/Spinner'
   import { mapActions, mapGetters } from 'vuex'
   import { eventBus } from "../main";
 
@@ -59,13 +59,17 @@
       }
     },
     methods: {
-      ...mapActions(['loadVacations'])
+      ...mapActions(['loadVacations']),
+      loadingListener(data) {
+        this.loading = data;
+      }
     },
     computed: mapGetters(['getVacations', 'countriesIsExist']),
     created() {
-      eventBus.$on('loading', (data) => {
-        this.loading = data;
-      });
+      eventBus.$on('loading', this.loadingListener);
+    },
+    beforeDestroy() {
+      eventBus.$off('loading', this.loadingListener);
     }
   }
 </script>

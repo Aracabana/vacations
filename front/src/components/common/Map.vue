@@ -19,7 +19,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import {LMap, LTileLayer, LMarker, LGeoJson} from 'vue2-leaflet';
-  import request from '../utils/request';
+  import request from '../../utils/request';
 
   export default {
     name: "Map",
@@ -79,7 +79,7 @@
 </script>
 
 <style scoped>
-  @import '~leaflet/dist/leaflet.css';
+  @import '../../../node_modules/leaflet/dist/leaflet.css';
   .map-wrapper {
     margin-top: 32px;
     height: 300px;

@@ -9,8 +9,8 @@
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
-  import Spinner from '../components/Spinner';
-  import Header from '../components/Header';
+  import Spinner from '../components/common/Spinner';
+  import Header from '../components/common/Header';
   import VacationEditPopup from '../components/VacationEditPopup';
 
   export default {

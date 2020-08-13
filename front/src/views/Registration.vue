@@ -112,8 +112,8 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex'
   import {required, minLength, email, sameAs} from 'vuelidate/lib/validators'
-  import Spinner from '../components/Spinner.vue'
-  import Notification from '../components/Notification'
+  import Spinner from '../components/common/Spinner.vue'
+  import Notification from '../components/common/Notification'
   import request from '../utils/request';
 
   export default {

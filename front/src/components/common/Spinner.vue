@@ -13,7 +13,7 @@
 </script>
 
 <style lang="less" scoped>
-  @import '../assets/less/variables';
+  @import '../../assets/less/variables';
   .spinner-wrapper {
     position: absolute;
     left: 0;

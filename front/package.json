@@ -9,10 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "draggabilly": "^2.3.0",
     "leaflet": "^1.6.0",
+    "packery": "^2.1.2",
     "register-service-worker": "^1.7.1",
     "v-lazy-image": "^1.4.0",
     "vue": "^2.6.11",
+    "vue-masonry": "^0.11.8",
     "vue-router": "^3.2.0",
     "vue2-leaflet": "^2.5.2",
     "vuelidate": "^0.7.5",

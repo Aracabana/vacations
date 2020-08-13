@@ -42,7 +42,7 @@
                           v-model.trim="dateFrom"
                           id="dateFrom"
                           type="date"
-                          :min="formatDatePicker()"
+                          :min="new Date() | formatDatePicker"
                           class="form-control"
                           :class="{'is-invalid': $v.dateFrom.$dirty && !$v.dateFrom.required}"
                         >
@@ -61,7 +61,7 @@
                           v-model.trim="dateTo"
                           id="dateTo"
                           type="date"
-                          :min="formatDatePicker(1)"
+                          :min="new Date() | formatDatePicker(1)"
                           class="form-control"
                           :class="{'is-invalid': $v.dateTo.$dirty && !$v.dateTo.required}"
                         >
@@ -95,14 +95,12 @@
 <script>
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {required} from 'vuelidate/lib/validators'
-  import {formatDateForPicker} from '../utils/formatDate';
-  import Notification from '../components/Notification'
-  import Spinner from '../components/Spinner'
+  import Notification from '../components/common/Notification'
+  import Spinner from '../components/common/Spinner'
   import CountriesList from '../components/CountriesList';
   import CountryInfo from '../components/CountryInfo'
-  import Map from '../components/Map'
+  import Map from '../components/common/Map'
   import router from "../router";
-  import popup from "../components/popup";
 
   export default {
     name: 'CreateVacation',
@@ -130,11 +128,7 @@
       onblur() {
         setTimeout(() => this.countriesListIsOpen = false, 150);
       },
-      formatDatePicker(increase) {
-        return formatDateForPicker(increase)
-      },
       async submit() {
-        this.$modal.show(popup);
         if (this.$v.$invalid) {
           this.$v.$touch()
           return

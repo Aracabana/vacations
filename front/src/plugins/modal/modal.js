@@ -1,38 +1,17 @@
-import ModalContainer from "../../components/ModalContainer";
-
 export default class Modal {
-  constructor(Vue, options) {
-    this.subscription = new Vue();
+  constructor() {
     this.container = null;
   }
 
-  // setWrapper() {
-  //   const div = document.createElement('div');
-  //   div.classList.add('test');
-  //   document.body.appendChild(div);
-  //   return div;
-  // }
-
-  // setContainer(root) {
-  //   this.root = root;
-  //   const elem = this.setWrapper();
-  //
-  //   new Vue({
-  //     root,
-  //     render: h => h(ModalContainer)
-  //   }).$mount(elem);
-  // }
-
-  show(component) {
+  show(component, componentProps, modalProps = null) {
     if (!component) {
-      console.log('component not provided');
       return;
     }
-    this.container.show(component);
+    this.container.show(component, componentProps, modalProps);
   }
 
-  hide() {
-    this.subscription.$emit('toggle', name, false);
+  close() {
+    this.container.destroyModal();
   }
 
 }

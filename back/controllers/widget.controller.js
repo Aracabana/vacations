@@ -1,33 +1,33 @@
-const { ActiveWidgets, BudgetWidget } = require('../models');
+const {ActiveWidgets, BudgetWidget} = require('../models');
 
 async function insert(request, response) {
-    const { vacationId, widgetId } = request.body;
+    const {vacationId, widgetId} = request.body;
     try {
         const result = await ActiveWidgets.insert(vacationId, widgetId);
-        if (result) {
-           response.json({ok: true});
-           return;
+        if (!result) {
+            throw new Error('Ошибка сервера');
         }
-        throw new Error('Ошибка сервера');
+        response.json({ok: true});
     } catch (err) {
         response.json({ok: false, caption: err.message});
     }
 }
 
 async function remove(request, response) {
-    const { widgetId, vacationId } = request.body;
+    const {widgetId, vacationId} = request.body;
     try {
         const result = await ActiveWidgets.remove(widgetId, vacationId);
-        if (result) {
-            response.json({ok: true});
+        if (!result) {
+            throw new Error('Ошибка сервера');
         }
+        response.json({ok: true});
     } catch (err) {
         response.json({ok: false, caption: err.message});
     }
 }
 
-async function getAll (request, response) {
-    const { vacationId } = request.query;
+async function getAll(request, response) {
+    const {vacationId} = request.query;
     try {
         const widgets = await ActiveWidgets.getAllByVacationId(vacationId);
         if (!widgets.length) {
@@ -40,7 +40,7 @@ async function getAll (request, response) {
 }
 
 async function getBudgetInfoByVacationId(request, response) {
-    const { vacationId } = request.query;
+    const {vacationId} = request.query;
     try {
         const info = await BudgetWidget.getInfoByVacationId(vacationId);
         response.json({ok: true, info});
@@ -50,7 +50,7 @@ async function getBudgetInfoByVacationId(request, response) {
 }
 
 async function insertBudgetInfo(request, response) {
-    const { data, vacationId } = request.body;
+    const {data, vacationId} = request.body;
     try {
         const result = await BudgetWidget.insert(data.categoryId, data.name, data.price, vacationId);
         if (result) {
@@ -63,4 +63,4 @@ async function insertBudgetInfo(request, response) {
     }
 }
 
-module.exports = { insert, remove, getAll, getBudgetInfoByVacationId, insertBudgetInfo };
+module.exports = {insert, remove, getAll, getBudgetInfoByVacationId, insertBudgetInfo};

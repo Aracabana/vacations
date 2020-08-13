@@ -13,9 +13,6 @@ export default {
       searchField: 'countryName',
       sortField1: 'continentName',
       sortField2: 'countryName'
-    },
-    lazyLoadingOptions: {
-      continentsToShow: 2
     }
   },
   actions: {
@@ -35,12 +32,7 @@ export default {
     },
 
     async applyCountriesFilters({commit}) {
-      commit('setContinentsToShow', 2);
       commit('filterCountries');
-    },
-
-    async increaseContinentsToShow({commit, state}, value) {
-      commit('setContinentsToShow', value);
     },
 
     async selectCountry({commit, getters}, countryId) {
@@ -52,7 +44,6 @@ export default {
     setCountries: (state, countries) => state.countries = countries,
     setSelectedCountry: (state, selectedCountry) => state.selectedCountry = selectedCountry,
     setCountriesSearchValue: (state, searchValue) => state.countriesFilterOptions.searchValue = searchValue,
-    setContinentsToShow: (state, value) => state.lazyLoadingOptions.continentsToShow = value,
 
     filterCountries(state) {
       const countries = new FilterBuilder(state.countriesFilterOptions, [...state.countries]);
@@ -73,7 +64,7 @@ export default {
         const itemForSelect = {
           countryId: country.id,
           countryName: country.countryName,
-          isoAlpha3: country.isoAlpha3
+          getFlag: country.getFlag
         };
         if (foundItem) {
           foundItem.countries.push(itemForSelect);
@@ -85,7 +76,6 @@ export default {
           })
         }
       });
-      // return result.filter((item, index) => index < state.lazyLoadingOptions.continentsToShow);
       return result;
     },
     countriesIsExist(state) {
@@ -103,5 +93,5 @@ export default {
     selectedCountryHasLatLng(state) {
       return state.selectedCountry?.latlng?.length;
     }
-  },
+  }
 }

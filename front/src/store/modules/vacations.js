@@ -1,6 +1,6 @@
 import request from '../../utils/request';
 import { FilterBuilder } from "../../utils/FilterBuilder";
-import router from '../../router'
+import router from '../../router';
 
 export default {
   state: {
@@ -60,11 +60,11 @@ export default {
       if (result) {
         const countryOfVacation = getters.getCountryById(vacation.country_Id);
         const updatedVacation = new Vacation(vacation, countryOfVacation);
-        commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), ...[updatedVacation]]);
+        commit('setVacations', [...state.vacations.filter(item => item.id !== vacation.id), updatedVacation]);
         commit('filterVacations');
-        commit('updatePopup', null);
         commit('updateNotification', {page: router.currentRoute.name, ok: result.ok, caption: result.caption});
       }
+      return result;
     },
 
     async sortVacation({commit}, {sortField, sortOrder}) {

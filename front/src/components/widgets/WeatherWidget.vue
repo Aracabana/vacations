@@ -1,10 +1,10 @@
 <template>
-    <span>testpopup</span>
+    <span>Weather Widget</span>
 </template>
 
 <script>
     export default {
-        name: "popup"
+        name: "WeatherWidget"
     }
 </script>
 

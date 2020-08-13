@@ -6,25 +6,36 @@
         <div class="container-fluid">
           <h3 class="text-white">Виджеты</h3>
         </div>
-        <ul id="widgets-sidebar" class="widget-menu list-unstyled"></ul>
+        <InactiveWidgetsSidebar></InactiveWidgetsSidebar>
       </nav>
       <div class="vacation-page-main">
         <div class="container-fluid">
-          <h1 id="vacation-country" class="vacation-page-title">{{vacation.countryName}}</h1>
-          <p id="vacation-dates" class="text-black-50">
-            {{formattedVacationDates}}
-          </p>
-          <div class="vacation-btns-bar">
-            <VacationEditBtn v-if="isEditable" :vacation="vacation"></VacationEditBtn>
-            <VacationRemoveBtn @removed="goBack" :vacation-id="vacation.id"></VacationRemoveBtn>
+
+          <div class="vacation-page-header">
+            <div class="vacation-page-title-wrapper">
+              <div class="vacation-page-title">
+                <v-lazy-image
+                  :src="vacation.country.getFlag()"
+                  :src-placeholder="imgPlaceholder"
+                  class="flag"
+                />
+                <h1 id="vacation-country">{{vacation.countryName}}</h1>
+              </div>
+              <div class="vacation-btns-bar">
+                <VacationEditBtn v-if="isEditable" :vacation="vacation"></VacationEditBtn>
+                <VacationRemoveBtn @removed="goBack" :vacation-id="vacation.id"></VacationRemoveBtn>
+              </div>
+            </div>
+            <p id="vacation-page-dates" class="text-black-50">
+              {{formattedVacationDates}}
+            </p>
           </div>
 
           <div class="content">
             <Notification v-if="getNotification && getNotification.page === 'Vacation'"></Notification>
-            <div id="widgets-wrapper" class="row">
-
-            </div>
+            <ActiveWidgetsContainer></ActiveWidgetsContainer>
           </div>
+
         </div>
       </div>
     </div>
@@ -32,32 +43,40 @@
 </template>
 
 <script>
-  import {mapGetters} from "vuex";
-  import Notification from '../components/Notification'
+  import {mapActions, mapGetters} from "vuex";
+  import Notification from '../components/common/Notification'
   import VacationEditBtn from "../components/VacationEditBtn";
   import VacationRemoveBtn from "../components/VacationRemoveBtn";
-  import Spinner from "../components/Spinner";
+  import Spinner from "../components/common/Spinner";
+  import ActiveWidgetsContainer from '../components/widgets/ActiveWidgetsContainer';
+  import InactiveWidgetsSidebar from '../components/widgets/InactiveWidgetsSidebar';
+  import VLazyImage from "v-lazy-image";
   import {eventBus} from "../main";
 
   export default {
     name: "Vacation",
-    components: {Notification, VacationEditBtn, VacationRemoveBtn, Spinner},
+    components: {
+      Notification,
+      VacationEditBtn,
+      VacationRemoveBtn,
+      Spinner,
+      VLazyImage,
+      ActiveWidgetsContainer,
+      InactiveWidgetsSidebar
+    },
     data() {
       return {
+        vacationId: null,
         vacation: {},
-        loading: false
+        loading: false,
+        imgPlaceholder: require('@/assets/img/img-placeholder.png')
       }
     },
     computed: {
       ...mapGetters(['getVacationById', 'getNotification', 'getVacations']),
       formattedVacationDates() {
-        const formatter = new Intl.DateTimeFormat(undefined, {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric"
-        });
-        const formattedDateFrom = formatter.format(this.vacation.dateFrom);
-        const formattedDateTo = formatter.format(this.vacation.dateTo);
+        const formattedDateFrom = this.$options.filters.formatVacationDates(this.vacation.dateFrom);
+        const formattedDateTo = this.$options.filters.formatVacationDates(this.vacation.dateTo);
         return `${formattedDateFrom} - ${formattedDateTo}`;
       },
       isEditable() {
@@ -65,28 +84,32 @@
       }
     },
     methods: {
+      ...mapActions(['loadWidgets']),
       goBack(removed) {
-        if (removed) {
-          setTimeout(() => this.$router.back(), 300);
-        }
+        if (!removed) return;
+        setTimeout(() => this.$router.back(), 300);
+      },
+      getVacation(id) {
+        this.loading = true;
+        this.vacation = this.getVacationById(id);
+        this.loading = false;
+      },
+      loadingListener(data) {
+        this.loading = data;
       }
     },
-    created() {
-      this.loading = true;
+    async created() {
       this.vacationId = this.$router.currentRoute.params.id;
-      this.vacation = this.getVacationById(this.vacationId);
-      this.loading = false;
+      this.getVacation(this.vacationId);
+      await this.loadWidgets(this.vacationId);
     },
     async mounted() {
-      eventBus.$on('loading', (data) => {
-        this.loading = data;
-      })
+      eventBus.$on('loading', this.loadingListener);
+      eventBus.$on('vacationUpdated', () => this.getVacation(this.vacationId));
     },
-    watch: {
-      getVacations(oldVal, newVal) {
-        console.log(oldVal);
-        console.log(newVal);
-      }
+    beforeDestroy() {
+      eventBus.$off('loading', this.loadingListener);
+      eventBus.$off('vacationUpdated');
     }
   }
 </script>
@@ -105,10 +128,16 @@
     flex-grow: 1;
   }
 
-  .vacation-btns-bar {
-    position: absolute;
-    top: 16px;
-    right: 16px;
+  .vacation-page-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .vacation-page-title {
+    display: flex;
+    align-items: center;
   }
 
   .vacation-page-title .flag {

@@ -2,7 +2,7 @@
   <tr class="table-row" @click="goToVacationPage">
     <td style="width: 30%;">
       <v-lazy-image
-        :src="vacation.country.flag"
+        :src="vacation.country.getFlag()"
         :src-placeholder="require('@/assets/img/img-placeholder.png')"
         class="flag"
       />
@@ -50,24 +50,6 @@
       toLocaleDateString: function (value) {
         return value.toLocaleDateString();
       }
-    },
-    mounted() {
-      // if ("IntersectionObserver" in window) {
-      //   this.observer = new IntersectionObserver((entries) => {
-      //     const row = entries[0];
-      //     console.log(entries[0].target);
-      //     if (row.isIntersecting) {
-      //       this.increaseVacationsCount();
-      //       this.observer.disconnect();
-      //     }
-      //   }, {});
-      //   this.observer.observe(this.$el);
-      // }
-    },
-    beforeDestroy() {
-      // if ("IntersectionObserver" in window) {
-      //   this.observer.disconnect();
-      // }
     }
   }
 </script>

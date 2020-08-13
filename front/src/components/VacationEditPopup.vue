@@ -1,80 +1,57 @@
 <template>
-  <transition name="modal-fade">
-    <div class="popup-bg" @click.self="hidePopup">
-      <div class="popup">
-        <div class="popup-content">
-          <Notification v-if="getNotification && getNotification.page === 'Popup'"></Notification>
-          <Spinner v-if="loading"></Spinner>
-          <button class="btn popup-close" type="button" @click="hidePopup">
-            <i class="fas fa-times"></i>
-          </button>
-          <h3 id="js-popup-title" class="popup-title">{{getPopup.countryName}}</h3>
-          <form id="form-edit" @submit.prevent="submit">
-            <div class="form-group">
-              <label for="dateFrom">Дата начала</label>
-              <input
-                v-model="dateFrom"
-                id="dateFrom"
-                type="date"
-                :min="formatDatePicker()"
-                class="form-control"
-                :class="{'is-invalid': ($v.dateFrom.$dirty && !$v.dateFrom.required) || ($v.dateFrom.$dirty && !$v.dateFrom.isValid)}"
-              >
-              <div
-                v-if="$v.dateFrom.$dirty && !$v.dateFrom.required"
-                class="invalid-feedback"
-              >
-                Поле обязательно для заполнения
-              </div>
-              <div
-                v-if="$v.dateFrom.$dirty && !$v.dateFrom.isValid"
-                class="invalid-feedback"
-              >
-                Не корректная дата
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="dateTo">Дата завершения</label>
-              <input
-                v-model="dateTo"
-                id="dateTo"
-                type="date"
-                :min="formatDatePicker(1)"
-                class="form-control"
-                :class="{'is-invalid':  ($v.dateTo.$dirty && !$v.dateTo.required) || ($v.dateTo.$dirty && !$v.dateTo.isValid)}"
-              >
-              <div
-                v-if="$v.dateTo.$dirty && !$v.dateTo.required"
-                class="invalid-feedback"
-              >
-                Поле обязательно для заполнения
-              </div>
-              <div
-                v-if="$v.dateTo.$dirty && !$v.dateTo.isValid"
-                class="invalid-feedback"
-              >
-                Не корректная дата
-              </div>
-            </div>
-            <div class="btns text-right">
-              <button id="popup-submit" type="submit" class="btn btn-success">Сохранить</button>
-            </div>
-          </form>
+  <div class="popup-content">
+    <Notification v-if="getNotification && getNotification.page === 'Popup'"></Notification>
+    <Spinner v-if="loading"></Spinner>
+    <form id="form-edit" @submit.prevent="submit">
+
+      <div class="form-group" :class="{'is-invalid' : $v.dateFrom.$error}">
+        <label for="dateFrom">Дата начала</label>
+        <input
+          id="dateFrom"
+          type="date"
+          v-model="dateFrom"
+          class="form-control"
+          :min="new Date() | formatDatePicker"
+        >
+        <div v-if="$v.dateFrom.$dirty" class="invalid-feedback">
+          <span v-if="!$v.dateFrom.required">Поле обязательно для заполнения</span>
+          <span v-if="!$v.dateFrom.isValid">Не корректная дата</span>
         </div>
       </div>
-    </div>
-  </transition>
+
+      <div class="form-group" :class="{'is-invalid' : $v.dateFrom.$error}">
+        <label for="dateTo">Дата завершения</label>
+        <input
+          id="dateTo"
+          type="date"
+          v-model="dateTo"
+          class="form-control"
+          :min="new Date() | formatDatePicker(1)"
+        >
+        <div v-if="$v.dateFrom.$dirty" class="invalid-feedback">
+          <span v-if="!$v.dateFrom.required">Поле обязательно для заполнения</span>
+          <span v-if="!$v.dateFrom.isValid">Не корректная дата</span>
+        </div>
+      </div>
+
+      <div class="btns text-right">
+        <button id="popup-submit" type="submit" class="btn btn-success">Сохранить</button>
+      </div>
+
+    </form>
+  </div>
 </template>
 
 <script>
-  import {mapActions, mapGetters, mapMutations} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
   import {required} from 'vuelidate/lib/validators'
-  import {formatDateForPicker} from '../utils/formatDate';
-  import Spinner from './Spinner'
-  import Notification from '../components/Notification'
+  import Spinner from './common/Spinner'
+  import Notification from './common/Notification'
+  import {eventBus} from '../main';
 
   export default {
     name: "VacationEditPopup",
+    props: ['props'],
     validations: {
       dateFrom: {required},
       dateTo: {required}
@@ -84,105 +61,43 @@
       return {
         dateFrom: '',
         dateTo: '',
-        loading: false
+        loading: false,
+        vacation: this.props.vacation
       }
     },
-    computed: mapGetters(['getNotification', 'getPopup']),
+    computed: mapGetters(['getNotification']),
     methods: {
       ...mapActions(['editVacation']),
-      ...mapMutations(['updatePopup']),
+
       async submit() {
         if (this.$v.$invalid) {
           this.$v.$touch()
           return
         }
         const updatedVacation = {
-          ...this.getPopup,
+          ...this.vacation,
           dateFrom: this.dateFrom,
           dateTo: this.dateTo,
         }
         this.loading = true;
-        await this.editVacation(updatedVacation);
+        const result = await this.editVacation(updatedVacation);
+        if (result) {
+          this.$modal.close();
+          eventBus.$emit('vacationUpdated');
+        }
         this.loading = false;
-      },
-      formatDatePicker(increase) {
-        return formatDateForPicker(increase)
-      },
-      hidePopup() {
-        this.updatePopup(null);
-      },
-      formatDate: function (value) {
-        return value.toLocaleDateString().split('.').reverse().join('-');
       }
+
     },
-    mounted() {
-      this.dateFrom = this.formatDate(this.getPopup.dateFrom)
-      this.dateTo = this.formatDate(this.getPopup.dateTo)
+    created() {
+      this.dateFrom = this.$options.filters.formatDatePicker(this.vacation.dateFrom);
+      this.dateTo = this.$options.filters.formatDatePicker(this.vacation.dateTo);
     }
   }
 </script>
 
 <style lang="less" scoped>
-  @import '../assets/less/variables';
-  .modal-fade-enter,
-  .modal-fade-leave-active {
-    opacity: 0;
-  }
-
-  .modal-fade-enter-active,
-  .modal-fade-leave-active {
-    transition: opacity .5s ease
-  }
-  .popup-bg {
-    overflow-x: hidden;
-    overflow-y: auto;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 110;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-  }
-  .popup {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    max-width: 475px;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-  }
   .popup-content {
-    position: relative;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    margin: 0 auto;
-    padding: 40px 32px 32px;
-    background-color: #ffffff;
-  }
-  .popup-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    .flex();
-    .flex-center();
-    .align-items-center();
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    color: #343a40;
-    cursor: pointer;
-    .transition();
-    &:hover, &:active, &:focus {
-      color: #007bff;
-    }
-  }
-  .popup-title {
-    margin-bottom: 32px;
+    min-width: 400px;
   }
 </style>

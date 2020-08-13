@@ -13,7 +13,7 @@
 
 <script>
   import {mapGetters} from 'vuex'
-  import Notification from '../components/Notification'
+  import Notification from '../components/common/Notification'
   import VacationsFilter from '../components/VacationsFilter'
   import VacationsTable from '../components/VacationsTable'
 

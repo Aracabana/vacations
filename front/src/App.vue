@@ -10,7 +10,7 @@
 <script>
 import AuthLayout from './layouts/AuthLayout.vue'
 import MainLayout from './layouts/MainLayout.vue'
-import ModalContainer from "./components/ModalContainer";
+import ModalContainer from "./components/common/ModalContainer";
 
 export default {
   name: 'App',
@@ -63,4 +63,11 @@ export default {
       .box-shadow-none();
     }
   }
+
+  .packery-drop-placeholder {
+    outline: 3px dashed #3c874e;
+    outline-offset: -6px;
+    transition: transform 0.2s;
+  }
+
 </style>

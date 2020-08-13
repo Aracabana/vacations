@@ -51,7 +51,7 @@
 </script>
 
 <style lang="less" scoped>
-  @import '../assets/less/variables';
+  @import '../../assets/less/variables';
   .header {
     position: fixed;
     left: 0;

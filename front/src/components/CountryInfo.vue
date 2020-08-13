@@ -53,6 +53,7 @@
   .country-info {
     height: 100%;
   }
+
   p {
     .flex();
     .flex-start();
@@ -60,6 +61,7 @@
       margin-right: 8px;
     }
   }
+
   span span {
     display: block;
   }
