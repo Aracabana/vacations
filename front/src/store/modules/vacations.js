@@ -35,6 +35,7 @@ export default {
         const countryOfVacation = getters.getCountryById(response.vacation.country_Id);
         const vacation = new Vacation(response.vacation, countryOfVacation);
         commit('setVacations', [...state.vacations, vacation]);
+        commit('filterVacations');
         commit('updateNotification', {...response, page: router.currentRoute.name})
         return vacation.id;
       }

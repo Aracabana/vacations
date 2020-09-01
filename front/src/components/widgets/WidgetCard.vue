@@ -26,7 +26,7 @@
   import {mapActions} from 'vuex';
 
   export default {
-    name: "widget",
+    name: "WidgetCard",
     data() {
       return {
         visible: false,
@@ -41,11 +41,9 @@
     },
     methods: {
       ...mapActions(['disableWidget']),
-
       toggleExpand() {
         this.expanded = !this.expanded;
       },
-
       async removeFromContainer() {
         const vacationId = this.$router.currentRoute.params.id;
         const widgetId = this.$attrs.id;
@@ -77,6 +75,7 @@
     background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: .25rem;
+    transition: all 1s;
   }
 
   .expanded {

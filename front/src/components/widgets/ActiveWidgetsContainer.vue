@@ -1,27 +1,27 @@
 <template>
   <div class="widgets-container">
     <div v-packery:options="packeryOptions" class="widgets-wrapper">
-      <widget
+      <WidgetCard
         v-for="(widget, index) in getActiveWidgets"
         :key="index"
         v-bind="widget.props"
       >
         <component :is="widget.component"></component>
-      </widget>
+      </WidgetCard>
     </div>
-    <div v-if="!hasWidgets" class="widgets-container-empty">Виджеты не выбраны</div>
+    <div v-if="!getActiveWidgets.length" class="widgets-container-empty">Виджеты не выбраны</div>
   </div>
 </template>
 
 <script>
   import {mapGetters} from 'vuex';
   import Spinner from '../common/Spinner';
-  import widget from './widget';
+  import WidgetCard from './WidgetCard';
 
   export default {
     name: "ActiveWidgetsContainer",
     props: ['containerProps'],
-    components: {widget, Spinner},
+    components: {WidgetCard, Spinner},
     data() {
       return {
         packery: null,
@@ -33,7 +33,7 @@
         containerWidth: 0,
       }
     },
-    computed: mapGetters(['getActiveWidgets', 'hasWidgets']),
+    computed: mapGetters(['getActiveWidgets']),
     methods: {}
   }
 </script>

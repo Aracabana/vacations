@@ -49,7 +49,7 @@
   import VacationRemoveBtn from "../components/VacationRemoveBtn";
   import Spinner from "../components/common/Spinner";
   import ActiveWidgetsContainer from '../components/widgets/ActiveWidgetsContainer';
-  import InactiveWidgetsSidebar from '../components/widgets/InactiveWidgetsSidebar';
+  import InactiveWidgetsSidebar from '../components/widgets/WidgetsSidebar';
   import VLazyImage from "v-lazy-image";
   import {eventBus} from "../main";
 
