@@ -1,4 +1,3 @@
-import {win} from 'leaflet/src/core/Browser';
 import PackeryClass from 'packery';
 import Draggabilly from 'draggabilly';
 

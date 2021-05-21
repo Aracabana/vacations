@@ -1,4 +1,3 @@
-import {FilterBuilder} from '../../utils/FilterBuilder';
 import request from "../../utils/request";
 import router from '../../router'
 import WidgetFactory from '../../utils/WidgetsFactory';
@@ -7,19 +6,12 @@ export default {
   state: {
     widgets: [],
     filteredWidgets: [],
-    // countriesFilterOptions: {
-    //   searchValue: '',
-    //   searchField: 'countryName',
-    //   sortField1: 'continentName',
-    //   sortField2: 'countryName'
-    // }
   },
   actions: {
     async loadWidgets({commit}, vacationId) {
       try {
         const {widgets} = await request(`/api/widgets?vacationId=${vacationId}`);
         commit('setWidgets', widgets);
-        // commit('filterWidgets');
       } catch (err) {
         commit('updateNotification', {page: router.currentRoute.name, ok: false, caption: err.message});
       }
@@ -58,29 +50,9 @@ export default {
         commit('updateNotification', {page: router.currentRoute.name, ok: false, caption: err.message})
       }
     }
-
-    //
-    // async searchCountry({commit, dispatch}, input) {
-    //   commit('setCountriesSearchValue', input);
-    //   dispatch('applyCountriesFilters');
-    // },
-    //
-    // async applyCountriesFilters({commit}) {
-    //   commit('filterCountries');
-    // },
-    //
-    // async selectCountry({commit, getters}, countryId) {
-    //   const selectedCountry = getters.getCountryById(countryId);
-    //   commit('setSelectedCountry', selectedCountry);
-    // }
   },
   mutations: {
     setWidgets: (state, widgets) => state.widgets = widgets
-
-    // filterCountries(state) {
-    //   const countries = new FilterBuilder(state.countriesFilterOptions, [...state.countries]);
-    //   state.filteredCountries = countries.search().sortByTwoFields().get();
-    // }
   },
   getters: {
     hasWidgets(state) {

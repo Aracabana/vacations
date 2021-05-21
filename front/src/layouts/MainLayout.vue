@@ -3,7 +3,6 @@
     <Header></Header>
     <Spinner v-if="appLoading"></Spinner>
     <router-view v-else></router-view>
-<!--    <VacationEditPopup v-if="getPopup"></VacationEditPopup>-->
   </section>
 </template>
 
